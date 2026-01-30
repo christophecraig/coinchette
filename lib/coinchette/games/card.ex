@@ -79,6 +79,46 @@ defmodule Coinchette.Games.Card do
   defp non_trump_value(:eight), do: 0
   defp non_trump_value(:seven), do: 0
 
+  @doc """
+  Retourne la force de la carte pour déterminer le gagnant d'un pli.
+
+  Différent de value/2 qui retourne les points. Cette fonction
+  détermine quelle carte "bat" l'autre, même si elles ont 0 points.
+
+  ## Exemples
+
+      iex> card = Card.new(:nine, :spades)
+      iex> Card.strength(card, :hearts)
+      9
+  """
+  def strength(%__MODULE__{rank: rank, suit: suit}, trump_suit) do
+    if suit == trump_suit do
+      trump_strength(rank)
+    else
+      non_trump_strength(rank)
+    end
+  end
+
+  # Force des atouts (ordre de victoire)
+  defp trump_strength(:jack), do: 20
+  defp trump_strength(:nine), do: 14
+  defp trump_strength(:ace), do: 11
+  defp trump_strength(:ten), do: 10
+  defp trump_strength(:king), do: 4
+  defp trump_strength(:queen), do: 3
+  defp trump_strength(:eight), do: 2
+  defp trump_strength(:seven), do: 1
+
+  # Force des non-atouts (ordre standard des cartes)
+  defp non_trump_strength(:ace), do: 14
+  defp non_trump_strength(:ten), do: 10
+  defp non_trump_strength(:king), do: 9
+  defp non_trump_strength(:queen), do: 8
+  defp non_trump_strength(:jack), do: 7
+  defp non_trump_strength(:nine), do: 6
+  defp non_trump_strength(:eight), do: 5
+  defp non_trump_strength(:seven), do: 4
+
   defimpl String.Chars do
     @moduledoc """
     Conversion d'une carte en chaîne de caractères lisible.
