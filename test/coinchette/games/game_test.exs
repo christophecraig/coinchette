@@ -1,7 +1,7 @@
 defmodule Coinchette.Games.GameTest do
   use ExUnit.Case, async: true
 
-  alias Coinchette.Games.Game
+  alias Coinchette.Games.{Game, Card, Player}
 
   describe "new/1" do
     test "creates a new game with trump suit" do
@@ -81,15 +81,51 @@ defmodule Coinchette.Games.GameTest do
       other_card = List.first(other_player.hand)
 
       # Try to play it as player 0 (current player)
-      assert Game.play_card(game, other_card) == {:error, :card_not_in_hand}
+      # Returns :invalid_card because Rules check happens first
+      assert Game.play_card(game, other_card) == {:error, :invalid_card}
+    end
+
+    test "returns error if card violates FFB rules", %{game: game} do
+      # Ensure player 0 has both spades and hearts
+      spades_card = Card.new(:ace, :spades)
+      hearts_card = Card.new(:king, :hearts)
+
+      player0 = %{Player.new(0, [spades_card, hearts_card]) | team: 0}
+      game = %{game | players: [player0 | Enum.drop(game.players, 1)]}
+
+      # Player 0 plays spades (led suit)
+      {:ok, game} = Game.play_card(game, spades_card)
+
+      # Now player 1 must have spades in hand for this test
+      # We'll create a controlled scenario
+      spades_seven = Card.new(:seven, :spades)
+      hearts_queen = Card.new(:queen, :hearts)
+
+      player1 = %{Player.new(1, [spades_seven, hearts_queen]) | team: 1}
+      game = %{game | players: List.replace_at(game.players, 1, player1)}
+
+      # Try to play hearts when spades is required
+      assert Game.play_card(game, hearts_queen) == {:error, :invalid_card}
     end
 
     test "completes trick after 4 cards and starts new one", %{game: game} do
-      # Play 4 cards
+      alias Coinchette.Games.Rules
+
+      # Play 4 cards (one complete trick) with valid moves
       game =
         Enum.reduce(0..3, game, fn _, acc ->
           current_player = Enum.at(acc.players, acc.current_player_position)
-          card = List.first(current_player.hand)
+
+          # Get valid cards and play first one
+          valid_cards =
+            Rules.valid_cards(
+              current_player,
+              acc.current_trick,
+              acc.trump_suit,
+              current_player.position
+            )
+
+          card = List.first(valid_cards)
           {:ok, updated} = Game.play_card(acc, card)
           updated
         end)
@@ -138,10 +174,24 @@ defmodule Coinchette.Games.GameTest do
   end
 
   # Helper function to play a full round (8 tricks = 32 cards)
+  # Plays legal cards according to FFB rules
   defp play_full_round(game) do
     Enum.reduce(1..32, game, fn _, acc ->
       current_player = Enum.at(acc.players, acc.current_player_position)
-      card = List.first(current_player.hand)
+
+      # Get valid cards according to FFB rules
+      alias Coinchette.Games.Rules
+
+      valid_cards =
+        Rules.valid_cards(
+          current_player,
+          acc.current_trick,
+          acc.trump_suit,
+          current_player.position
+        )
+
+      # Play first valid card
+      card = List.first(valid_cards)
       {:ok, updated} = Game.play_card(acc, card)
       updated
     end)

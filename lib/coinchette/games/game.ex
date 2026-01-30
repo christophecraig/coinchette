@@ -10,7 +10,7 @@ defmodule Coinchette.Games.Game do
   Coordonne les modules Card, Deck, Player et Trick pour une partie complète.
   """
 
-  alias Coinchette.Games.{Card, Deck, Player, Trick}
+  alias Coinchette.Games.{Card, Deck, Player, Trick, Rules}
 
   @type status :: :waiting | :playing | :finished
 
@@ -92,19 +92,30 @@ defmodule Coinchette.Games.Game do
   def play_card(%__MODULE__{status: :playing} = game, card) do
     current_player = current_player(game)
 
-    case Player.play_card(current_player, card) do
-      {:error, reason} ->
-        {:error, reason}
+    # Valider selon les règles FFB
+    if Rules.can_play_card?(
+         current_player,
+         game.current_trick,
+         game.trump_suit,
+         current_player.position,
+         card
+       ) do
+      case Player.play_card(current_player, card) do
+        {:error, reason} ->
+          {:error, reason}
 
-      {updated_player, played_card} ->
-        updated_game =
-          game
-          |> update_player(updated_player)
-          |> add_card_to_trick(played_card, current_player.position)
-          |> maybe_complete_trick()
-          |> advance_turn()
+        {updated_player, played_card} ->
+          updated_game =
+            game
+            |> update_player(updated_player)
+            |> add_card_to_trick(played_card, current_player.position)
+            |> maybe_complete_trick()
+            |> advance_turn()
 
-        {:ok, updated_game}
+          {:ok, updated_game}
+      end
+    else
+      {:error, :invalid_card}
     end
   end
 
