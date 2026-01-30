@@ -11,7 +11,22 @@ defmodule Coinchette.MixProject do
       aliases: aliases(),
       deps: deps(),
       compilers: [:phoenix_live_view] ++ Mix.compilers(),
-      listeners: [Phoenix.CodeReloader]
+      listeners: [Phoenix.CodeReloader],
+      test_coverage: [
+        summary: [threshold: 30],
+        ignore_modules: [
+          ~r/\.Migrations\./,
+          ~r/\.Repo$/,
+          CoinchetteWeb.Endpoint,
+          CoinchetteWeb.Telemetry,
+          Coinchette.Application,
+          Coinchette.Mailer
+        ]
+      ],
+      # Note: Threshold will be increased to 80% once game logic is implemented
+      preferred_cli_env: [
+        "test.coverage": :test
+      ]
     ]
   end
 
