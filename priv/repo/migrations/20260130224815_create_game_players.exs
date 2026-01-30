@@ -5,10 +5,13 @@ defmodule Coinchette.Repo.Migrations.CreateGamePlayers do
     create table(:game_players, primary_key: false) do
       add :id, :uuid, primary_key: true
       add :game_id, references(:games, type: :uuid, on_delete: :delete_all), null: false
-      add :user_id, references(:users, type: :uuid, on_delete: :nilify_all)  # nullable si bot
-      add :position, :integer, null: false  # 0-3 (position à la table)
+      # nullable si bot
+      add :user_id, references(:users, type: :uuid, on_delete: :nilify_all)
+      # 0-3 (position à la table)
+      add :position, :integer, null: false
       add :is_bot, :boolean, default: false, null: false
-      add :bot_difficulty, :string  # easy, medium, hard (null si humain)
+      # easy, medium, hard (null si humain)
+      add :bot_difficulty, :string
 
       timestamps()
     end
