@@ -226,6 +226,24 @@ defmodule Coinchette.GameServer do
     with :ok <- validate_turn(state, user_id),
          {:ok, new_game} <- Games.Game.make_bid(state.game, bid_action) do
 
+      # Auto-complete deal and announcements if bidding is done
+      new_game =
+        cond do
+          new_game.status == :bidding_completed ->
+            # Complete the deal (distribute remaining cards)
+            game_with_cards = Games.Game.complete_deal(new_game)
+            # Complete announcements (transition to :playing)
+            Games.Game.complete_announcements(game_with_cards)
+
+          new_game.status == :bidding_failed ->
+            # Send system message about failed bidding
+            broadcast_system_message(state.game_id, "Tous ont passé ! Redistribution nécessaire")
+            new_game
+
+          true ->
+            new_game
+        end
+
       # Persist
       Multiplayer.update_game_state(state.game_id, new_game)
       Multiplayer.add_game_event(state.game_id, "bid_made", %{
@@ -312,6 +330,24 @@ defmodule Coinchette.GameServer do
 
       case result do
         {:ok, new_game} ->
+          # Auto-complete deal and announcements if bidding is done
+          new_game =
+            cond do
+              new_game.status == :bidding_completed ->
+                # Complete the deal (distribute remaining cards)
+                game_with_cards = Games.Game.complete_deal(new_game)
+                # Complete announcements (transition to :playing)
+                Games.Game.complete_announcements(game_with_cards)
+
+              new_game.status == :bidding_failed ->
+                # Send system message about failed bidding
+                broadcast_system_message(state.game_id, "Tous ont passé ! Redistribution nécessaire")
+                new_game
+
+              true ->
+                new_game
+            end
+
           # Persist
           Multiplayer.update_game_state(state.game_id, new_game)
 

@@ -344,31 +344,32 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           <.announcements_notification result={@game.announcements_result} />
         <% end %>
 
-        <%= if @game.status == :bidding do %>
-          <!-- Bidding Interface -->
-          <.bidding_interface
-            game={@game}
-            is_my_turn={is_my_turn?(@game, @my_position)}
-            player_names={@player_names}
-          />
-        <% else %>
-          <!-- Game Board with Chat -->
-          <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <div class="lg:col-span-3">
-              <.game_board
+        <!-- Game Board with Chat (always visible) -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div class="lg:col-span-3">
+            <%= if @game.status == :bidding do %>
+              <!-- Bidding Interface -->
+              <.bidding_interface
                 game={@game}
-                my_position={@my_position}
-                player_names={@player_names}
                 is_my_turn={is_my_turn?(@game, @my_position)}
+                player_names={@player_names}
               />
-            </div>
+            <% end %>
 
-            <!-- Chat Sidebar -->
-            <div class="lg:col-span-1">
-              <.chat_panel streams={@streams} />
-            </div>
+            <!-- Game Board (always show hand) -->
+            <.game_board
+              game={@game}
+              my_position={@my_position}
+              player_names={@player_names}
+              is_my_turn={is_my_turn?(@game, @my_position)}
+            />
           </div>
-        <% end %>
+
+          <!-- Chat Sidebar -->
+          <div class="lg:col-span-1">
+            <.chat_panel streams={@streams} />
+          </div>
+        </div>
 
         <!-- Score Panel -->
         <.score_panel game={@game} my_position={@my_position} player_names={@player_names} />
