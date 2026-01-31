@@ -330,6 +330,9 @@ defmodule Coinchette.Games.Game do
     %{game | status: :playing, current_trick: Trick.new()}
   end
 
+  # Si déjà en :playing ou autre statut, retourner tel quel
+  def complete_announcements(%__MODULE__{} = game), do: game
+
   # Détecte automatiquement les annonces de tous les joueurs
   defp detect_and_process_announcements(%__MODULE__{} = game) do
     first_player = rem(game.dealer_position + 1, 4)

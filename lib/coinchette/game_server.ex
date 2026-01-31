@@ -230,10 +230,14 @@ defmodule Coinchette.GameServer do
       new_game =
         cond do
           new_game.status == :bidding_completed ->
+            Logger.info("Bidding completed for game #{state.game_id}, completing deal and announcements")
             # Complete the deal (distribute remaining cards)
             game_with_cards = Games.Game.complete_deal(new_game)
+            Logger.info("Deal completed, status: #{game_with_cards.status}")
             # Complete announcements (transition to :playing)
-            Games.Game.complete_announcements(game_with_cards)
+            final_game = Games.Game.complete_announcements(game_with_cards)
+            Logger.info("Announcements completed, status: #{final_game.status}")
+            final_game
 
           new_game.status == :bidding_failed ->
             # Send system message about failed bidding and schedule redeal
@@ -335,10 +339,13 @@ defmodule Coinchette.GameServer do
           new_game =
             cond do
               new_game.status == :bidding_completed ->
+                Logger.info("Bot completed bidding for game #{state.game_id}, completing deal and announcements")
                 # Complete the deal (distribute remaining cards)
                 game_with_cards = Games.Game.complete_deal(new_game)
                 # Complete announcements (transition to :playing)
-                Games.Game.complete_announcements(game_with_cards)
+                final_game = Games.Game.complete_announcements(game_with_cards)
+                Logger.info("Bot turn: announcements completed, status: #{final_game.status}")
+                final_game
 
               new_game.status == :bidding_failed ->
                 # Send system message about failed bidding and schedule redeal
