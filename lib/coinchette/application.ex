@@ -12,8 +12,10 @@ defmodule Coinchette.Application do
       Coinchette.Repo,
       {DNSCluster, query: Application.get_env(:coinchette, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Coinchette.PubSub},
-      # Start a worker by calling: Coinchette.Worker.start_link(arg)
-      # {Coinchette.Worker, arg},
+      # Registry for GameServer process lookup
+      {Registry, keys: :unique, name: Coinchette.GameRegistry},
+      # DynamicSupervisor for GameServer processes
+      Coinchette.GameServerSupervisor,
       # Start to serve requests, typically the last entry
       CoinchetteWeb.Endpoint
     ]
