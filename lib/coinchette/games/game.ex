@@ -654,9 +654,9 @@ defmodule Coinchette.Games.Game do
   end
 
   defp advance_turn(%__MODULE__{current_trick: trick} = game) do
-    # Si le pli vient d'être complété, current_player_position
-    # a déjà été mis à jour vers le gagnant, on ne bouge pas
-    if Trick.complete?(trick) do
+    # Si le pli est vide (vient d'être complété et réinitialisé),
+    # current_player_position a déjà été mis à jour vers le gagnant, on ne bouge pas
+    if trick.cards == [] do
       game
     else
       # Sinon, on passe au joueur suivant

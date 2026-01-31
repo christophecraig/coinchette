@@ -228,8 +228,14 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     assign(socket, :player_names, player_names)
   end
 
-  defp get_player_name(socket, position) do
-    Map.get(socket.assigns.player_names, position, "Joueur #{position + 1}")
+  defp get_player_name(socket_or_map, position) do
+    player_names =
+      case socket_or_map do
+        %{assigns: %{player_names: names}} -> names
+        %{} = names when is_map(names) -> names
+      end
+
+    Map.get(player_names, position, "Joueur #{position + 1}")
   end
 
   defp detect_belote_announcement(old_game, new_game) do
@@ -501,11 +507,16 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       <div class="lg:col-span-2">
         <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6">
           <!-- Trick Area -->
-          <%= if @game.current_trick do %>
+          <%= if @game.current_trick && length(@game.current_trick.cards) > 0 do %>
             <div class="relative aspect-square max-w-md mx-auto mb-6">
               <div class="absolute inset-0 bg-green-700/50 rounded-full border-4 border-white/20"></div>
               <%= for {card, pos} <- @game.current_trick.cards do %>
-                <.trick_card card={card} position={pos} my_position={@my_position} />
+                <.trick_card
+                  card={card}
+                  position={pos}
+                  my_position={@my_position}
+                  player_name={get_player_name(@player_names, pos)}
+                />
               <% end %>
             </div>
           <% end %>
@@ -706,14 +717,27 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
         # Left
       end
 
-    assigns = Map.merge(assigns, %{top: top, left: left})
+    assigns = Map.merge(assigns, %{top: top, left: left, position_offset: position_offset})
 
     ~H"""
     <div
       class="absolute transform -translate-x-1/2 -translate-y-1/2"
       style={"top: #{@top}; left: #{@left};"}
     >
-      <.card_display card={@card} />
+      <div class="flex flex-col items-center gap-1">
+        <!-- Player name above card for top position, below for others -->
+        <%= if @position_offset == 2 do %>
+          <div class="text-xs font-semibold text-white bg-black/50 px-2 py-1 rounded whitespace-nowrap">
+            <%= @player_name %>
+          </div>
+        <% end %>
+        <.card_display card={@card} />
+        <%= if @position_offset != 2 do %>
+          <div class="text-xs font-semibold text-white bg-black/50 px-2 py-1 rounded whitespace-nowrap">
+            <%= @player_name %>
+          </div>
+        <% end %>
+      </div>
     </div>
     """
   end
