@@ -236,8 +236,9 @@ defmodule Coinchette.GameServer do
             Games.Game.complete_announcements(game_with_cards)
 
           new_game.status == :bidding_failed ->
-            # Send system message about failed bidding
-            broadcast_system_message(state.game_id, "Tous ont passé ! Redistribution nécessaire")
+            # Send system message about failed bidding and schedule redeal
+            broadcast_system_message(state.game_id, "Tous ont passé ! Redistribution dans 2 secondes...")
+            Process.send_after(self(), :redeal_cards, 2000)
             new_game
 
           true ->
@@ -340,8 +341,9 @@ defmodule Coinchette.GameServer do
                 Games.Game.complete_announcements(game_with_cards)
 
               new_game.status == :bidding_failed ->
-                # Send system message about failed bidding
-                broadcast_system_message(state.game_id, "Tous ont passé ! Redistribution nécessaire")
+                # Send system message about failed bidding and schedule redeal
+                broadcast_system_message(state.game_id, "Tous ont passé ! Redistribution dans 2 secondes...")
+                Process.send_after(self(), :redeal_cards, 2000)
                 new_game
 
               true ->
@@ -382,6 +384,35 @@ defmodule Coinchette.GameServer do
   def handle_info(:shutdown, state) do
     Logger.info("Shutting down GameServer for game #{state.game_id}")
     {:stop, :normal, state}
+  end
+
+  @impl true
+  def handle_info(:redeal_cards, state) do
+    # Redeal cards when bidding failed (all players passed)
+    Logger.info("Redealing cards for game #{state.game_id} after bidding failure")
+
+    # Rotate dealer position
+    new_dealer = rem(state.game.dealer_position + 1, 4)
+
+    # Create fresh game with new dealer and redeal cards
+    new_game =
+      Games.Game.new(dealer_position: new_dealer)
+      |> Games.Game.deal_initial_cards()
+
+    # Persist
+    Multiplayer.update_game_state(state.game_id, new_game)
+    Multiplayer.add_game_event(state.game_id, "cards_redealt", %{dealer_position: new_dealer})
+
+    new_state = %{state | game: new_game}
+
+    # Broadcast
+    broadcast_game_update(state.game_id, new_game)
+    broadcast_system_message(state.game_id, "🔄 Nouvelles cartes distribuées !")
+
+    # Schedule bot turn if first player is a bot
+    new_state = maybe_schedule_bot_turn(new_state)
+
+    {:noreply, new_state}
   end
 
   ## Private Functions

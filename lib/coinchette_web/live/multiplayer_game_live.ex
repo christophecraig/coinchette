@@ -278,7 +278,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
         end
 
       game.status == :bidding_failed ->
-        "Tous ont passé ! Redistribution nécessaire"
+        "Tous ont passé ! Redistribution en cours..."
 
       Game.game_over?(game) ->
         winner_team = Game.winner(game)
