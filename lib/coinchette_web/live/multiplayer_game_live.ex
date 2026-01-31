@@ -422,24 +422,32 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
   end
 
   defp announcements_notification(assigns) do
+    # Extract announcements from winning team
+    winning_announcements =
+      assigns.result.all_announcements
+      |> Enum.filter(fn player_ann -> player_ann.team == assigns.result.winning_team end)
+      |> Enum.flat_map(fn player_ann -> player_ann.announcements end)
+
+    assigns = Map.put(assigns, :winning_announcements, winning_announcements)
+
     ~H"""
     <div class="alert alert-info shadow-lg mb-4">
       <div>
         <h3 class="font-bold text-lg">
-          Annonces : +<%= @result.total_points %> points pour l'Équipe <%= @result.team + 1 %>
+          Annonces : +<%= @result.total_points %> points pour l'Équipe <%= @result.winning_team + 1 %>
         </h3>
         <div class="text-sm mt-1 space-y-1">
-          <%= for {type, points} <- @result.announcements do %>
+          <%= for announcement <- @winning_announcements do %>
             <div>
-              <%= case type do %>
+              <%= case announcement.type do %>
                 <% :tierce -> %>
-                  Tierce : +<%= points %> points
+                  Tierce : +<%= announcement.points %> points
                 <% :cinquante -> %>
-                  Cinquante : +<%= points %> points
+                  Cinquante : +<%= announcement.points %> points
                 <% :cent -> %>
-                  Cent : +<%= points %> points
+                  Cent : +<%= announcement.points %> points
                 <% :carre -> %>
-                  Carré : +<%= points %> points
+                  Carré : +<%= announcement.points %> points
               <% end %>
             </div>
           <% end %>
