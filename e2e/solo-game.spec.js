@@ -12,24 +12,15 @@ test.describe('Solo Game vs Bots', () => {
     // Verify game elements are present
     await expect(page.locator('body')).toBeVisible();
 
-    // Check for player positions (4 players: user + 3 bots)
-    const hasPlayers = await page.locator('text=/nord|est|ouest|sud|north|east|west|south/i').count() >= 1;
-    expect(hasPlayers).toBeTruthy();
+    // Check for player hands using data-testid
+    const southHand = page.locator('[data-testid="player-hand-south"]');
+    await expect(southHand).toBeVisible({ timeout: 5000 });
 
-    // Should see cards (game started automatically or has new game button)
-    const hasCards = await page.locator('[data-testid="player-hand"], .card, [class*="card"]').count() > 0;
+    // Should see game board or bidding interface
+    const hasGameBoard = await page.locator('[data-testid="game-board"]').count() > 0;
+    const hasBiddingInterface = await page.locator('[data-testid="bid-take-button"]').count() > 0;
 
-    if (!hasCards) {
-      // Try to start new game
-      const newGameButton = page.locator('button:has-text("Nouvelle Partie"), button:has-text("New Game")');
-      if (await newGameButton.count() > 0) {
-        await newGameButton.click();
-        await page.waitForTimeout(1000);
-      }
-    }
-
-    // Verify cards are displayed
-    await page.waitForSelector('[data-testid="player-hand"], .card, [class*="card"]', { timeout: 5000 });
+    expect(hasGameBoard || hasBiddingInterface).toBeTruthy();
   });
 
   test('displays bidding phase correctly', async ({ page }) => {
@@ -37,18 +28,21 @@ test.describe('Solo Game vs Bots', () => {
     await page.waitForLoadState('networkidle');
 
     // Start new game to trigger bidding
-    const newGameButton = page.locator('button:has-text("Nouvelle Partie"), button:has-text("New Game")');
+    const newGameButton = page.locator('[data-testid="new-game-button"]');
     if (await newGameButton.count() > 0) {
       await newGameButton.click();
       await page.waitForTimeout(1000);
     }
 
-    // Check if bidding phase is visible
-    const hasBiddingUI = await page.locator('text=/prendre|passer|take|pass/i').count() > 0;
+    // Check if bidding phase is visible using data-testid
+    const takeBidButton = page.locator('[data-testid="bid-take-button"]');
+    const passBidButton = page.locator('[data-testid="bid-pass-button"]');
 
-    if (hasBiddingUI) {
+    const hasBidding = await takeBidButton.count() > 0 || await passBidButton.count() > 0;
+
+    if (hasBidding) {
       // Should see bidding options
-      await expect(page.locator('text=/prendre|take/i')).toBeVisible({ timeout: 5000 });
+      await expect(takeBidButton.or(passBidButton)).toBeVisible({ timeout: 5000 });
     }
   });
 
@@ -56,11 +50,18 @@ test.describe('Solo Game vs Bots', () => {
     await page.goto('/game');
     await page.waitForLoadState('networkidle');
 
-    // Wait for game to be in playing state
-    await page.waitForTimeout(2000);
+    // Wait for game to be in playing state or handle bidding
+    await page.waitForTimeout(1000);
 
-    // Look for playable cards (cards that are not disabled/grayed)
-    const playableCards = page.locator('.card:not(.disabled), [data-playable="true"]');
+    // Handle bidding if present
+    const takeBidButton = page.locator('[data-testid="bid-take-button"]');
+    if (await takeBidButton.count() > 0) {
+      await takeBidButton.click();
+      await page.waitForTimeout(2000);
+    }
+
+    // Look for playable cards using data-playable attribute
+    const playableCards = page.locator('[data-playable="true"]');
     const cardCount = await playableCards.count();
 
     if (cardCount > 0) {
@@ -70,9 +71,9 @@ test.describe('Solo Game vs Bots', () => {
       // Wait for card to be played
       await page.waitForTimeout(500);
 
-      // Verify some change occurred (card removed from hand or added to trick)
-      const body = await page.textContent('body');
-      expect(body).toBeTruthy();
+      // Verify game board is still visible
+      const gameBoard = page.locator('[data-testid="game-board"]');
+      await expect(gameBoard).toBeVisible();
     }
   });
 
@@ -80,13 +81,20 @@ test.describe('Solo Game vs Bots', () => {
     await page.goto('/game');
     await page.waitForLoadState('networkidle');
 
-    // Should see score display
-    const hasScore = await page.locator('text=/score|points|équipe|team/i').count() > 0;
-    expect(hasScore).toBeTruthy();
+    // Handle bidding to get to playing state
+    const takeBidButton = page.locator('[data-testid="bid-take-button"]');
+    if (await takeBidButton.count() > 0) {
+      await takeBidButton.click();
+      await page.waitForTimeout(2000);
+    }
 
-    // Should see numbers (scores)
-    const hasNumbers = await page.locator('text=/\\d+/').count() > 0;
-    expect(hasNumbers).toBeTruthy();
+    // Should see score panel using data-testid
+    const scorePanel = page.locator('[data-testid="score-panel"]');
+    await expect(scorePanel).toBeVisible({ timeout: 5000 });
+
+    // Should see score numbers
+    const scorePanelText = await scorePanel.textContent();
+    expect(scorePanelText).toMatch(/\d+/);
   });
 
   test('shows trump suit', async ({ page }) => {

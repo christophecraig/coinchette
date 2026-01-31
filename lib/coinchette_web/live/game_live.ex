@@ -332,12 +332,13 @@ defmodule CoinchetteWeb.GameLive do
             <button
               phx-click="new_game"
               class="btn btn-primary"
+              data-testid="new-game-button"
             >
               Nouvelle Partie
             </button>
           </div>
         </div>
-        
+
     <!-- Notification Belote/Rebelote -->
         <%= if @belote_announcement do %>
           <.belote_notification announcement={@belote_announcement} />
@@ -453,12 +454,14 @@ defmodule CoinchetteWeb.GameLive do
                   <button
                     phx-click="bid_take"
                     class="btn btn-success flex-1"
+                    data-testid="bid-take-button"
                   >
                     ✅ Je prends
                   </button>
                   <button
                     phx-click="bid_pass"
                     class="btn btn-ghost flex-1"
+                    data-testid="bid-pass-button"
                   >
                     ⏭️ Je passe
                   </button>
@@ -509,7 +512,7 @@ defmodule CoinchetteWeb.GameLive do
   # Composant plateau de jeu normal
   defp game_board(assigns) do
     ~H"""
-    <div class="relative bg-green-700 rounded-3xl shadow-2xl p-12 min-h-[600px]">
+    <div class="relative bg-green-700 rounded-3xl shadow-2xl p-12 min-h-[600px]" data-testid="game-board">
       <!-- Joueur Nord (Bot 2) -->
       <div class="absolute top-4 left-1/2 transform -translate-x-1/2">
         <.player_hand
@@ -560,7 +563,7 @@ defmodule CoinchetteWeb.GameLive do
   defp score_panel(assigns) do
     ~H"""
     <%= if @game.status == :playing or @game.status == :finished or Game.game_over?(@game) do %>
-      <div class="mt-8 grid grid-cols-2 gap-4">
+      <div class="mt-8 grid grid-cols-2 gap-4" data-testid="score-panel">
         <div class="card bg-base-100 shadow-xl">
           <div class="card-body">
             <h2 class="card-title">📊 Score</h2>
@@ -649,7 +652,7 @@ defmodule CoinchetteWeb.GameLive do
   # Composant main de joueur
   defp player_hand(assigns) do
     ~H"""
-    <div class="text-center">
+    <div class="text-center" data-testid={"player-hand-#{@position}"}>
       <div class="badge badge-lg mb-2" class={if @current, do: "badge-primary", else: "badge-ghost"}>
         {position_name(@position)}
         {if @current, do: "🎯", else: ""}
@@ -660,6 +663,7 @@ defmodule CoinchetteWeb.GameLive do
             <.card_component
               card={card}
               clickable={card_playable?(@game, card)}
+              data_testid={"card-#{card.suit}-#{card.rank}"}
             />
           <% end %>
         <% else %>
@@ -696,6 +700,7 @@ defmodule CoinchetteWeb.GameLive do
     assigns =
       assigns
       |> assign_new(:enlarged, fn -> false end)
+      |> assign_new(:data_testid, fn -> nil end)
       |> assign(:size_classes, if(assigns[:enlarged], do: "w-32 h-48", else: "w-16 h-24"))
       |> assign(:rank_size, if(assigns[:enlarged], do: "text-3xl", else: "text-xl"))
       |> assign(:suit_size, if(assigns[:enlarged], do: "text-6xl", else: "text-3xl"))
@@ -704,13 +709,16 @@ defmodule CoinchetteWeb.GameLive do
     <div
       phx-click={if @clickable, do: "play_card"}
       phx-value-card={"#{@card.rank}_#{@card.suit}"}
+      data-testid={@data_testid}
+      data-playable={to_string(@clickable)}
       class={[
         "card bg-white shadow-lg border-2 transition-all",
         @size_classes,
         if(@clickable,
           do: "hover:scale-110 hover:shadow-2xl border-blue-500 cursor-pointer",
           else: "border-gray-300"
-        )
+        ),
+        if(!@clickable, do: "opacity-50")
       ]}
     >
       <div class="card-body p-2 flex flex-col justify-between">
