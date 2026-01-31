@@ -79,7 +79,7 @@ defmodule CoinchetteWeb.LobbyLive do
         Game Lobby
         <:subtitle>Welcome, <%= @current_user.username %>!</:subtitle>
         <:actions>
-          <.button phx-click="create_game">
+          <.button phx-click="create_game" data-testid="create-game-button">
             <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
@@ -111,12 +111,13 @@ defmodule CoinchetteWeb.LobbyLive do
                   maxlength="6"
                   class="input input-bordered w-full uppercase font-mono text-center text-lg tracking-widest"
                   autocomplete="off"
+                  data-testid="room-code-input"
                 />
                 <label class="label">
                   <span class="label-text-alt">Enter 6-character room code</span>
                 </label>
               </div>
-              <.button type="submit" class="w-full mt-2">
+              <.button type="submit" class="w-full mt-2" data-testid="join-game-button">
                 Join Game
               </.button>
             </.form>
@@ -141,9 +142,9 @@ defmodule CoinchetteWeb.LobbyLive do
               </p>
             </div>
           <% else %>
-            <div class="space-y-4">
+            <div class="space-y-4" data-testid="active-games-list">
               <%= for game <- @active_games do %>
-                <div class="bg-base-200 rounded-box p-4 hover:bg-base-300 transition cursor-pointer" phx-click="view_game" phx-value-id={game.id}>
+                <div class="bg-base-200 rounded-box p-4 hover:bg-base-300 transition cursor-pointer" phx-click="view_game" phx-value-id={game.id} data-testid={"game-card-#{game.id}"}>
                   <div class="flex items-center justify-between">
                     <div class="flex-1">
                       <div class="flex items-center gap-3">

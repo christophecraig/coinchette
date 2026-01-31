@@ -229,6 +229,7 @@ defmodule CoinchetteWeb.GameLobbyLive do
                 phx-click="start_game"
                 disabled={length(@players) < 2}
                 variant="primary"
+                data-testid="start-game-button"
               >
                 Start Game
               </.button>
@@ -322,6 +323,7 @@ defmodule CoinchetteWeb.GameLobbyLive do
                           phx-click="add_bot"
                           phx-value-position={position}
                           class="btn btn-sm btn-ghost"
+                          data-testid={"add-bot-button-#{position}"}
                         >
                           Add Bot
                         </button>

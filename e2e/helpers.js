@@ -5,37 +5,41 @@
  */
 
 /**
- * Register and login a test user
+ * Register and login a test user using test auth header
  * @param {import('@playwright/test').Page} page
  * @param {string} [username] - Optional username, will generate if not provided
  * @returns {Promise<{username: string, email: string}>}
  */
 async function loginAsTestUser(page, username) {
-  const timestamp = Date.now();
-  const testUsername = username || `testuser_${timestamp}`;
-  const testEmail = `test_${timestamp}@example.com`;
-  const testPassword = 'testpassword123';
+  const testUsername = username || 'e2e_tester';
+  const testEmail = 'e2e_test@example.com';
 
-  // For now, skip authentication for tests
-  // In production, implement proper auth flow
-  // This allows tests to run even if auth is not implemented yet
+  // Set test auth header to automatically authenticate
+  await page.setExtraHTTPHeaders({
+    'x-test-auth': 'true'
+  });
+
+  // Navigate to home to create session
   await page.goto('/');
-  await page.waitForTimeout(500);
+  await page.waitForLoadState('networkidle');
 
   return { username: testUsername, email: testEmail };
 }
 
 /**
- * Create authenticated session (mock for testing)
+ * Create authenticated session using test header
  * @param {import('@playwright/test').Page} page
  * @returns {Promise<boolean>}
  */
 async function createAuthSession(page) {
-  // Navigate to home
-  await page.goto('/');
+  // Set test auth header
+  await page.setExtraHTTPHeaders({
+    'x-test-auth': 'true'
+  });
 
-  // For E2E tests, we can bypass auth by going directly to protected pages
-  // or implementing a test-only auth endpoint
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+
   return true;
 }
 
@@ -135,6 +139,7 @@ async function handleBidding(page, action = 'take') {
 
 module.exports = {
   loginAsTestUser,
+  createAuthSession,
   waitForElementOrSkip,
   createGameWithBots,
   startMultiplayerGame,
