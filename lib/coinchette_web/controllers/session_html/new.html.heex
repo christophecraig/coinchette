@@ -1,0 +1,22 @@
+<div class="mx-auto max-w-sm">
+  <.header class="text-center">
+    Log in to Coinchette
+    <:subtitle>
+      Don't have an account?
+      <.link navigate="/register" class="font-semibold text-brand hover:underline">
+        Sign up
+      </.link>
+    </:subtitle>
+  </.header>
+
+  <.form :let={f} for={%{}} as={:user} action={~p"/login"}>
+    <.input field={f[:email]} type="email" label="Email" required />
+    <.input field={f[:password]} type="password" label="Password" required />
+
+    <div class="mt-6">
+      <.button type="submit" class="w-full">
+        Log in <span aria-hidden="true">→</span>
+      </.button>
+    </div>
+  </.form>
+</div>

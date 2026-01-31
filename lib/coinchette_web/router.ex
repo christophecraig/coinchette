@@ -1,6 +1,8 @@
 defmodule CoinchetteWeb.Router do
   use CoinchetteWeb, :router
 
+  import CoinchetteWeb.Auth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -8,6 +10,15 @@ defmodule CoinchetteWeb.Router do
     plug :put_root_layout, html: {CoinchetteWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_user
+  end
+
+  pipeline :require_auth do
+    plug :require_authenticated_user
+  end
+
+  pipeline :redirect_if_auth do
+    plug :redirect_if_authenticated
   end
 
   pipeline :api do
@@ -19,6 +30,23 @@ defmodule CoinchetteWeb.Router do
 
     get "/", PageController, :home
     live "/game", GameLive
+  end
+
+  # Authentication routes (guest only)
+  scope "/", CoinchetteWeb do
+    pipe_through [:browser, :redirect_if_auth]
+
+    live "/register", RegistrationLive
+    get "/login", SessionController, :new
+    post "/login", SessionController, :create
+  end
+
+  # Authenticated routes
+  scope "/", CoinchetteWeb do
+    pipe_through [:browser, :require_auth]
+
+    delete "/logout", SessionController, :delete
+    live "/lobby", LobbyLive
   end
 
   # Other scopes may use custom stacks.
