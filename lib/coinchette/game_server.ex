@@ -13,7 +13,7 @@ defmodule Coinchette.GameServer do
   require Logger
 
   alias Coinchette.{Multiplayer, Games}
-  alias Coinchette.Bots.Basic
+  alias Coinchette.Bots.{Basic, Bidding}
 
   @type player_map :: %{Games.Player.position() => user_id :: binary() | nil}
 
@@ -321,9 +321,10 @@ defmodule Coinchette.GameServer do
       result =
         case state.game.status do
           :bidding ->
-            # Bot makes a bid (simple strategy: always pass for now)
-            # TODO: Implement smarter bidding strategy
-            Games.Game.make_bid(state.game, :pass)
+            # Bot makes a bid using intelligent strategy
+            bot_action = decide_bot_bid(state.game)
+            Logger.info("Bot at position #{current_pos} decides: #{inspect(bot_action)}")
+            Games.Game.make_bid(state.game, bot_action)
 
           :playing ->
             # Bot plays a card
@@ -423,6 +424,18 @@ defmodule Coinchette.GameServer do
   end
 
   ## Private Functions
+
+  # Détermine l'action de bidding du bot en fonction de sa main
+  defp decide_bot_bid(%Games.Game{bidding: bidding, players: players, current_player_position: pos}) when bidding != nil do
+    current_player = Enum.at(players, pos)
+    proposed_trump = bidding.proposed_trump
+    round = bidding.round
+
+    Bidding.decide_bid(current_player.hand, proposed_trump, round: round)
+  end
+
+  # Fallback si pas de bidding en cours (ne devrait pas arriver)
+  defp decide_bot_bid(_game), do: :pass
 
   defp via_tuple(game_id) do
     {:via, Registry, {Coinchette.GameRegistry, game_id}}
