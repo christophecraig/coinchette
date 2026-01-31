@@ -468,10 +468,10 @@ waiting → deal_initial_cards → bidding
 
 ---
 
-#### 🟠 T2.7 : Annonces Belote/Rebelote [✅ Terminé - Backend]
+#### 🟠 T2.7 : Annonces Belote/Rebelote [✅ Terminé]
 **Assigné** : Claude
 **Estimation** : 3h
-**Statut** : ✅ Backend complet le 2026-01-31
+**Statut** : ✅ Complet le 2026-01-31
 
 **Détails** :
 - [x] Détection automatique Roi+Dame d'atout
@@ -481,8 +481,8 @@ waiting → deal_initial_cards → bidding
 - [x] Gestion dans `Game.check_and_announce_belote/3`
 - [x] Modification de `Score.calculate_scores` pour bonus
 - [x] Champs ajoutés : `belote_announced`, `belote_rebelote`
-- [ ] UI : Affichage notification "Belote!" et "Rebelote!"
-- [ ] UI : Badge/indicateur sur le score (+20 pts)
+- [x] UI : Affichage notification "Belote!" et "Rebelote!" avec animation
+- [x] UI : Badge/indicateur sur le score (+20 pts) avec icône 👑
 
 **Règles FFB implémentées** :
 - Roi + Dame d'atout = 20 points bonus
@@ -497,6 +497,13 @@ waiting → deal_initial_cards → bidding
 - `lib/coinchette/games/game.ex` (+80 lignes)
   - Ajout champs `belote_announced`, `belote_rebelote`
   - Fonctions : `has_belote?/2`, `check_and_announce_belote/3`
+- `lib/coinchette_web/live/game_live.ex` (+50 lignes)
+  - Ajout assign `:belote_announcement` pour tracking des annonces
+  - Fonction `detect_belote_announcement/2` pour détecter les changements
+  - Composant `belote_notification/1` avec animation pulse
+  - Badge "+20 pts" dans `score_panel/1` avec icône 👑
+- `test/coinchette/games/score_integration_test.exs` (modifié)
+  - Tests ajustés pour accepter 162 ou 182 pts (avec Belote/Rebelote)
   - Intégration dans `play_card/2`
   - Helper functions pour détection paire
 - `lib/coinchette/games/score.ex` (+15 lignes)
@@ -534,9 +541,11 @@ waiting → deal_initial_cards → bidding
 
 ### 2026-01-31 (Session 3)
 - **T2.6 COMPLÉTÉE** : Phase d'enchères belote classique (Backend + UI)
-- **T2.7 COMPLÉTÉE** : Annonces Belote/Rebelote (Backend)
+- **T2.7 COMPLÉTÉE** : Annonces Belote/Rebelote (Backend + UI)
 - **Module Bidding** : Gestion complète des 2 tours d'enchères FFB
 - **Belote/Rebelote** : Détection automatique Roi+Dame d'atout + 20 pts
+- **UI Belote/Rebelote** : Notifications animées "Belote!" et "Rebelote!" avec pulse
+- **Badge score** : Icône 👑 +20 affichée pour l'équipe ayant Belote/Rebelote
 - **Game modifié** : Nouveaux états + champs belote_announced/belote_rebelote
 - **Nouvelles fonctions** : deal_initial_cards, make_bid, complete_deal, has_belote?, check_and_announce_belote
 - **Distribution FFB** : 5 cartes initiales + talon 3 cartes + distribution finale
@@ -546,7 +555,7 @@ waiting → deal_initial_cards → bidding
 - **Total tests** : 156 tests passent (100% success)
 - **Backward compat** : Ancien flow deal_cards() préservé pour tests existants
 - **Qualité** : Compilation sans warnings, approche TDD stricte (Red-Green-Refactor)
-- **Next step** : T2.7 UI (notifications Belote/Rebelote) OU M3 (PvP local)
+- **Next step** : M3 (PvP local) OU T2.8 (Tierce/Cinquante/Cent) OU améliorer UI
 
 ### 2026-01-31 (Session 2)
 - **T2.5 Complétée** : Système de scoring FFB complet (162pts, dix de der)

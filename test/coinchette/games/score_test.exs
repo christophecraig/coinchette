@@ -1,7 +1,7 @@
 defmodule Coinchette.Games.ScoreTest do
   use ExUnit.Case, async: true
 
-  alias Coinchette.Games.{Score, Card, Trick, Player}
+  alias Coinchette.Games.{Score, Card, Trick}
 
   describe "trick_points/2" do
     test "calculates points for trick with non-trump cards" do

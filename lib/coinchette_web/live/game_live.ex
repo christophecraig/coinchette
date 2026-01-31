@@ -15,7 +15,8 @@ defmodule CoinchetteWeb.GameLive do
      socket
      |> assign(:game, game)
      |> assign(:selected_card, nil)
-     |> assign(:message, "Phase d'enchères - À vous de jouer")}
+     |> assign(:message, "Phase d'enchères - À vous de jouer")
+     |> assign(:belote_announcement, nil)}
   end
 
   @impl true
@@ -32,13 +33,17 @@ defmodule CoinchetteWeb.GameLive do
     if current_player.position == 0 do
       case Game.play_card(game, card) do
         {:ok, updated_game} ->
+          # Détecter annonce Belote/Rebelote
+          announcement = detect_belote_announcement(game, updated_game)
+
           # Après le coup du joueur, faire jouer les bots
           final_game = play_bot_turns(updated_game)
 
           {:noreply,
            socket
            |> assign(:game, final_game)
-           |> assign(:message, get_game_message(final_game))}
+           |> assign(:message, get_game_message(final_game))
+           |> assign(:belote_announcement, announcement)}
 
         {:error, :invalid_card} ->
           {:noreply,
@@ -67,6 +72,7 @@ defmodule CoinchetteWeb.GameLive do
      socket
      |> assign(:game, new_game)
      |> assign(:message, "Nouvelle partie commencée !")
+     |> assign(:belote_announcement, nil)
      |> clear_flash()}
   end
 
@@ -159,6 +165,25 @@ defmodule CoinchetteWeb.GameLive do
          socket
          |> put_flash(:error, "Erreur: #{inspect(reason)}")
          |> assign(:message, "Erreur lors de l'enchère.")}
+    end
+  end
+
+  # Détecte si une annonce Belote/Rebelote a été faite
+  defp detect_belote_announcement(old_game, new_game) do
+    cond do
+      # Rebelote : belote_rebelote vient d'être set
+      new_game.belote_rebelote != nil and old_game.belote_rebelote == nil ->
+        {team, _} = new_game.belote_rebelote
+        {:rebelote, team}
+
+      # Belote : belote_announced vient d'être set
+      new_game.belote_announced != nil and old_game.belote_announced == nil ->
+        {player_position, _} = new_game.belote_announced
+        player = Enum.at(new_game.players, player_position)
+        {:belote, player.team}
+
+      true ->
+        nil
     end
   end
 
@@ -308,6 +333,11 @@ defmodule CoinchetteWeb.GameLive do
           </div>
         </div>
 
+        <!-- Notification Belote/Rebelote -->
+        <%= if @belote_announcement do %>
+          <.belote_notification announcement={@belote_announcement} />
+        <% end %>
+
         <%= if @game.status == :bidding do %>
           <!-- Interface d'enchères -->
           <.bidding_interface game={@game} />
@@ -318,6 +348,43 @@ defmodule CoinchetteWeb.GameLive do
 
         <!-- Score et info -->
         <.score_panel game={@game} />
+      </div>
+    </div>
+    """
+  end
+
+  # Composant notification Belote/Rebelote
+  defp belote_notification(assigns) do
+    ~H"""
+    <div class="alert alert-success shadow-lg mb-4 animate-pulse">
+      <div class="flex items-center gap-2">
+        <%= case @announcement do %>
+          <% {:belote, team} -> %>
+            <span class="text-2xl">👑</span>
+            <div>
+              <h3 class="font-bold text-lg">Belote !</h3>
+              <div class="text-sm">
+                <%= if team == 0 do %>
+                  Annoncée par votre équipe
+                <% else %>
+                  Annoncée par l'équipe adverse
+                <% end %>
+              </div>
+            </div>
+          <% {:rebelote, team} -> %>
+            <span class="text-2xl">👸</span>
+            <div>
+              <h3 class="font-bold text-lg">Rebelote !</h3>
+              <div class="text-sm">
+                <%= if team == 0 do %>
+                  Votre équipe gagne +20 points
+                <% else %>
+                  L'équipe adverse gagne +20 points
+                <% end %>
+              </div>
+            </div>
+          <% _ -> %>
+        <% end %>
       </div>
     </div>
     """
@@ -467,7 +534,12 @@ defmodule CoinchetteWeb.GameLive do
               <h2 class="card-title">📊 Score</h2>
               <div class="space-y-3">
                 <div class="flex justify-between items-center">
-                  <span>Équipe 0 (Vous + Nord):</span>
+                  <div class="flex items-center gap-2">
+                    <span>Équipe 0 (Vous + Nord):</span>
+                    <%= if @game.belote_rebelote && elem(@game.belote_rebelote, 0) == 0 do %>
+                      <span class="badge badge-success badge-sm">👑 +20</span>
+                    <% end %>
+                  </div>
                   <div class="text-right">
                     <span class="font-bold text-2xl text-primary">
                       <%= @game.scores[0] %>
@@ -480,7 +552,12 @@ defmodule CoinchetteWeb.GameLive do
                 </div>
                 <div class="divider my-0"></div>
                 <div class="flex justify-between items-center">
-                  <span>Équipe 1 (Est + Ouest):</span>
+                  <div class="flex items-center gap-2">
+                    <span>Équipe 1 (Est + Ouest):</span>
+                    <%= if @game.belote_rebelote && elem(@game.belote_rebelote, 0) == 1 do %>
+                      <span class="badge badge-success badge-sm">👑 +20</span>
+                    <% end %>
+                  </div>
                   <div class="text-right">
                     <span class="font-bold text-2xl text-secondary">
                       <%= @game.scores[1] %>

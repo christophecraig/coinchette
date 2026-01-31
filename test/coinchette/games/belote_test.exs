@@ -1,7 +1,7 @@
 defmodule Coinchette.Games.BeloteTest do
   use ExUnit.Case, async: true
 
-  alias Coinchette.Games.{Game, Card, Player, Trick}
+  alias Coinchette.Games.{Game, Card, Player}
 
   describe "detect_belote_rebelote/3" do
     test "détecte quand un joueur a le Roi et la Dame d'atout" do
