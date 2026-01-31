@@ -124,10 +124,11 @@ defmodule Coinchette.Games.Bidding do
 
   def bid(%__MODULE__{round: 1} = bidding, :take) do
     {:ok,
-     %{bidding |
-       taker: bidding.current_bidder,
-       trump_suit: bidding.proposed_trump,
-       status: :completed
+     %{
+       bidding
+       | taker: bidding.current_bidder,
+         trump_suit: bidding.proposed_trump,
+         status: :completed
      }}
   end
 
@@ -136,11 +137,7 @@ defmodule Coinchette.Games.Bidding do
 
     # Si on revient au donneur (après que tous aient passé), passer au round 2
     if next_bidder == next_position(bidding.dealer_position) do
-      {:ok,
-       %{bidding |
-         round: 2,
-         current_bidder: next_position(bidding.dealer_position)
-       }}
+      {:ok, %{bidding | round: 2, current_bidder: next_position(bidding.dealer_position)}}
     else
       {:ok, %{bidding | current_bidder: next_bidder}}
     end
@@ -161,12 +158,7 @@ defmodule Coinchette.Games.Bidding do
 
   def bid(%__MODULE__{round: 2} = bidding, {:choose, suit})
       when suit in [:spades, :hearts, :diamonds, :clubs] do
-    {:ok,
-     %{bidding |
-       taker: bidding.current_bidder,
-       trump_suit: suit,
-       status: :completed
-     }}
+    {:ok, %{bidding | taker: bidding.current_bidder, trump_suit: suit, status: :completed}}
   end
 
   def bid(%__MODULE__{round: 2}, {:choose, _invalid_suit}) do

@@ -26,8 +26,9 @@ defmodule Coinchette.Games.Card do
       iex> Card.new(:ace, :spades)
       %Card{rank: :ace, suit: :spades}
   """
-  def new(rank, suit) when rank in [:seven, :eight, :nine, :ten, :jack, :queen, :king, :ace] and
-                             suit in [:spades, :hearts, :diamonds, :clubs] do
+  def new(rank, suit)
+      when rank in [:seven, :eight, :nine, :ten, :jack, :queen, :king, :ace] and
+             suit in [:spades, :hearts, :diamonds, :clubs] do
     %__MODULE__{rank: rank, suit: suit}
   end
 

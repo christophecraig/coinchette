@@ -10,7 +10,8 @@ defmodule Coinchette.Games.BiddingTest do
       bidding = Bidding.new(proposed_card, dealer_position: 0)
 
       assert bidding.proposed_trump == :hearts
-      assert bidding.current_bidder == 1  # Joueur à droite du donneur
+      # Joueur à droite du donneur
+      assert bidding.current_bidder == 1
       assert bidding.round == 1
       assert bidding.taker == nil
       assert bidding.trump_suit == nil
@@ -43,13 +44,18 @@ defmodule Coinchette.Games.BiddingTest do
     end
 
     test "tous passent au premier tour, passe au second tour", %{bidding: bidding} do
-      {:ok, b1} = Bidding.bid(bidding, :pass)  # Joueur 1
-      {:ok, b2} = Bidding.bid(b1, :pass)       # Joueur 2
-      {:ok, b3} = Bidding.bid(b2, :pass)       # Joueur 3
-      {:ok, b4} = Bidding.bid(b3, :pass)       # Joueur 4 (donneur)
+      # Joueur 1
+      {:ok, b1} = Bidding.bid(bidding, :pass)
+      # Joueur 2
+      {:ok, b2} = Bidding.bid(b1, :pass)
+      # Joueur 3
+      {:ok, b3} = Bidding.bid(b2, :pass)
+      # Joueur 4 (donneur)
+      {:ok, b4} = Bidding.bid(b3, :pass)
 
       assert b4.round == 2
-      assert b4.current_bidder == 1  # Recommence à droite du donneur
+      # Recommence à droite du donneur
+      assert b4.current_bidder == 1
       assert b4.status == :in_progress
     end
 
@@ -97,10 +103,14 @@ defmodule Coinchette.Games.BiddingTest do
     end
 
     test "tous passent au second tour, enchères échouent", %{bidding: bidding} do
-      {:ok, b1} = Bidding.bid(bidding, :pass)  # Joueur 1
-      {:ok, b2} = Bidding.bid(b1, :pass)       # Joueur 2
-      {:ok, b3} = Bidding.bid(b2, :pass)       # Joueur 3
-      {:ok, b4} = Bidding.bid(b3, :pass)       # Joueur 4 (donneur)
+      # Joueur 1
+      {:ok, b1} = Bidding.bid(bidding, :pass)
+      # Joueur 2
+      {:ok, b2} = Bidding.bid(b1, :pass)
+      # Joueur 3
+      {:ok, b3} = Bidding.bid(b2, :pass)
+      # Joueur 4 (donneur)
+      {:ok, b4} = Bidding.bid(b3, :pass)
 
       assert b4.status == :failed
       assert b4.taker == nil

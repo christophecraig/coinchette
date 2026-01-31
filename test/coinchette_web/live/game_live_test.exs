@@ -9,7 +9,8 @@ defmodule CoinchetteWeb.GameLiveTest do
 
       # Vérifie que la page charge
       assert html =~ "Coinchette"
-      assert html =~ "enchères"  # Évite l'apostrophe échappée
+      # Évite l'apostrophe échappée
+      assert html =~ "enchères"
 
       # Vérifie l'interface d'enchères
       assert html =~ "Carte retournée"
@@ -49,7 +50,8 @@ defmodule CoinchetteWeb.GameLiveTest do
 
       # Vérifie que la partie a redémarré
       assert html =~ "Nouvelle partie commencée"
-      assert html =~ "enchères"  # Évite l'apostrophe échappée
+      # Évite l'apostrophe échappée
+      assert html =~ "enchères"
     end
 
     test "can take trump in bidding", %{conn: conn} do

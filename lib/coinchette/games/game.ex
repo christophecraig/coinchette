@@ -13,9 +13,16 @@ defmodule Coinchette.Games.Game do
   Coordonne les modules Card, Deck, Player, Trick et Bidding pour une partie complète.
   """
 
-  alias Coinchette.Games.{Card, Deck, Player, Trick, Rules, Score, Bidding}
+  alias Coinchette.Games.{Card, Deck, Player, Trick, Rules, Score, Bidding, Announcements}
 
-  @type status :: :waiting | :bidding | :bidding_completed | :bidding_failed | :playing | :finished
+  @type status ::
+          :waiting
+          | :bidding
+          | :bidding_completed
+          | :bidding_failed
+          | :announcing
+          | :playing
+          | :finished
 
   @type t :: %__MODULE__{
           trump_suit: Card.suit() | nil,
@@ -30,7 +37,9 @@ defmodule Coinchette.Games.Game do
           proposed_trump_card: Card.t() | nil,
           bidding: Bidding.t() | nil,
           belote_announced: {Player.position(), :king | :queen} | nil,
-          belote_rebelote: {Player.team(), boolean()} | nil
+          belote_rebelote: {Player.team(), boolean()} | nil,
+          announcements_result: Announcements.announcement_result() | nil,
+          announcement_phase_complete: boolean()
         }
 
   defstruct [
@@ -39,6 +48,7 @@ defmodule Coinchette.Games.Game do
     :bidding,
     :belote_announced,
     :belote_rebelote,
+    :announcements_result,
     status: :waiting,
     players: [],
     current_trick: nil,
@@ -46,7 +56,8 @@ defmodule Coinchette.Games.Game do
     tricks_won: [],
     scores: %{0 => 0, 1 => 0},
     dealer_position: 0,
-    talon: []
+    talon: [],
+    announcement_phase_complete: false
   ]
 
   @doc """
@@ -117,11 +128,7 @@ defmodule Coinchette.Games.Game do
       |> Enum.with_index()
       |> Enum.map(fn {hand, position} -> Player.new(position, hand) end)
 
-    %{game |
-      players: players,
-      status: :playing,
-      current_trick: Trick.new()
-    }
+    %{game | players: players, status: :playing, current_trick: Trick.new()}
   end
 
   @doc """
@@ -160,12 +167,13 @@ defmodule Coinchette.Games.Game do
     # Initialiser la phase d'enchères
     bidding = Bidding.new(proposed_card, dealer_position: dealer_position)
 
-    %{game |
-      players: players,
-      talon: talon,
-      proposed_trump_card: proposed_card,
-      bidding: bidding,
-      status: :bidding
+    %{
+      game
+      | players: players,
+        talon: talon,
+        proposed_trump_card: proposed_card,
+        bidding: bidding,
+        status: :bidding
     }
   end
 
@@ -202,10 +210,7 @@ defmodule Coinchette.Games.Game do
         updated_game =
           cond do
             Bidding.completed?(updated_bidding) ->
-              %{updated_game |
-                status: :bidding_completed,
-                trump_suit: updated_bidding.trump_suit
-              }
+              %{updated_game | status: :bidding_completed, trump_suit: updated_bidding.trump_suit}
 
             Bidding.failed?(updated_bidding) ->
               %{updated_game | status: :bidding_failed}
@@ -231,7 +236,8 @@ defmodule Coinchette.Games.Game do
   Selon règles FFB :
   - Le preneur récupère les 3 cartes du talon (8 cartes total pour lui)
   - Tous les autres joueurs reçoivent 2 cartes supplémentaires (8 cartes total)
-  - Démarre la partie (status = :playing)
+  - Démarre la phase d'annonces (status = :announcing)
+  - Détecte automatiquement les annonces de tous les joueurs
   - Premier joueur = à droite du donneur
 
   ## Exemples
@@ -242,9 +248,11 @@ defmodule Coinchette.Games.Game do
       iex> Enum.all?(game.players, fn p -> length(p.hand) == 8 end)
       true
       iex> game.status
-      :playing
+      :announcing
   """
-  def complete_deal(%__MODULE__{status: :bidding_completed, bidding: bidding, talon: talon} = game) do
+  def complete_deal(
+        %__MODULE__{status: :bidding_completed, bidding: bidding, talon: talon} = game
+      ) do
     taker_position = bidding.taker
 
     # Distribuer les cartes restantes
@@ -297,12 +305,50 @@ defmodule Coinchette.Games.Game do
         end
       end)
 
-    %{game |
-      players: updated_players,
-      talon: [],
-      status: :playing,
-      current_trick: Trick.new(),
-      current_player_position: rem(game.dealer_position + 1, 4)
+    # Passer en phase d'annonces et détecter automatiquement
+    game
+    |> Map.put(:players, updated_players)
+    |> Map.put(:talon, [])
+    |> Map.put(:status, :announcing)
+    |> Map.put(:current_player_position, rem(game.dealer_position + 1, 4))
+    |> detect_and_process_announcements()
+  end
+
+  @doc """
+  Complète la phase d'annonces et démarre la partie.
+
+  Transition de :announcing vers :playing.
+  Les annonces ont déjà été détectées et stockées dans game.announcements_result.
+
+  ## Exemples
+
+      iex> game = game |> Game.complete_announcements()
+      iex> game.status
+      :playing
+  """
+  def complete_announcements(%__MODULE__{status: :announcing} = game) do
+    %{game | status: :playing, current_trick: Trick.new()}
+  end
+
+  # Détecte automatiquement les annonces de tous les joueurs
+  defp detect_and_process_announcements(%__MODULE__{} = game) do
+    first_player = rem(game.dealer_position + 1, 4)
+
+    # Détecter pour tous les joueurs
+    all_announcements =
+      Enum.map(game.players, fn player ->
+        announcements = Announcements.detect_all(player.hand, game.trump_suit)
+        %{player_position: player.position, team: player.team, announcements: announcements}
+      end)
+
+    # Comparer et déterminer gagnant
+    result = Announcements.compare_announcements(all_announcements, first_player)
+
+    %{
+      game
+      | announcements_result: result,
+        announcement_phase_complete: true,
+        current_trick: Trick.new()
     }
   end
 
@@ -391,20 +437,22 @@ defmodule Coinchette.Games.Game do
     player = current_player(game)
 
     # Obtenir les cartes valides selon les règles FFB
-    valid_cards = Rules.valid_cards(
-      player,
-      game.current_trick,
-      game.trump_suit,
-      player.position
-    )
+    valid_cards =
+      Rules.valid_cards(
+        player,
+        game.current_trick,
+        game.trump_suit,
+        player.position
+      )
 
     # Le bot choisit une carte
-    chosen_card = strategy_module.choose_card(
-      player,
-      game.current_trick,
-      game.trump_suit,
-      valid_cards
-    )
+    chosen_card =
+      strategy_module.choose_card(
+        player,
+        game.current_trick,
+        game.trump_suit,
+        valid_cards
+      )
 
     # Jouer la carte choisie
     play_card(game, chosen_card)
@@ -542,9 +590,11 @@ defmodule Coinchette.Games.Game do
 
       # Seconde carte jouée par le même joueur = Rebelote !
       {announced_position, _rank} when announced_position == player.position ->
-        %{game |
-          belote_rebelote: {player.team, true},
-          belote_announced: nil  # Reset après Rebelote
+        %{
+          game
+          | belote_rebelote: {player.team, true},
+            # Reset après Rebelote
+            belote_announced: nil
         }
 
       # Autre joueur, ne rien faire
@@ -579,21 +629,24 @@ defmodule Coinchette.Games.Game do
 
       updated_tricks_won = game.tricks_won ++ [{winning_team, trick}]
 
-      # Recalculer les scores (avec dix de der si dernier pli + belote/rebelote)
+      # Recalculer les scores (avec dix de der si dernier pli + belote/rebelote + annonces si premier pli)
       is_last_trick = length(updated_tricks_won) == 8
+      is_first_trick = length(updated_tricks_won) == 1
 
       score_opts =
         []
         |> maybe_add_last_trick_winner(is_last_trick, winning_team)
         |> maybe_add_belote_rebelote(game.belote_rebelote)
+        |> maybe_add_announcements(is_first_trick, game.announcements_result)
 
       updated_scores = Score.calculate_scores(updated_tricks_won, game.trump_suit, score_opts)
 
-      %{game |
-        tricks_won: updated_tricks_won,
-        current_trick: Trick.new(),
-        current_player_position: winning_position,
-        scores: updated_scores
+      %{
+        game
+        | tricks_won: updated_tricks_won,
+          current_trick: Trick.new(),
+          current_player_position: winning_position,
+          scores: updated_scores
       }
     else
       game
@@ -625,4 +678,12 @@ defmodule Coinchette.Games.Game do
   end
 
   defp maybe_add_belote_rebelote(opts, _), do: opts
+
+  # Ajoute announcements aux options si c'est le premier pli et qu'il y a des annonces
+  defp maybe_add_announcements(opts, true, %{winning_team: _team} = result)
+       when result.total_points > 0 do
+    Keyword.put(opts, :announcements, result)
+  end
+
+  defp maybe_add_announcements(opts, _, _), do: opts
 end

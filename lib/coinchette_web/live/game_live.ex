@@ -82,8 +82,10 @@ defmodule CoinchetteWeb.GameLive do
 
     case Game.make_bid(game, :take) do
       {:ok, updated_game} ->
-        # Enchères terminées, distribuer les cartes finales et démarrer
-        final_game = Game.complete_deal(updated_game)
+        # Enchères terminées, distribuer les cartes finales
+        game_with_announcements = Game.complete_deal(updated_game)
+        # Compléter phase annonces et démarrer
+        final_game = Game.complete_announcements(game_with_announcements)
         # Faire jouer les bots si nécessaire
         final_game = play_bot_turns(final_game)
 
@@ -205,7 +207,8 @@ defmodule CoinchetteWeb.GameLive do
         case Game.play_bot_turn(game, Bots.Basic) do
           {:ok, updated_game} ->
             # Continue récursivement
-            Process.sleep(500)  # Petite pause pour animation
+            # Petite pause pour animation
+            Process.sleep(500)
             play_bot_turns(updated_game)
 
           {:error, _reason} ->
@@ -247,7 +250,8 @@ defmodule CoinchetteWeb.GameLive do
 
           case Game.make_bid(game, action) do
             {:ok, updated_game} ->
-              Process.sleep(800)  # Pause pour simulation
+              # Pause pour simulation
+              Process.sleep(800)
               play_bidding_bots(updated_game)
 
             {:error, _reason} ->
@@ -301,12 +305,13 @@ defmodule CoinchetteWeb.GameLive do
     if current_player.position == 0 do
       alias Coinchette.Games.Rules
 
-      valid_cards = Rules.valid_cards(
-        current_player,
-        game.current_trick,
-        game.trump_suit,
-        current_player.position
-      )
+      valid_cards =
+        Rules.valid_cards(
+          current_player,
+          game.current_trick,
+          game.trump_suit,
+          current_player.position
+        )
 
       card in valid_cards
     else
@@ -322,7 +327,7 @@ defmodule CoinchetteWeb.GameLive do
         <!-- Header -->
         <div class="text-center mb-8">
           <h1 class="text-4xl font-bold text-white mb-2">🃏 Coinchette</h1>
-          <p class="text-green-100 text-lg"><%= @message %></p>
+          <p class="text-green-100 text-lg">{@message}</p>
           <div class="mt-4">
             <button
               phx-click="new_game"
@@ -332,10 +337,15 @@ defmodule CoinchetteWeb.GameLive do
             </button>
           </div>
         </div>
-
-        <!-- Notification Belote/Rebelote -->
+        
+    <!-- Notification Belote/Rebelote -->
         <%= if @belote_announcement do %>
           <.belote_notification announcement={@belote_announcement} />
+        <% end %>
+        
+    <!-- Notification Annonces -->
+        <%= if @game.announcements_result && @game.announcements_result.total_points > 0 && length(@game.tricks_won) <= 1 do %>
+          <.announcements_notification result={@game.announcements_result} />
         <% end %>
 
         <%= if @game.status == :bidding do %>
@@ -345,8 +355,8 @@ defmodule CoinchetteWeb.GameLive do
           <!-- Plateau de jeu normal -->
           <.game_board game={@game} />
         <% end %>
-
-        <!-- Score et info -->
+        
+    <!-- Score et info -->
         <.score_panel game={@game} />
       </div>
     </div>
@@ -390,6 +400,27 @@ defmodule CoinchetteWeb.GameLive do
     """
   end
 
+  # Composant notification Annonces
+  defp announcements_notification(assigns) do
+    ~H"""
+    <div class="alert alert-info shadow-lg mb-4">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">🎺</span>
+        <div>
+          <h3 class="font-bold text-lg">Annonces détectées !</h3>
+          <div class="text-sm">
+            <%= if @result.winning_team == 0 do %>
+              Votre équipe gagne +{@result.total_points} points
+            <% else %>
+              L'équipe adverse gagne +{@result.total_points} points
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   # Composant interface d'enchères
   defp bidding_interface(assigns) do
     ~H"""
@@ -402,11 +433,12 @@ defmodule CoinchetteWeb.GameLive do
             <.card_component card={@game.proposed_trump_card} clickable={false} enlarged={true} />
           </div>
           <p class="text-white mt-4 text-lg">
-            Couleur proposée : <span class="font-bold"><%= format_suit(@game.proposed_trump_card.suit) %></span>
+            Couleur proposée :
+            <span class="font-bold">{format_suit(@game.proposed_trump_card.suit)}</span>
           </p>
         </div>
-
-        <!-- Boutons d'enchères -->
+        
+    <!-- Boutons d'enchères -->
         <%= if @game.bidding.current_bidder == 1 do %>
           <div class="card bg-base-100 shadow-xl max-w-md">
             <div class="card-body">
@@ -415,7 +447,7 @@ defmodule CoinchetteWeb.GameLive do
               <%= if @game.bidding.round == 1 do %>
                 <!-- Premier tour : Prendre ou Passer -->
                 <p class="text-sm text-base-content/70 mb-4">
-                  Premier tour - Voulez-vous prendre <%= format_suit(@game.proposed_trump_card.suit) %> comme atout ?
+                  Premier tour - Voulez-vous prendre {format_suit(@game.proposed_trump_card.suit)} comme atout ?
                 </p>
                 <div class="flex gap-4">
                   <button
@@ -444,7 +476,7 @@ defmodule CoinchetteWeb.GameLive do
                         phx-value-suit={suit}
                         class="btn btn-outline btn-lg"
                       >
-                        <%= format_suit(suit) %>
+                        {format_suit(suit)}
                       </button>
                     <% end %>
                   <% end %>
@@ -463,11 +495,11 @@ defmodule CoinchetteWeb.GameLive do
             <span>Le bot enchérit...</span>
           </div>
         <% end %>
-
-        <!-- Info enchères -->
+        
+    <!-- Info enchères -->
         <div class="text-white text-sm space-y-1">
-          <p><strong>Tour :</strong> <%= @game.bidding.round %> / 2</p>
-          <p><strong>Enchérisseur actuel :</strong> Joueur <%= @game.bidding.current_bidder + 1 %></p>
+          <p><strong>Tour :</strong> {@game.bidding.round} / 2</p>
+          <p><strong>Enchérisseur actuel :</strong> Joueur {@game.bidding.current_bidder + 1}</p>
         </div>
       </div>
     </div>
@@ -478,49 +510,49 @@ defmodule CoinchetteWeb.GameLive do
   defp game_board(assigns) do
     ~H"""
     <div class="relative bg-green-700 rounded-3xl shadow-2xl p-12 min-h-[600px]">
-          <!-- Joueur Nord (Bot 2) -->
-          <div class="absolute top-4 left-1/2 transform -translate-x-1/2">
-            <.player_hand
-              player={Enum.at(@game.players, 2)}
-              position="north"
-              current={Game.current_player(@game).position == 2}
-            />
-          </div>
-
-          <!-- Joueur Ouest (Bot 3) -->
-          <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
-            <.player_hand
-              player={Enum.at(@game.players, 3)}
-              position="west"
-              current={Game.current_player(@game).position == 3}
-            />
-          </div>
-
-          <!-- Joueur Est (Bot 1) -->
-          <div class="absolute right-4 top-1/2 transform -translate-y-1/2">
-            <.player_hand
-              player={Enum.at(@game.players, 1)}
-              position="east"
-              current={Game.current_player(@game).position == 1}
-            />
-          </div>
-
-          <!-- Pli en cours (centre) -->
-          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <.current_trick trick={@game.current_trick} trump_suit={@game.trump_suit} />
-          </div>
-
-          <!-- Joueur Sud (Humain) -->
-          <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-            <.player_hand
-              player={Enum.at(@game.players, 0)}
-              position="south"
-              current={Game.current_player(@game).position == 0}
-              playable={true}
-              game={@game}
-            />
-          </div>
-        </div>
+      <!-- Joueur Nord (Bot 2) -->
+      <div class="absolute top-4 left-1/2 transform -translate-x-1/2">
+        <.player_hand
+          player={Enum.at(@game.players, 2)}
+          position="north"
+          current={Game.current_player(@game).position == 2}
+        />
+      </div>
+      
+    <!-- Joueur Ouest (Bot 3) -->
+      <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+        <.player_hand
+          player={Enum.at(@game.players, 3)}
+          position="west"
+          current={Game.current_player(@game).position == 3}
+        />
+      </div>
+      
+    <!-- Joueur Est (Bot 1) -->
+      <div class="absolute right-4 top-1/2 transform -translate-y-1/2">
+        <.player_hand
+          player={Enum.at(@game.players, 1)}
+          position="east"
+          current={Game.current_player(@game).position == 1}
+        />
+      </div>
+      
+    <!-- Pli en cours (centre) -->
+      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <.current_trick trick={@game.current_trick} trump_suit={@game.trump_suit} />
+      </div>
+      
+    <!-- Joueur Sud (Humain) -->
+      <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+        <.player_hand
+          player={Enum.at(@game.players, 0)}
+          position="south"
+          current={Game.current_player(@game).position == 0}
+          playable={true}
+          game={@game}
+        />
+      </div>
+    </div>
     """
   end
 
@@ -529,76 +561,88 @@ defmodule CoinchetteWeb.GameLive do
     ~H"""
     <%= if @game.status == :playing or @game.status == :finished or Game.game_over?(@game) do %>
       <div class="mt-8 grid grid-cols-2 gap-4">
-          <div class="card bg-base-100 shadow-xl">
-            <div class="card-body">
-              <h2 class="card-title">📊 Score</h2>
-              <div class="space-y-3">
-                <div class="flex justify-between items-center">
-                  <div class="flex items-center gap-2">
-                    <span>Équipe 0 (Vous + Nord):</span>
-                    <%= if @game.belote_rebelote && elem(@game.belote_rebelote, 0) == 0 do %>
-                      <span class="badge badge-success badge-sm">👑 +20</span>
-                    <% end %>
-                  </div>
-                  <div class="text-right">
-                    <span class="font-bold text-2xl text-primary">
-                      <%= @game.scores[0] %>
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title">📊 Score</h2>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                  <span>Équipe 0 (Vous + Nord):</span>
+                  <%= if @game.belote_rebelote && elem(@game.belote_rebelote, 0) == 0 do %>
+                    <span class="badge badge-success badge-sm">👑 +20</span>
+                  <% end %>
+                  <%= if @game.announcements_result && @game.announcements_result.winning_team == 0 && @game.announcements_result.total_points > 0 do %>
+                    <span class="badge badge-info badge-sm">
+                      🎺 +{@game.announcements_result.total_points}
                     </span>
-                    <span class="text-sm text-base-content/60"> pts</span>
-                    <div class="text-xs text-base-content/50">
-                      <%= @game.tricks_won |> Enum.count(fn {team, _} -> team == 0 end) %> plis
-                    </div>
+                  <% end %>
+                </div>
+                <div class="text-right">
+                  <span class="font-bold text-2xl text-primary">
+                    {@game.scores[0]}
+                  </span>
+                  <span class="text-sm text-base-content/60"> pts</span>
+                  <div class="text-xs text-base-content/50">
+                    {@game.tricks_won |> Enum.count(fn {team, _} -> team == 0 end)} plis
                   </div>
                 </div>
-                <div class="divider my-0"></div>
-                <div class="flex justify-between items-center">
-                  <div class="flex items-center gap-2">
-                    <span>Équipe 1 (Est + Ouest):</span>
-                    <%= if @game.belote_rebelote && elem(@game.belote_rebelote, 0) == 1 do %>
-                      <span class="badge badge-success badge-sm">👑 +20</span>
-                    <% end %>
-                  </div>
-                  <div class="text-right">
-                    <span class="font-bold text-2xl text-secondary">
-                      <%= @game.scores[1] %>
+              </div>
+              <div class="divider my-0"></div>
+              <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                  <span>Équipe 1 (Est + Ouest):</span>
+                  <%= if @game.belote_rebelote && elem(@game.belote_rebelote, 0) == 1 do %>
+                    <span class="badge badge-success badge-sm">👑 +20</span>
+                  <% end %>
+                  <%= if @game.announcements_result && @game.announcements_result.winning_team == 1 && @game.announcements_result.total_points > 0 do %>
+                    <span class="badge badge-info badge-sm">
+                      🎺 +{@game.announcements_result.total_points}
                     </span>
-                    <span class="text-sm text-base-content/60"> pts</span>
-                    <div class="text-xs text-base-content/50">
-                      <%= @game.tricks_won |> Enum.count(fn {team, _} -> team == 1 end) %> plis
-                    </div>
+                  <% end %>
+                </div>
+                <div class="text-right">
+                  <span class="font-bold text-2xl text-secondary">
+                    {@game.scores[1]}
+                  </span>
+                  <span class="text-sm text-base-content/60"> pts</span>
+                  <div class="text-xs text-base-content/50">
+                    {@game.tricks_won |> Enum.count(fn {team, _} -> team == 1 end)} plis
                   </div>
                 </div>
-                <%= if Game.game_over?(@game) do %>
-                  <div class="alert alert-success mt-2">
-                    <span class="text-sm">
-                      <%= if @game.scores[0] > @game.scores[1] do %>
-                        🎉 Victoire ! Vous gagnez <%= @game.scores[0] %> - <%= @game.scores[1] %>
-                      <% else %>
-                        😢 Défaite. Score: <%= @game.scores[0] %> - <%= @game.scores[1] %>
-                      <% end %>
-                    </span>
-                  </div>
-                <% end %>
               </div>
-            </div>
-          </div>
-
-          <div class="card bg-base-100 shadow-xl">
-            <div class="card-body">
-              <h2 class="card-title">ℹ️ Info</h2>
-              <div class="space-y-2 text-sm">
-                <p><strong>Atout:</strong> <%= format_suit(@game.trump_suit) %></p>
-                <p><strong>Plis joués:</strong> <%= length(@game.tricks_won) %> / 8</p>
-                <p><strong>Total points:</strong> 162</p>
-                <%= if length(@game.tricks_won) == 8 do %>
-                  <p class="text-success"><strong>Dix de der:</strong> ✅ +10 pts</p>
-                <% end %>
-                <p><strong>Statut:</strong> <%= if Game.game_over?(@game), do: "Terminé", else: "En cours" %></p>
-              </div>
+              <%= if Game.game_over?(@game) do %>
+                <div class="alert alert-success mt-2">
+                  <span class="text-sm">
+                    <%= if @game.scores[0] > @game.scores[1] do %>
+                      🎉 Victoire ! Vous gagnez {@game.scores[0]} - {@game.scores[1]}
+                    <% else %>
+                      😢 Défaite. Score: {@game.scores[0]} - {@game.scores[1]}
+                    <% end %>
+                  </span>
+                </div>
+              <% end %>
             </div>
           </div>
         </div>
-      <% end %>
+
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title">ℹ️ Info</h2>
+            <div class="space-y-2 text-sm">
+              <p><strong>Atout:</strong> {format_suit(@game.trump_suit)}</p>
+              <p><strong>Plis joués:</strong> {length(@game.tricks_won)} / 8</p>
+              <p><strong>Total points:</strong> 162</p>
+              <%= if length(@game.tricks_won) == 8 do %>
+                <p class="text-success"><strong>Dix de der:</strong> ✅ +10 pts</p>
+              <% end %>
+              <p>
+                <strong>Statut:</strong> {if Game.game_over?(@game), do: "Terminé", else: "En cours"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
     """
   end
 
@@ -607,8 +651,8 @@ defmodule CoinchetteWeb.GameLive do
     ~H"""
     <div class="text-center">
       <div class="badge badge-lg mb-2" class={if @current, do: "badge-primary", else: "badge-ghost"}>
-        <%= position_name(@position) %>
-        <%= if @current, do: "🎯", else: "" %>
+        {position_name(@position)}
+        {if @current, do: "🎯", else: ""}
       </div>
       <div class="flex gap-1 flex-wrap justify-center max-w-md">
         <%= if @position == "south" and assigns[:playable] do %>
@@ -663,15 +707,18 @@ defmodule CoinchetteWeb.GameLive do
       class={[
         "card bg-white shadow-lg border-2 transition-all",
         @size_classes,
-        if(@clickable, do: "hover:scale-110 hover:shadow-2xl border-blue-500 cursor-pointer", else: "border-gray-300")
+        if(@clickable,
+          do: "hover:scale-110 hover:shadow-2xl border-blue-500 cursor-pointer",
+          else: "border-gray-300"
+        )
       ]}
     >
       <div class="card-body p-2 flex flex-col justify-between">
         <span class={"#{@rank_size} font-bold #{card_color(@card)}"}>
-          <%= format_rank(@card.rank) %>
+          {format_rank(@card.rank)}
         </span>
         <span class={"#{@suit_size} #{card_color(@card)}"}>
-          <%= format_suit(@card.suit) %>
+          {format_suit(@card.suit)}
         </span>
       </div>
     </div>
@@ -712,8 +759,12 @@ defmodule CoinchetteWeb.GameLive do
   defp card_color(%Card{suit: suit}) when suit in [:hearts, :diamonds], do: "text-red-600"
   defp card_color(%Card{suit: suit}) when suit in [:spades, :clubs], do: "text-black"
 
-  defp trick_card_position(0), do: "col-start-1 row-start-2 self-end"  # South
-  defp trick_card_position(1), do: "col-start-2 row-start-2 self-center justify-self-end"  # East
-  defp trick_card_position(2), do: "col-start-1 row-start-1 self-start"  # North
-  defp trick_card_position(3), do: "col-start-1 row-start-2 self-center justify-self-start"  # West
+  # South
+  defp trick_card_position(0), do: "col-start-1 row-start-2 self-end"
+  # East
+  defp trick_card_position(1), do: "col-start-2 row-start-2 self-center justify-self-end"
+  # North
+  defp trick_card_position(2), do: "col-start-1 row-start-1 self-start"
+  # West
+  defp trick_card_position(3), do: "col-start-1 row-start-2 self-center justify-self-start"
 end

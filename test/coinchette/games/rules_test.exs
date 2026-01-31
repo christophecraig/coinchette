@@ -27,7 +27,8 @@ defmodule Coinchette.Games.RulesTest do
 
     test "can play any card if led suit not in hand" do
       hand = [
-        Card.new(:ace, :hearts),  # Trump
+        # Trump
+        Card.new(:ace, :hearts),
         Card.new(:king, :diamonds)
       ]
 
@@ -40,15 +41,18 @@ defmodule Coinchette.Games.RulesTest do
 
       # Pas de pique en main, peut jouer n'importe quoi (mais doit couper si possible)
       assert length(valid) == 1
-      assert Card.new(:ace, :hearts) in valid  # Must play trump
+      # Must play trump
+      assert Card.new(:ace, :hearts) in valid
     end
   end
 
   describe "valid_cards/4 - must trump if cannot follow" do
     test "must play trump if cannot follow suit and has trump" do
       hand = [
-        Card.new(:ace, :hearts),  # Trump
-        Card.new(:king, :hearts), # Trump
+        # Trump
+        Card.new(:ace, :hearts),
+        # Trump
+        Card.new(:king, :hearts),
         Card.new(:queen, :diamonds)
       ]
 
@@ -87,15 +91,18 @@ defmodule Coinchette.Games.RulesTest do
   describe "valid_cards/4 - must overtrump" do
     test "must overtrump if opponent played trump" do
       hand = [
-        Card.new(:jack, :hearts),  # Trump (20 pts - strongest)
-        Card.new(:seven, :hearts), # Trump (0 pts - weakest)
+        # Trump (20 pts - strongest)
+        Card.new(:jack, :hearts),
+        # Trump (0 pts - weakest)
+        Card.new(:seven, :hearts),
         Card.new(:ace, :diamonds)
       ]
 
       trick =
         Trick.new()
         |> Trick.add_card(Card.new(:ten, :spades), 0)
-        |> Trick.add_card(Card.new(:nine, :hearts), 1)  # Trump (14 pts)
+        # Trump (14 pts)
+        |> Trick.add_card(Card.new(:nine, :hearts), 1)
 
       player = Player.new(2, hand)
       valid = Rules.valid_cards(player, trick, :hearts, 2)
@@ -108,15 +115,18 @@ defmodule Coinchette.Games.RulesTest do
 
     test "can play weak trump if cannot overtrump" do
       hand = [
-        Card.new(:seven, :hearts), # Trump (0 pts)
-        Card.new(:eight, :hearts), # Trump (0 pts)
+        # Trump (0 pts)
+        Card.new(:seven, :hearts),
+        # Trump (0 pts)
+        Card.new(:eight, :hearts),
         Card.new(:ace, :diamonds)
       ]
 
       trick =
         Trick.new()
         |> Trick.add_card(Card.new(:ten, :spades), 0)
-        |> Trick.add_card(Card.new(:jack, :hearts), 1)  # Trump (20 pts - strongest)
+        # Trump (20 pts - strongest)
+        |> Trick.add_card(Card.new(:jack, :hearts), 1)
 
       player = Player.new(2, hand)
       valid = Rules.valid_cards(player, trick, :hearts, 2)
@@ -131,17 +141,21 @@ defmodule Coinchette.Games.RulesTest do
   describe "valid_cards/4 - partner exception" do
     test "can discard if partner is winning (no trump in trick)" do
       hand = [
-        Card.new(:ace, :hearts),  # Trump
+        # Trump
+        Card.new(:ace, :hearts),
         Card.new(:king, :diamonds)
       ]
 
       # Partner (position 0, team 0) is winning with Ace of spades
       trick =
         Trick.new()
-        |> Trick.add_card(Card.new(:ace, :spades), 0)   # Partner
-        |> Trick.add_card(Card.new(:seven, :spades), 1) # Opponent
+        # Partner
+        |> Trick.add_card(Card.new(:ace, :spades), 0)
+        # Opponent
+        |> Trick.add_card(Card.new(:seven, :spades), 1)
 
-      player = Player.new(2, hand)  # Position 2, team 0 (same as position 0)
+      # Position 2, team 0 (same as position 0)
+      player = Player.new(2, hand)
       valid = Rules.valid_cards(player, trick, :hearts, 2)
 
       # Partner winning, can discard (no obligation to trump)
@@ -150,18 +164,23 @@ defmodule Coinchette.Games.RulesTest do
 
     test "must overtrump if partner played trump but opponent overtrumped" do
       hand = [
-        Card.new(:jack, :hearts),  # Trump (20 pts)
-        Card.new(:seven, :hearts), # Trump (0 pts)
+        # Trump (20 pts)
+        Card.new(:jack, :hearts),
+        # Trump (0 pts)
+        Card.new(:seven, :hearts),
         Card.new(:ace, :diamonds)
       ]
 
       trick =
         Trick.new()
         |> Trick.add_card(Card.new(:ten, :spades), 0)
-        |> Trick.add_card(Card.new(:eight, :hearts), 1)  # Partner's trump
-        |> Trick.add_card(Card.new(:nine, :hearts), 2)   # Opponent overtrumped (14 pts)
+        # Partner's trump
+        |> Trick.add_card(Card.new(:eight, :hearts), 1)
+        # Opponent overtrumped (14 pts)
+        |> Trick.add_card(Card.new(:nine, :hearts), 2)
 
-      player = Player.new(3, hand)  # Team 1 (partner is position 1)
+      # Team 1 (partner is position 1)
+      player = Player.new(3, hand)
       valid = Rules.valid_cards(player, trick, :hearts, 3)
 
       # Opponent is winning, must overtrump
@@ -171,17 +190,22 @@ defmodule Coinchette.Games.RulesTest do
 
     test "no obligation to overtrump partner" do
       hand = [
-        Card.new(:jack, :hearts),  # Trump (20 pts)
-        Card.new(:seven, :hearts), # Trump (0 pts)
+        # Trump (20 pts)
+        Card.new(:jack, :hearts),
+        # Trump (0 pts)
+        Card.new(:seven, :hearts),
         Card.new(:ace, :diamonds)
       ]
 
       trick =
         Trick.new()
-        |> Trick.add_card(Card.new(:ten, :spades), 0)   # Opponent
-        |> Trick.add_card(Card.new(:nine, :hearts), 1)  # Partner's trump (14 pts)
+        # Opponent
+        |> Trick.add_card(Card.new(:ten, :spades), 0)
+        # Partner's trump (14 pts)
+        |> Trick.add_card(Card.new(:nine, :hearts), 1)
 
-      player = Player.new(3, hand)  # Team 1 (partner is position 1)
+      # Team 1 (partner is position 1)
+      player = Player.new(3, hand)
       valid = Rules.valid_cards(player, trick, :hearts, 3)
 
       # Partner winning, can play any trump (no obligation to overtrump)

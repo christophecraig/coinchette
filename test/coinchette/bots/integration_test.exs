@@ -51,8 +51,8 @@ defmodule Coinchette.Bots.IntegrationTest do
 
       # Then: All plays are successful (no errors)
       assert Enum.all?(results, fn result ->
-        match?({:ok, _game}, result)
-      end)
+               match?({:ok, _game}, result)
+             end)
     end
 
     test "bot handles different trump suits correctly" do

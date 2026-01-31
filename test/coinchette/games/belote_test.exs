@@ -101,6 +101,7 @@ defmodule Coinchette.Games.BeloteTest do
 
       {:ok, game} = Game.make_bid(game, :take)
       game = Game.complete_deal(game)
+      game = Game.complete_announcements(game)
 
       # Marquer qu'une équipe a Belote/Rebelote
       game = %{game | belote_rebelote: {0, true}}
@@ -122,12 +123,15 @@ defmodule Coinchette.Games.BeloteTest do
     Enum.reduce(1..32, game, fn _, acc ->
       if not Game.game_over?(acc) do
         current_player = Game.current_player(acc)
-        valid_cards = Coinchette.Games.Rules.valid_cards(
-          current_player,
-          acc.current_trick,
-          acc.trump_suit,
-          current_player.position
-        )
+
+        valid_cards =
+          Coinchette.Games.Rules.valid_cards(
+            current_player,
+            acc.current_trick,
+            acc.trump_suit,
+            current_player.position
+          )
+
         card = List.first(valid_cards)
         {:ok, updated} = Game.play_card(acc, card)
         updated

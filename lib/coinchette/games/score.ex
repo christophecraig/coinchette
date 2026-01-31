@@ -44,6 +44,7 @@ defmodule Coinchette.Games.Score do
     * `opts` - Options:
       * `:last_trick_winner` - Équipe qui a gagné le dernier pli (reçoit +10)
       * `:belote_rebelote` - Tuple {team, true} si une équipe a Belote/Rebelote (+20)
+      * `:announcements` - Résultat des annonces %{winning_team: team, total_points: points}
 
   ## Exemples
 
@@ -55,6 +56,7 @@ defmodule Coinchette.Games.Score do
   def calculate_scores(tricks_won, trump_suit, opts \\ []) do
     last_trick_winner = Keyword.get(opts, :last_trick_winner)
     belote_rebelote = Keyword.get(opts, :belote_rebelote)
+    announcements = Keyword.get(opts, :announcements)
 
     # Calculer les points de base par équipe
     base_scores =
@@ -88,7 +90,17 @@ defmodule Coinchette.Games.Score do
           scores_with_dix_de_der
       end
 
-    scores_with_belote
+    # Ajouter les points d'annonces si spécifié
+    scores_with_announcements =
+      case announcements do
+        %{winning_team: team, total_points: points} when not is_nil(team) and points > 0 ->
+          Map.update(scores_with_belote, team, points, &(&1 + points))
+
+        _ ->
+          scores_with_belote
+      end
+
+    scores_with_announcements
     |> ensure_both_teams()
   end
 
@@ -112,7 +124,8 @@ defmodule Coinchette.Games.Score do
         nil -> nil
       end
 
-    scores = calculate_scores(game.tricks_won, game.trump_suit, last_trick_winner: last_trick_winner)
+    scores =
+      calculate_scores(game.tricks_won, game.trump_suit, last_trick_winner: last_trick_winner)
 
     winner =
       scores

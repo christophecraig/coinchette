@@ -57,11 +57,14 @@ defmodule Coinchette.Bots.FFBScenariosTest do
         |> Trick.add_card(opponent_trump, 1)
 
       # Bot must overtrump
-      nine_trump = Card.new(:nine, :spades)  # Stronger trump
-      jack_trump = Card.new(:jack, :spades)  # Even stronger
+      # Stronger trump
+      nine_trump = Card.new(:nine, :spades)
+      # Even stronger
+      jack_trump = Card.new(:jack, :spades)
 
       player = Player.new(2, [nine_trump, jack_trump])
-      valid_cards = [nine_trump, jack_trump]  # Both can overtrump
+      # Both can overtrump
+      valid_cards = [nine_trump, jack_trump]
 
       # When: Bot chooses
       chosen = Basic.choose_card(player, trick, :spades, valid_cards)
@@ -79,7 +82,8 @@ defmodule Coinchette.Bots.FFBScenariosTest do
       eight_clubs = Card.new(:eight, :clubs)
       seven_trump = Card.new(:seven, :spades)
 
-      player = Player.new(2, [eight_clubs, seven_trump])  # Position 2 = same team as 0
+      # Position 2 = same team as 0
+      player = Player.new(2, [eight_clubs, seven_trump])
       valid_cards = [eight_clubs, seven_trump]
 
       # When: Bot chooses
@@ -98,7 +102,8 @@ defmodule Coinchette.Bots.FFBScenariosTest do
       king = Card.new(:king, :hearts)
 
       player = Player.new(0, [ace, king, seven])
-      valid_cards = [ace, king, seven]  # All cards are valid when leading
+      # All cards are valid when leading
+      valid_cards = [ace, king, seven]
 
       # When: Bot chooses
       chosen = Basic.choose_card(player, trick, :spades, valid_cards)

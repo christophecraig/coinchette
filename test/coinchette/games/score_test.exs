@@ -48,10 +48,14 @@ defmodule Coinchette.Games.ScoreTest do
 
     test "calculates points for mixed trump and non-trump trick" do
       # Given: Mix of trump and non-trump
-      jack_trump = Card.new(:jack, :hearts)  # 20 points (trump)
-      ace_clubs = Card.new(:ace, :clubs)     # 11 points
-      king_clubs = Card.new(:king, :clubs)   # 4 points
-      seven_clubs = Card.new(:seven, :clubs) # 0 points
+      # 20 points (trump)
+      jack_trump = Card.new(:jack, :hearts)
+      # 11 points
+      ace_clubs = Card.new(:ace, :clubs)
+      # 4 points
+      king_clubs = Card.new(:king, :clubs)
+      # 0 points
+      seven_clubs = Card.new(:seven, :clubs)
 
       trick =
         Trick.new()
@@ -80,47 +84,63 @@ defmodule Coinchette.Games.ScoreTest do
       # Simulate realistic point distribution
 
       # Team 0 tricks (positions 0 and 2)
-      trick1 = create_trick([
-        {Card.new(:ace, :hearts), 0},
-        {Card.new(:king, :hearts), 1},
-        {Card.new(:ten, :hearts), 2},  # Team 0 wins
-        {Card.new(:seven, :hearts), 3}
-      ])
+      trick1 =
+        create_trick([
+          {Card.new(:ace, :hearts), 0},
+          {Card.new(:king, :hearts), 1},
+          # Team 0 wins
+          {Card.new(:ten, :hearts), 2},
+          {Card.new(:seven, :hearts), 3}
+        ])
+
       # Points: 11 + 4 + 10 + 0 = 25
 
-      trick2 = create_trick([
-        {Card.new(:jack, :spades), 0},  # Trump, Team 0 wins
-        {Card.new(:eight, :hearts), 1},
-        {Card.new(:nine, :diamonds), 2},
-        {Card.new(:seven, :clubs), 3}
-      ])
+      trick2 =
+        create_trick([
+          # Trump, Team 0 wins
+          {Card.new(:jack, :spades), 0},
+          {Card.new(:eight, :hearts), 1},
+          {Card.new(:nine, :diamonds), 2},
+          {Card.new(:seven, :clubs), 3}
+        ])
+
       # Points: 20 + 0 + 0 + 0 = 20
 
-      trick3 = create_trick([
-        {Card.new(:ace, :diamonds), 0},
-        {Card.new(:ten, :diamonds), 1},
-        {Card.new(:king, :diamonds), 2},  # Team 0 wins
-        {Card.new(:queen, :diamonds), 3}
-      ])
+      trick3 =
+        create_trick([
+          {Card.new(:ace, :diamonds), 0},
+          {Card.new(:ten, :diamonds), 1},
+          # Team 0 wins
+          {Card.new(:king, :diamonds), 2},
+          {Card.new(:queen, :diamonds), 3}
+        ])
+
       # Points: 11 + 10 + 4 + 3 = 28
 
       # Team 1 tricks (positions 1 and 3)
-      trick4 = create_trick([
-        {Card.new(:nine, :spades), 0},  # Trump
-        {Card.new(:ace, :spades), 1},   # Trump, Team 1 wins (but 9 stronger in trump)
-        {Card.new(:eight, :clubs), 2},
-        {Card.new(:seven, :hearts), 3}
-      ])
+      trick4 =
+        create_trick([
+          # Trump
+          {Card.new(:nine, :spades), 0},
+          # Trump, Team 1 wins (but 9 stronger in trump)
+          {Card.new(:ace, :spades), 1},
+          {Card.new(:eight, :clubs), 2},
+          {Card.new(:seven, :hearts), 3}
+        ])
+
       # Actually position 0 wins (9 of trump = 14 strength vs As = 11 strength)
       # But for this test, let's say position 1 wins
       # Points: 14 + 11 + 0 + 0 = 25
 
-      trick5 = create_trick([
-        {Card.new(:king, :clubs), 0},
-        {Card.new(:ace, :clubs), 1},   # Team 1 wins
-        {Card.new(:ten, :clubs), 2},
-        {Card.new(:queen, :clubs), 3}
-      ])
+      trick5 =
+        create_trick([
+          {Card.new(:king, :clubs), 0},
+          # Team 1 wins
+          {Card.new(:ace, :clubs), 1},
+          {Card.new(:ten, :clubs), 2},
+          {Card.new(:queen, :clubs), 3}
+        ])
+
       # Points: 4 + 11 + 10 + 3 = 28
 
       # Simplified: just test the structure works
@@ -150,8 +170,10 @@ defmodule Coinchette.Games.ScoreTest do
     test "adds dix de der (10 points) to last trick winner" do
       # Given: Simple game where team 0 wins last trick
       # Use exact point values that create_simple_trick can produce
-      trick1 = create_simple_trick(11)  # 1 ace = 11 points
-      trick2 = create_simple_trick(22)  # 2 aces = 22 points (last trick)
+      # 1 ace = 11 points
+      trick1 = create_simple_trick(11)
+      # 2 aces = 22 points (last trick)
+      trick2 = create_simple_trick(22)
 
       tricks_won = [
         {0, trick1},
@@ -174,15 +196,24 @@ defmodule Coinchette.Games.ScoreTest do
       # Let's use: 22+22+22+22+22+22+11+11 = 154 - 10 (dix de der) = 144 != 152
       # Correct: Values that sum to 152 (before dix de der)
       tricks_won = [
-        {0, create_simple_trick(22)},  # 2 aces
-        {1, create_simple_trick(22)},  # 2 aces
-        {0, create_simple_trick(22)},  # 2 aces
-        {1, create_simple_trick(22)},  # 2 aces
-        {0, create_simple_trick(22)},  # 2 aces
-        {1, create_simple_trick(22)},  # 2 aces
-        {0, create_simple_trick(11)},  # 1 ace
-        {1, create_simple_trick(11)}   # 1 ace (last trick gets +10)
+        # 2 aces
+        {0, create_simple_trick(22)},
+        # 2 aces
+        {1, create_simple_trick(22)},
+        # 2 aces
+        {0, create_simple_trick(22)},
+        # 2 aces
+        {1, create_simple_trick(22)},
+        # 2 aces
+        {0, create_simple_trick(22)},
+        # 2 aces
+        {1, create_simple_trick(22)},
+        # 1 ace
+        {0, create_simple_trick(11)},
+        # 1 ace (last trick gets +10)
+        {1, create_simple_trick(11)}
       ]
+
       # Total: 22*6 + 11*2 = 132 + 22 = 154 + 10 (dix de der) = 164 (not 162!)
       # Let's fix: 21+21+21+21+21+21+11+11 = 148 + 10 = 158 (not 162)
       # Correct total: Use 152 before dix de der
@@ -226,7 +257,8 @@ defmodule Coinchette.Games.ScoreTest do
               3 -> [Card.new(:queen, :hearts)]
               2 -> [Card.new(:jack, :hearts)]
               0 -> []
-              _ -> []  # For other values, just approximate
+              # For other values, just approximate
+              _ -> []
             end
 
           aces ++ remainder_cards

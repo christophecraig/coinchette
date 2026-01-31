@@ -34,7 +34,8 @@ defmodule Coinchette.Games.ScoreIntegrationTest do
 
       expected_total =
         if final_game.belote_rebelote do
-          182  # 162 + 20 for Belote/Rebelote
+          # 162 + 20 for Belote/Rebelote
+          182
         else
           162
         end
@@ -58,7 +59,8 @@ defmodule Coinchette.Games.ScoreIntegrationTest do
       # (Final score should be 162 total, or 182 with Belote/Rebelote)
       expected_total =
         if final_game.belote_rebelote do
-          182  # 162 + 20 for Belote/Rebelote
+          # 162 + 20 for Belote/Rebelote
+          182
         else
           162
         end

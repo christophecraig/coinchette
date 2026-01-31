@@ -92,7 +92,8 @@ defmodule Coinchette.Games.TrickTest do
       trick =
         Trick.new()
         |> Trick.add_card(Card.new(:seven, :spades), 0)
-        |> Trick.add_card(Card.new(:ace, :hearts), 1)  # Not led suit
+        # Not led suit
+        |> Trick.add_card(Card.new(:ace, :hearts), 1)
         |> Trick.add_card(Card.new(:eight, :spades), 2)
         |> Trick.add_card(Card.new(:nine, :spades), 3)
 
@@ -106,7 +107,8 @@ defmodule Coinchette.Games.TrickTest do
       trick =
         Trick.new()
         |> Trick.add_card(Card.new(:ace, :spades), 0)
-        |> Trick.add_card(Card.new(:seven, :hearts), 1)  # Trump
+        # Trump
+        |> Trick.add_card(Card.new(:seven, :hearts), 1)
         |> Trick.add_card(Card.new(:king, :spades), 2)
         |> Trick.add_card(Card.new(:queen, :spades), 3)
 
@@ -116,10 +118,14 @@ defmodule Coinchette.Games.TrickTest do
     test "highest trump wins when multiple trumps" do
       trick =
         Trick.new()
-        |> Trick.add_card(Card.new(:seven, :hearts), 0)  # Trump
-        |> Trick.add_card(Card.new(:jack, :hearts), 1)   # Trump (20 pts)
-        |> Trick.add_card(Card.new(:nine, :hearts), 2)   # Trump (14 pts)
-        |> Trick.add_card(Card.new(:ace, :hearts), 3)    # Trump (11 pts)
+        # Trump
+        |> Trick.add_card(Card.new(:seven, :hearts), 0)
+        # Trump (20 pts)
+        |> Trick.add_card(Card.new(:jack, :hearts), 1)
+        # Trump (14 pts)
+        |> Trick.add_card(Card.new(:nine, :hearts), 2)
+        # Trump (11 pts)
+        |> Trick.add_card(Card.new(:ace, :hearts), 3)
 
       # Jack of trumps wins (highest value)
       assert Trick.winner(trick, :hearts) == 1
@@ -128,8 +134,10 @@ defmodule Coinchette.Games.TrickTest do
     test "eight of trumps beats seven (even with 0 points each)" do
       trick =
         Trick.new()
-        |> Trick.add_card(Card.new(:seven, :hearts), 0)  # Trump (0 pts, strength 1)
-        |> Trick.add_card(Card.new(:eight, :hearts), 1)  # Trump (0 pts, strength 2)
+        # Trump (0 pts, strength 1)
+        |> Trick.add_card(Card.new(:seven, :hearts), 0)
+        # Trump (0 pts, strength 2)
+        |> Trick.add_card(Card.new(:eight, :hearts), 1)
         |> Trick.add_card(Card.new(:king, :spades), 2)
         |> Trick.add_card(Card.new(:ace, :spades), 3)
 

@@ -48,7 +48,8 @@ defmodule Coinchette.Games.GameTest do
         |> Game.deal_initial_cards()
 
       assert %Bidding{} = game.bidding
-      assert game.bidding.current_bidder == 1  # À droite du donneur
+      # À droite du donneur
+      assert game.bidding.current_bidder == 1
       assert game.bidding.round == 1
       assert game.bidding.status == :in_progress
     end
@@ -91,10 +92,14 @@ defmodule Coinchette.Games.GameTest do
     end
 
     test "tous passent au premier tour, passe au second tour", %{game: game} do
-      {:ok, g1} = Game.make_bid(game, :pass)  # Joueur 1
-      {:ok, g2} = Game.make_bid(g1, :pass)    # Joueur 2
-      {:ok, g3} = Game.make_bid(g2, :pass)    # Joueur 3
-      {:ok, g4} = Game.make_bid(g3, :pass)    # Joueur 4 (donneur)
+      # Joueur 1
+      {:ok, g1} = Game.make_bid(game, :pass)
+      # Joueur 2
+      {:ok, g2} = Game.make_bid(g1, :pass)
+      # Joueur 3
+      {:ok, g3} = Game.make_bid(g2, :pass)
+      # Joueur 4 (donneur)
+      {:ok, g4} = Game.make_bid(g3, :pass)
 
       assert g4.bidding.round == 2
       assert g4.status == :bidding
@@ -150,11 +155,12 @@ defmodule Coinchette.Games.GameTest do
       assert length(unique_cards) == 32
     end
 
-    test "démarre la partie (status = playing)", %{game: game} do
+    test "démarre la phase d'annonces (status = announcing)", %{game: game} do
       updated = Game.complete_deal(game)
 
-      assert updated.status == :playing
+      assert updated.status == :announcing
       assert updated.current_trick != nil
+      assert updated.announcement_phase_complete == true
     end
 
     test "le joueur à droite du donneur commence", %{game: game} do
@@ -178,10 +184,14 @@ defmodule Coinchette.Games.GameTest do
       {:ok, game} = Game.make_bid(game, :take)
       assert game.status == :bidding_completed
 
-      # Distribution finale
+      # Distribution finale et annonces
       game = Game.complete_deal(game)
-      assert game.status == :playing
+      assert game.status == :announcing
       assert game.trump_suit != nil
+
+      # Compléter phase annonces
+      game = Game.complete_announcements(game)
+      assert game.status == :playing
 
       # Jouer une partie complète
       game = play_full_round(game)
