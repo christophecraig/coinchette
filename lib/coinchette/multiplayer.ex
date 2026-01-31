@@ -255,18 +255,18 @@ defmodule Coinchette.Multiplayer do
   end
 
   @doc """
-  Lists chat messages for a game.
+  Lists chat messages for a game in chronological order (oldest first).
+  By default returns up to 100 messages.
   """
   def list_chat_messages(game_id, opts \\ []) do
     limit = Keyword.get(opts, :limit, 100)
 
     ChatMessage
     |> where([cm], cm.game_id == ^game_id)
-    |> order_by([cm], desc: cm.inserted_at)
+    |> order_by([cm], [asc: cm.inserted_at])
     |> limit(^limit)
     |> preload(:user)
     |> Repo.all()
-    |> Enum.reverse()
   end
 
   ## Room Code Generation
