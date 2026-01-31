@@ -92,6 +92,20 @@ defmodule Coinchette.Games.Deck do
   end
 
   @doc """
+  Retourne toutes les cartes du deck.
+
+  ## Exemples
+
+      iex> deck = Deck.new()
+      iex> cards = Deck.all_cards(deck)
+      iex> length(cards)
+      32
+  """
+  def all_cards(%__MODULE__{cards: cards}) do
+    cards
+  end
+
+  @doc """
   Retourne le nombre de cartes restantes dans le deck.
 
   ## Exemples

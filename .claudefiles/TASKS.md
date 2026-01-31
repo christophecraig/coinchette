@@ -193,28 +193,334 @@ Bloquées    : 0/5 (0%)
 
 ---
 
+## 📊 Statistiques Sprint M2
+
+```
+Complétées : 5/5 (100%) ✅
+En cours    : 0/5 (0%)
+À faire     : 0/5 (0%)
+Bloquées    : 0/5 (0%)
+```
+
+**Vélocité estimée** : 28h
+**Temps écoulé** : 28h
+**Statut** : ✅ MILESTONE M2 COMPLET + Scoring FFB
+
+---
+
 ## 🔮 Prochains sprints (Aperçu)
 
 ### M2 : Mode Solo vs IA (Semaines 3-6)
 
-#### 🔴 T2.1 : Moteur de jeu - Structure de base [📝 Planifié]
-- [ ] Modules `Game`, `Deck`, `Player`
-- [ ] Distribution des cartes
-- [ ] Gestion des plis
+#### 🔴 T2.1 : Moteur de jeu - Structure de base [✅ Terminé]
+**Assigné** : Claude
+**Estimation** : 6h
+**Statut** : ✅ Complété le 2026-01-31
 
-#### 🔴 T2.2 : Règles de jeu belote classique [📝 Planifié]
-- [ ] Validation des coups légaux
-- [ ] Calcul du score
-- [ ] Gestion des annonces (tierce, belote, etc.)
+**Détails** :
+- [x] Modules `Game`, `Deck`, `Player`, `Card`, `Trick`
+- [x] Distribution des cartes (8 cartes par joueur)
+- [x] Gestion des plis (8 plis par partie)
+- [x] State machine (waiting/playing/finished)
 
-#### 🟠 T2.3 : IA basique [📝 Planifié]
-- [ ] Algorithme de sélection de carte
-- [ ] Stratégie simple (suit, coupe, défausse)
+**Fichiers créés** :
+- `lib/coinchette/games/game.ex`
+- `lib/coinchette/games/deck.ex`
+- `lib/coinchette/games/player.ex`
+- `lib/coinchette/games/card.ex`
+- `lib/coinchette/games/trick.ex`
 
-#### 🟠 T2.4 : Interface web - Plateau de jeu [📝 Planifié]
-- [ ] LiveView pour le plateau
-- [ ] Composants cartes
-- [ ] Drag & drop
+---
+
+#### 🔴 T2.2 : Règles de jeu belote classique [✅ Terminé]
+**Assigné** : Claude
+**Estimation** : 8h
+**Statut** : ✅ Complété le 2026-01-31
+
+**Détails** :
+- [x] Validation des coups légaux (fournir, couper, surcouper)
+- [x] Gestion partenaire maître (exception FFB)
+- [x] Calcul de la force des cartes (trump vs non-trump)
+- [x] Détermination du gagnant du pli
+
+**Fichiers créés** :
+- `lib/coinchette/games/rules.ex`
+- `test/coinchette/games/rules_test.exs`
+
+**Notes** :
+- Respect strict des règles FFB
+- Gestion complète des atouts (jack=20pts, nine=14pts)
+- Exception partenaire maître implémentée
+
+---
+
+#### 🟠 T2.3 : IA basique [✅ Terminé]
+**Assigné** : Claude
+**Estimation** : 5h
+**Statut** : ✅ Complété le 2026-01-31
+
+**Détails** :
+- [x] Behaviour `Bots.Strategy` créé
+- [x] Implémentation `Bots.Basic` (stratégie conservative)
+- [x] Intégration dans `Game.play_bot_turn/2`
+- [x] Tests unitaires complets (8 scénarios)
+- [x] Tests d'intégration (partie complète)
+- [x] Tests scénarios FFB (règles complexes)
+
+**Stratégie Basic** :
+- Joue toujours la plus petite carte valide
+- Préfère défausser non-atouts quand possible
+- Respecte 100% les règles FFB
+
+**Fichiers créés** :
+- `lib/coinchette/bots/strategy.ex` (behaviour)
+- `lib/coinchette/bots/basic.ex` (implémentation)
+- `lib/coinchette/bots.ex` (module doc + default)
+- `test/coinchette/bots/basic_test.exs`
+- `test/coinchette/bots/integration_test.exs`
+- `test/coinchette/bots/ffb_scenarios_test.exs`
+
+**Fichiers modifiés** :
+- `lib/coinchette/games/game.ex` (ajout `play_bot_turn/2`)
+
+**Critères d'acceptance** :
+- ✅ Bot respecte toujours les règles FFB
+- ✅ Stratégie simple mais fonctionnelle
+- ✅ Tests couvrent tous les cas (fournir, couper, surcouper, partenaire)
+- ✅ Intégration complète avec Game module
+
+---
+
+#### 🟠 T2.4 : Interface web - Plateau de jeu [✅ Terminé]
+**Assigné** : Claude
+**Estimation** : 6h
+**Statut** : ✅ Complété le 2026-01-31
+
+**Détails** :
+- [x] LiveView GameLive créé
+- [x] Composants cartes interactifs
+- [x] Clic pour jouer (pas drag & drop pour MVP, plus simple)
+- [x] Validation visuelle (cartes grisées si invalides)
+- [x] Affichage 4 joueurs + pli central
+- [x] Score en temps réel
+- [x] Bots jouent automatiquement
+- [x] Nouvelle partie
+
+**Interface** :
+- Plateau de jeu circulaire (4 positions)
+- Cartes visuelles avec symboles ♠♥♦♣
+- Couleurs rouge/noir selon couleur
+- Cartes cliquables/non-cliquables selon règles
+- Score par équipe
+- Info atout et plis
+
+**Interactions** :
+- Clic sur carte → joue la carte (si valide)
+- Bouton "Nouvelle Partie" → redémarre
+- Bots jouent automatiquement après joueur humain
+- Pause 500ms entre chaque bot (visibilité)
+
+**Fichiers créés** :
+- `lib/coinchette_web/live/game_live.ex` (LiveView principal)
+- `lib/coinchette_web/router.ex` (route `/game` ajoutée)
+- `test/coinchette_web/live/game_live_test.exs` (8 tests)
+- `assets/css/app.css` (styles cartes ajoutés)
+- `GAME_GUIDE.md` (guide utilisateur)
+
+**Tests** :
+- ✅ 8 tests LiveView (mount, affichage, interactions)
+- ✅ Vérifie présence des 4 joueurs
+- ✅ Vérifie affichage score
+- ✅ Vérifie bouton nouvelle partie
+- ✅ Vérifie info atout et plis
+
+**Critères d'acceptance** :
+- ✅ Plateau affiche 4 joueurs
+- ✅ Joueur humain voit ses 8 cartes
+- ✅ Cartes invalides grisées automatiquement
+- ✅ Bots jouent automatiquement
+- ✅ Interface responsive (Tailwind + daisyUI)
+- ✅ Partie jouable de bout en bout
+
+**Notes** :
+- Pas de drag & drop (clic suffit pour MVP)
+- Pas d'animations avancées (MVP)
+- Pas de sons (MVP)
+- Atout fixe à ♥ (phase enchères = T2.6)
+
+---
+
+#### 🔴 T2.5 : Calcul de points FFB [✅ Terminé]
+**Assigné** : Claude
+**Estimation** : 3h
+**Statut** : ✅ Complété le 2026-01-31
+
+**Détails** :
+- [x] Module Score créé avec calculs FFB
+- [x] Calcul points par pli (atout/non-atout)
+- [x] Dix de der (+10pts au dernier pli)
+- [x] Tracking scores par équipe dans Game
+- [x] Total vérifié = 162pts par manche
+- [x] Affichage points dans LiveView
+- [x] Tests complets (unitaires + intégration)
+
+**Valeurs FFB implémentées** :
+- Atout: V=20, 9=14, A=11, 10=10, R=4, D=3, 8/7=0
+- Non-atout: A=11, 10=10, R=4, D=3, V=2, 9/8/7=0
+- Dix de der: +10pts
+- Total: 162pts/manche
+
+**Fichiers créés** :
+- `lib/coinchette/games/score.ex` (module calculs)
+- `test/coinchette/games/score_test.exs` (tests unitaires)
+- `test/coinchette/games/score_integration_test.exs` (tests intégration)
+
+**Fichiers modifiés** :
+- `lib/coinchette/games/game.ex` (ajout champ scores, calcul auto)
+- `lib/coinchette_web/live/game_live.ex` (affichage points)
+
+**Affichage UI** :
+- Points en gros (au lieu de plis)
+- Nombre de plis en petit
+- Message victoire/défaite avec score
+- Badge "Dix de der" quand dernier pli
+- Total 162pts affiché
+
+**Critères d'acceptance** :
+- ✅ Points calculés selon FFB
+- ✅ Dix de der attribué correctement
+- ✅ Total toujours = 162pts
+- ✅ Gagnant déterminé par points (pas plis)
+- ✅ UI affiche points en temps réel
+- ✅ Tests property: total = 162
+
+---
+
+#### 🔴 T2.6 : Phase d'enchères belote classique [✅ Terminé]
+**Assigné** : Claude
+**Estimation** : 5h
+**Statut** : ✅ Complété le 2026-01-31
+
+**Détails** :
+- [x] Module Bidding créé (gestion enchères FFB)
+- [x] Distribution initiale : 5 cartes + talon de 3
+- [x] Premier tour : "Je prends" / "Je passe"
+- [x] Second tour : Choisir autre couleur ou passer
+- [x] Game modifié avec nouveaux états (bidding, bidding_completed, bidding_failed)
+- [x] Fonctions deal_initial_cards, make_bid, complete_deal
+- [x] UI LiveView pour enchères (boutons "Prendre" / "Passer" / choix couleur)
+- [x] Affichage carte retournée du talon (agrandie 2x)
+- [x] Gestion redistribution si tous passent (status bidding_failed)
+- [x] Bots enchérissent automatiquement avec stratégie aléatoire
+
+**Règles FFB implémentées** :
+- Distribution : 3+2 cartes par joueur (5 total)
+- Talon : 3 cartes, dernière retournée = proposition
+- Premier tour : prendre couleur proposée ou passer
+- Second tour : choisir autre couleur ou passer
+- Si tous passent aux 2 tours : redistribution
+- Preneur récupère talon + 3 cartes supplémentaires (8 total)
+- Autres joueurs : 3 cartes supplémentaires (8 total)
+
+**Fichiers créés** :
+- `lib/coinchette/games/bidding.ex` (module enchères)
+- `test/coinchette/games/bidding_test.exs` (17 tests bidding)
+
+**Fichiers modifiés** :
+- `lib/coinchette/games/game.ex` (ajout états + fonctions enchères)
+- `lib/coinchette/games/deck.ex` (ajout all_cards/1)
+- `test/coinchette/games/game_test.exs` (17 tests supplémentaires)
+
+**Tests** :
+- ✅ 17 tests Bidding (2 tours, validation actions)
+- ✅ 17 tests Game avec enchères (flow complet)
+- ✅ 149 tests totaux passent
+- ✅ Compilation sans warnings
+
+**State Machine** :
+```
+waiting → deal_initial_cards → bidding
+  ↓                               ↓
+  ↓                          (enchères)
+  ↓                               ↓
+  ↓                    bidding_completed → complete_deal → playing
+  ↓                               ↓
+  ↓                     bidding_failed (redistribution)
+  ↓
+(old flow) deal_cards → playing (backward compatibility)
+```
+
+**Critères d'acceptance** :
+- ✅ Backend : Distribution initiale 5 cartes + talon
+- ✅ Backend : Gestion 2 tours d'enchères
+- ✅ Backend : Validation actions (take/pass/choose)
+- ✅ Backend : Distribution finale après enchères
+- ✅ UI : Interface enchères avec boutons (Prendre/Passer/Choisir couleur)
+- ✅ UI : Affichage carte retournée (agrandie 32x48)
+- ✅ UI : Flow complet jouable (enchères → jeu)
+- ✅ UI : Bots enchérissent automatiquement
+- ✅ Tests : 149 tests passent (100% success)
+
+**Notes** :
+- Backward compatibility : Game.new(:hearts) |> deal_cards() fonctionne toujours
+- Nouveau flow : Game.new() |> deal_initial_cards() |> make_bid() |> complete_deal()
+- Tests robustes avec TDD strict (Red-Green-Refactor)
+
+---
+
+#### 🟠 T2.7 : Annonces Belote/Rebelote [✅ Terminé - Backend]
+**Assigné** : Claude
+**Estimation** : 3h
+**Statut** : ✅ Backend complet le 2026-01-31
+
+**Détails** :
+- [x] Détection automatique Roi+Dame d'atout
+- [x] Annonce "Belote" sur première carte jouée (Roi ou Dame)
+- [x] Annonce "Rebelote" sur seconde carte jouée
+- [x] Ajout automatique de +20 points au score de l'équipe
+- [x] Gestion dans `Game.check_and_announce_belote/3`
+- [x] Modification de `Score.calculate_scores` pour bonus
+- [x] Champs ajoutés : `belote_announced`, `belote_rebelote`
+- [ ] UI : Affichage notification "Belote!" et "Rebelote!"
+- [ ] UI : Badge/indicateur sur le score (+20 pts)
+
+**Règles FFB implémentées** :
+- Roi + Dame d'atout = 20 points bonus
+- Valable même si l'équipe chute la manche
+- Annonce automatique lors du jeu des cartes
+- Tracking par joueur et par équipe
+
+**Fichiers créés** :
+- `test/coinchette/games/belote_test.exs` (7 tests)
+
+**Fichiers modifiés** :
+- `lib/coinchette/games/game.ex` (+80 lignes)
+  - Ajout champs `belote_announced`, `belote_rebelote`
+  - Fonctions : `has_belote?/2`, `check_and_announce_belote/3`
+  - Intégration dans `play_card/2`
+  - Helper functions pour détection paire
+- `lib/coinchette/games/score.ex` (+15 lignes)
+  - Ajout paramètre `:belote_rebelote` dans `calculate_scores`
+  - Ajout automatique de +20 points
+- `test/coinchette/games/score_integration_test.exs` (ajustement test égalité)
+
+**Tests** :
+- ✅ 7 tests Belote (détection, annonce, scoring)
+- ✅ 156 tests totaux passent (100% success)
+- ✅ Approche TDD stricte (Red-Green-Refactor)
+
+**Critères d'acceptance** :
+- ✅ Backend : Détection automatique Roi+Dame d'atout
+- ✅ Backend : Annonce Belote/Rebelote enregistrée
+- ✅ Backend : +20 points ajoutés au score
+- ✅ Backend : Valable même si équipe chute
+- ⏳ UI : Affichage notifications (optionnel pour MVP)
+
+**Notes** :
+- Implémentation automatique (pas besoin d'action joueur)
+- Compatible avec ancien système de scoring
+- Tests unitaires complets pour toutes les combinaisons
+- Ready pour UI (champs déjà présents dans Game struct)
 
 ---
 
@@ -225,6 +531,44 @@ Bloquées    : 0/5 (0%)
 ---
 
 ## 📝 Notes et décisions
+
+### 2026-01-31 (Session 3)
+- **T2.6 COMPLÉTÉE** : Phase d'enchères belote classique (Backend + UI)
+- **T2.7 COMPLÉTÉE** : Annonces Belote/Rebelote (Backend)
+- **Module Bidding** : Gestion complète des 2 tours d'enchères FFB
+- **Belote/Rebelote** : Détection automatique Roi+Dame d'atout + 20 pts
+- **Game modifié** : Nouveaux états + champs belote_announced/belote_rebelote
+- **Nouvelles fonctions** : deal_initial_cards, make_bid, complete_deal, has_belote?, check_and_announce_belote
+- **Distribution FFB** : 5 cartes initiales + talon 3 cartes + distribution finale
+- **UI LiveView** : Interface complète avec boutons enchères + carte retournée agrandie
+- **Bots enchères** : Stratégie aléatoire pour enchérir automatiquement
+- **Tests TDD** : 41 nouveaux tests backend (34 enchères + 7 belote) + tests UI ajustés
+- **Total tests** : 156 tests passent (100% success)
+- **Backward compat** : Ancien flow deal_cards() préservé pour tests existants
+- **Qualité** : Compilation sans warnings, approche TDD stricte (Red-Green-Refactor)
+- **Next step** : T2.7 UI (notifications Belote/Rebelote) OU M3 (PvP local)
+
+### 2026-01-31 (Session 2)
+- **T2.5 Complétée** : Système de scoring FFB complet (162pts, dix de der)
+- **Points calculés** : Valet atout=20, 9 atout=14, valeurs correctes FFB
+- **Dix de der** : +10pts au dernier pli automatique
+- **UI améliorée** : Affichage points + plis, message victoire avec score
+- **Tests** : Property-based (total=162), intégration partie complète
+- **Gagnant** : Déterminé par points, pas par nombre de plis
+- **Next step** : T2.6 (Phase enchères) OU T2.7 (Annonces) OU améliorer UI
+
+### 2026-01-31 (Session 1)
+- **T2.1 Complétée** : Moteur de jeu complet (Game, Deck, Player, Card, Trick)
+- **T2.2 Complétée** : Règles FFB complètes (fournir, couper, surcouper, partenaire maître)
+- **T2.3 Complétée** : IA basique fonctionnelle avec stratégie conservative
+- **T2.4 Complétée** : Interface LiveView jouable, partie complète de bout en bout
+- **Approche** : TDD pour game engine, pragmatique pour UI
+- **Tests** : 3 fichiers tests bot + 1 fichier test LiveView
+- **Architecture** : Behaviour Strategy pour bots, LiveView pour UI temps réel
+- **Intégration** : `Game.play_bot_turn/2` + LiveView events
+- **Qualité** : Bot respecte 100% règles FFB, UI valide cartes visuellement
+- **UI** : Tailwind + daisyUI, cartes interactives, responsive
+- **Milestone M2** : Mode Solo vs IA fonctionnel avec scoring FFB
 
 ### 2026-01-30
 - **T1.1 Complétée** : Projet Phoenix initialisé avec succès
@@ -237,7 +581,6 @@ Bloquées    : 0/5 (0%)
 - **Qualité** : Credo strict (0 issues), deps.audit (0 vulns)
 - **Tests** : 5 tests Phoenix passent, tous les checks CI ✅
 - **Fichiers ajoutés** : .tool-versions, README, migrations, CI workflow, .credo.exs
-- **Next step** : T1.4 - Tests E2E Playwright OU passer à M2 (Game Engine)
 
 ### 2025-01-01
 - **Décision** : PostgreSQL choisi plutôt que SQLite (scalabilité)

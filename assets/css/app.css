@@ -103,3 +103,55 @@
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
 /* This file is for your main application CSS */
+
+/* Custom styles for Coinchette game */
+@layer components {
+  /* Card animations */
+  .card-enter {
+    animation: cardSlideIn 0.3s ease-out;
+  }
+
+  @keyframes cardSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Playing card style */
+  .playing-card {
+    @apply bg-white rounded-lg shadow-md border-2 border-gray-200;
+    @apply transition-all duration-200 ease-in-out;
+    aspect-ratio: 2.5 / 3.5;
+  }
+
+  .playing-card:hover {
+    @apply shadow-xl scale-105;
+  }
+
+  .playing-card.disabled {
+    @apply opacity-40 cursor-not-allowed;
+  }
+
+  .playing-card.disabled:hover {
+    @apply scale-100 shadow-md;
+  }
+
+  /* Game table felt effect */
+  .game-table {
+    background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Trick zone (center) */
+  .trick-zone {
+    @apply bg-green-800 bg-opacity-50 rounded-xl;
+    @apply border-2 border-green-600 border-dashed;
+    min-height: 200px;
+    min-width: 200px;
+  }
+}
