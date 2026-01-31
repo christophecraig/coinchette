@@ -212,6 +212,7 @@ defmodule Coinchette.GameServer do
       # Broadcast game started
       broadcast_game_update(state.game_id, game)
       broadcast_event(state.game_id, {:game_started, game})
+      broadcast_system_message(state.game_id, "🎮 La partie commence !")
 
       # Schedule bot turn if first player is a bot (bidding phase)
       new_state = maybe_schedule_bot_turn(new_state)
@@ -428,6 +429,7 @@ defmodule Coinchette.GameServer do
 
       # Broadcast
       broadcast_event(state.game_id, {:game_finished, %{winner_team: winner_team, scores: scores}})
+      broadcast_system_message(state.game_id, "🏆 Partie terminée ! L'Équipe #{winner_team + 1} remporte la victoire avec #{scores[winner_team]} points !")
 
       # Schedule shutdown after 5 minutes
       Process.send_after(self(), :shutdown, 300_000)
@@ -453,6 +455,14 @@ defmodule Coinchette.GameServer do
       Coinchette.PubSub,
       "game:#{game_id}",
       event
+    )
+  end
+
+  defp broadcast_system_message(game_id, message) do
+    Phoenix.PubSub.broadcast(
+      Coinchette.PubSub,
+      "game:#{game_id}",
+      {:system_message, message}
     )
   end
 

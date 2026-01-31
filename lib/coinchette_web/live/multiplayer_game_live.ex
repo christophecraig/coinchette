@@ -19,6 +19,9 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     # Find user's position
     my_position = find_user_position(state.player_map, socket.assigns.current_user.id)
 
+    # Load chat messages and set up stream
+    chat_messages = Multiplayer.list_chat_messages(game_id)
+
     socket =
       socket
       |> assign(:page_title, "Playing Game")
@@ -30,6 +33,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       |> assign(:selected_card, nil)
       |> assign(:message, get_game_message(game, my_position))
       |> assign(:belote_announcement, nil)
+      |> stream(:chat_messages, chat_messages)
       |> load_player_names(game_id)
 
     {:ok, socket}
@@ -111,6 +115,20 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     {:noreply, push_navigate(socket, to: ~p"/lobby")}
   end
 
+  def handle_event("send_chat", %{"message" => message}, socket) do
+    message = String.trim(message)
+
+    if message != "" do
+      GameServer.send_chat(
+        socket.assigns.game_id,
+        socket.assigns.current_user.id,
+        message
+      )
+    end
+
+    {:noreply, socket}
+  end
+
   ## PubSub Event Handlers
 
   def handle_info({:game_updated, game}, socket) do
@@ -137,6 +155,34 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
   def handle_info({:game_finished, _data}, socket) do
     # Game update will come via :game_updated
     {:noreply, socket}
+  end
+
+  def handle_info({:chat_message, %{user_id: user_id, message: text}}, socket) do
+    # Load user info and create message struct
+    user = Coinchette.Accounts.get_user!(user_id)
+
+    chat_message = %{
+      id: Ecto.UUID.generate(),
+      user: user,
+      message: text,
+      message_type: "user",
+      inserted_at: DateTime.utc_now()
+    }
+
+    {:noreply, stream_insert(socket, :chat_messages, chat_message)}
+  end
+
+  def handle_info({:system_message, message}, socket) do
+    # Add system message
+    chat_message = %{
+      id: Ecto.UUID.generate(),
+      user: %{username: "Système"},
+      message: message,
+      message_type: "system",
+      inserted_at: DateTime.utc_now()
+    }
+
+    {:noreply, stream_insert(socket, :chat_messages, chat_message)}
   end
 
   def handle_info(_msg, socket) do
@@ -306,13 +352,22 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
             player_names={@player_names}
           />
         <% else %>
-          <!-- Game Board -->
-          <.game_board
-            game={@game}
-            my_position={@my_position}
-            player_names={@player_names}
-            is_my_turn={is_my_turn?(@game, @my_position)}
-          />
+          <!-- Game Board with Chat -->
+          <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div class="lg:col-span-3">
+              <.game_board
+                game={@game}
+                my_position={@my_position}
+                player_names={@player_names}
+                is_my_turn={is_my_turn?(@game, @my_position)}
+              />
+            </div>
+
+            <!-- Chat Sidebar -->
+            <div class="lg:col-span-1">
+              <.chat_panel chat_messages={@chat_messages} />
+            </div>
+          </div>
         <% end %>
 
         <!-- Score Panel -->
@@ -441,7 +496,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
   defp game_board(assigns) do
     ~H"""
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Players and Trick Area -->
+      <!-- Trick Area and Hand -->
       <div class="lg:col-span-2">
         <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6">
           <!-- Trick Area -->
@@ -558,6 +613,62 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     """
   end
 
+  defp chat_panel(assigns) do
+    ~H"""
+    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 h-[600px] flex flex-col">
+      <h3 class="text-white font-semibold mb-4">💬 Chat</h3>
+
+      <!-- Messages Container -->
+      <div
+        id="chat-messages"
+        class="flex-1 overflow-y-auto mb-4 space-y-2"
+        phx-hook="ScrollToBottom"
+      >
+        <div id="chat-messages-stream" phx-update="stream">
+          <%= for {dom_id, msg} <- @streams.chat_messages do %>
+            <div id={dom_id} class={[
+              "p-2 rounded-lg text-sm",
+              msg.message_type == "system" && "bg-blue-500/20 text-blue-100 italic",
+              msg.message_type == "user" && "bg-white/10"
+            ]}>
+              <%= if msg.message_type == "user" do %>
+                <div class="flex items-baseline gap-2">
+                  <span class="font-semibold text-white text-xs">
+                    <%= msg.user.username %>
+                  </span>
+                  <span class="text-white/40 text-xs">
+                    <%= format_time(msg.inserted_at) %>
+                  </span>
+                </div>
+                <p class="text-white/90 mt-1"><%= msg.message %></p>
+              <% else %>
+                <p class="text-blue-100"><%= msg.message %></p>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Chat Input -->
+      <form phx-submit="send_chat" class="flex gap-2">
+        <input
+          type="text"
+          name="message"
+          placeholder="Envoyer un message..."
+          autocomplete="off"
+          class="flex-1 px-3 py-2 bg-white/20 text-white placeholder-white/50 rounded-lg border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/50"
+        />
+        <button
+          type="submit"
+          class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+        >
+          Envoyer
+        </button>
+      </form>
+    </div>
+    """
+  end
+
   defp card_display(assigns) do
     ~H"""
     <div class={[
@@ -647,4 +758,10 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       :spades -> "Pique"
     end
   end
+
+  defp format_time(%DateTime{} = dt) do
+    Calendar.strftime(dt, "%H:%M")
+  end
+
+  defp format_time(_), do: ""
 end
