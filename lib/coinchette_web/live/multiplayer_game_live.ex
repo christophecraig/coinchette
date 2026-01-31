@@ -365,7 +365,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
 
             <!-- Chat Sidebar -->
             <div class="lg:col-span-1">
-              <.chat_panel chat_messages={@chat_messages} />
+              <.chat_panel streams={@streams} />
             </div>
           </div>
         <% end %>

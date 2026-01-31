@@ -36,10 +36,15 @@ defmodule Coinchette.Multiplayer do
     |> Game.creation_changeset(attrs)
     |> Repo.insert()
     |> case do
-      {:ok, game} = result ->
+      {:ok, game} ->
         # Create initial event
         add_game_event(game.id, "game_created", %{creator_id: creator_id, variant: variant})
-        result
+
+        # Add creator as first player (position 0)
+        add_player(game.id, creator_id, 0)
+
+        # Return the game
+        {:ok, game}
 
       error ->
         error
