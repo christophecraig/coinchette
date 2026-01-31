@@ -1,0 +1,35 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: coinchette-db
+    plan: free
+    databaseName: coinchette_prod
+    databaseUser: coinchette
+    ipAllowList: []
+
+  # Phoenix Web Service
+  - type: web
+    name: coinchette-staging
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    envVars:
+      - key: MIX_ENV
+        value: prod
+      - key: PHX_SERVER
+        value: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: coinchette-db
+          property: connectionString
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: PHX_HOST
+        value: coinchette-staging.onrender.com
+      - key: PORT
+        value: 10000
+      - key: POOL_SIZE
+        value: 2

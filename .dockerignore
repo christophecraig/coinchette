@@ -1,0 +1,47 @@
+# Elixir
+/_build
+/cover
+/deps
+/doc
+/.fetch
+erl_crash.dump
+*.ez
+*.beam
+/config/*.secret.exs
+.elixir_ls/
+
+# Phoenix
+/priv/static/
+
+# Node
+/assets/node_modules/
+/node_modules/
+pnpm-lock.yaml
+package-lock.json
+npm-debug.log
+yarn.lock
+yarn-error.log
+
+# Playwright / E2E
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# Git
+/.git
+/.gitignore
+.git/
+.github/
+
+# IDE
+/.vscode
+/.idea
+*.swp
+*.swo
+
+# Misc
+/tmp
+.DS_Store
+.env
+.env.local
+*.log
