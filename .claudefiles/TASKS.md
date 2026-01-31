@@ -531,6 +531,62 @@ waiting → deal_initial_cards → bidding
 
 ---
 
+#### 🟠 T2.8 : Annonces Tierce/Cinquante/Cent/Carré [⏳ En cours]
+**Assigné** : Claude
+**Estimation** : 5h
+**Statut** : ⏳ Démarré le 2026-01-31
+
+**Détails** :
+- [ ] Module Announcements créé (détection + validation)
+- [ ] Détection automatique des annonces dans la main du joueur
+- [ ] Système de comparaison et priorité (Carré > Cent > Cinquante > Tierce)
+- [ ] Tie-breaking : plus haute carte > atout > égalité
+- [ ] Ajout des points au score de l'équipe gagnante
+- [ ] Intégration dans Game (phase d'annonces au 1er pli)
+- [ ] UI : Affichage des annonces déclarées
+- [ ] UI : Notification de l'équipe gagnante
+- [ ] Tests unitaires complets (tous types d'annonces + tie-breaking)
+
+**Règles FFB à implémenter** :
+- **Carré** (4 cartes identiques) :
+  - 4 Valets : 200 points
+  - 4 Neuf : 150 points
+  - 4 As, 10, Rois ou Dames : 100 points chacun
+  - 7 et 8 : pas de valeur
+- **Cent/Quinte** (5 cartes consécutives même couleur) : 100 points
+- **Cinquante/Quarte** (4 cartes consécutives même couleur) : 50 points
+- **Tierce** (3 cartes consécutives même couleur) : 20 points
+- Priorité : Carré > Cent > Cinquante > Tierce
+- Tie-breaking : Plus haute carte > Atout > Égalité (aucune ne compte)
+- Une carte ne peut compter que pour une seule annonce (sauf Belote)
+
+**Processus FFB** :
+1. Au 1er tour : joueurs annoncent le type (sans révéler)
+2. Au 2e tour (1er pli) : révélation des combinaisons avant de jouer
+3. Seule l'équipe avec la plus haute annonce marque les points
+
+**Fichiers à créer** :
+- `lib/coinchette/games/announcements.ex` (module détection)
+- `test/coinchette/games/announcements_test.exs` (tests unitaires)
+
+**Fichiers à modifier** :
+- `lib/coinchette/games/game.ex` (ajout phase annonces)
+- `lib/coinchette/games/score.ex` (ajout points annonces)
+- `lib/coinchette_web/live/game_live.ex` (UI annonces)
+
+**Critères d'acceptance** :
+- ✅ Backend : Détection automatique de toutes les annonces
+- ✅ Backend : Comparaison et tie-breaking corrects
+- ✅ Backend : Points ajoutés au score de l'équipe gagnante
+- ✅ Backend : Seule la meilleure annonce compte par équipe
+- ✅ Tests : Couverture complète (tous types + edge cases)
+- ✅ UI : Affichage des annonces et gagnant
+
+**Dépendances** :
+- T2.7 ✅ (Belote/Rebelote)
+
+---
+
 ## 🚨 Blockers actuels
 
 **Aucun blocker actif** 🎉

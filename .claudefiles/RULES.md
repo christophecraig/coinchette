@@ -94,7 +94,50 @@ SANS la couleur demandée ET partenaire maître:
 ### Points bonus
 - Belote + Rebelote: 20 points (Roi + Dame d'atout joués)
 - Dernier pli (Dix de der): 10 points
-- Total points par manche: 162 points
+- Total points par manche: 162 points (sans annonces)
+
+### Annonces (optionnel selon variante)
+
+**Important** : Les annonces sont une variante optionnelle de la belote classique.
+
+#### Types d'annonces et valeurs
+
+**Carré** (4 cartes identiques) :
+- 4 Valets: 200 points
+- 4 Neuf: 150 points
+- 4 As, 10, Rois ou Dames: 100 points chacun
+- 7 et 8: pas de valeur
+
+**Cent/Quinte** (5 cartes consécutives dans la même couleur) :
+- 100 points
+- Ordre: 7-8-9-10-V-D-R-A
+
+**Cinquante/Quarte** (4 cartes consécutives dans la même couleur) :
+- 50 points
+
+**Tierce** (3 cartes consécutives dans la même couleur) :
+- 20 points
+
+#### Processus de déclaration
+
+1. **Premier tour** : Chaque joueur annonce le type d'annonce (sans révéler les cartes) dans l'ordre après le donneur
+2. **Deuxième tour** (au premier pli) : Les joueurs révèlent leurs combinaisons juste avant de jouer leur carte
+3. **Attribution** : Seule l'équipe avec la plus haute annonce marque les points
+
+#### Règles de priorité
+
+1. **Par type** : Carré > Cent > Cinquante > Tierce
+2. **À type égal** : L'annonce avec la carte la plus haute gagne
+   - Exemple: Tierce à l'As bat Tierce à la Dame
+3. **En cas d'égalité** : L'annonce en atout est supérieure
+4. **Égalité parfaite** : Aucune annonce ne compte
+
+#### Règles spéciales
+
+- Une carte ne peut compter que pour une seule annonce à la fois (sauf Belote)
+- Belote reste "imbattable même en cas d'échec ou de capot"
+- Oubli d'annonce "Belote/Rebelote" annule l'annonce
+- Exception: Oubli de "Rebelote" tolérée une fois par équipe par partie
 
 ## Comptage des Points
 
