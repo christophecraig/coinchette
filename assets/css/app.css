@@ -317,4 +317,166 @@
             opacity: 1;
         }
     }
+
+    /* ===== MOBILE RESPONSIVE ===== */
+
+    /* Touch-friendly minimum sizes */
+    @media (max-width: 640px) {
+        /* Larger cards on mobile */
+        .playing-card {
+            min-width: 60px;
+            min-height: 84px;
+        }
+
+        /* Better spacing for touch */
+        .btn {
+            @apply min-h-12 px-6 text-base;
+        }
+
+        /* Reduce animations on mobile for performance */
+        .card-deal,
+        .card-play,
+        .card-win {
+            animation-duration: 0.2s !important;
+        }
+
+        /* Compact header on mobile */
+        h1 {
+            @apply text-2xl;
+        }
+
+        /* Stack player positions vertically on very small screens */
+        .game-board {
+            @apply flex-col gap-3;
+        }
+
+        /* Full width buttons on mobile */
+        .mobile-full {
+            @apply w-full;
+        }
+
+        /* Reduce padding on mobile */
+        .mobile-compact {
+            @apply p-4;
+        }
+
+        /* Smaller trick zone on mobile */
+        .trick-zone {
+            min-height: 150px;
+            min-width: 150px;
+        }
+
+        /* Better chat on mobile */
+        .chat-panel {
+            @apply max-h-60;
+        }
+
+        /* Hide less important elements on small screens */
+        .mobile-hide {
+            @apply hidden;
+        }
+    }
+
+    /* Tablet landscape optimization */
+    @media (min-width: 641px) and (max-width: 1024px) {
+        .playing-card {
+            min-width: 70px;
+            min-height: 98px;
+        }
+
+        .trick-zone {
+            min-height: 180px;
+            min-width: 180px;
+        }
+    }
+
+    /* Landscape orientation (phones in landscape) */
+    @media (max-height: 500px) and (orientation: landscape) {
+        /* Reduce vertical spacing */
+        .game-board {
+            @apply py-2;
+        }
+
+        /* Smaller cards in landscape */
+        .playing-card {
+            min-width: 50px;
+            min-height: 70px;
+        }
+
+        .trick-zone {
+            min-height: 120px;
+            min-width: 120px;
+        }
+
+        /* Compact header */
+        h1 {
+            @apply text-xl;
+        }
+
+        /* Hide score details, show only numbers */
+        .score-details {
+            @apply hidden;
+        }
+    }
+
+    /* Touch target improvement */
+    @media (pointer: coarse) {
+        /* Ensure minimum 44x44px touch targets */
+        .playing-card,
+        .btn,
+        button {
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        /* Increase tap area */
+        .playing-card {
+            @apply p-1;
+        }
+
+        /* Disable hover effects on touch devices */
+        .playing-card:hover:not(.disabled) {
+            @apply scale-105 -translate-y-1;
+            /* Reduced from 110% and -translate-y-2 */
+        }
+    }
+
+    /* High DPI screens (retina) */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        /* Sharper borders */
+        .playing-card {
+            border-width: 1.5px;
+        }
+    }
+
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+        .playing-card,
+        .card-enter,
+        .card-deal,
+        .card-play,
+        .card-win,
+        .btn,
+        .alert {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+
+    /* Dark mode adjustments */
+    @media (prefers-color-scheme: dark) {
+        .game-table {
+            background: linear-gradient(135deg, #0f3a1e 0%, #0a2514 100%);
+        }
+    }
+
+    /* Print styles (hide game, show scores) */
+    @media print {
+        .playing-card,
+        .trick-zone,
+        .btn {
+            @apply hidden;
+        }
+    }
 }

@@ -322,22 +322,22 @@ defmodule CoinchetteWeb.GameLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="min-h-screen bg-gradient-to-br from-green-800 to-green-600 p-8">
+    <div class="min-h-screen bg-gradient-to-br from-green-800 to-green-600 p-4 sm:p-6 lg:p-8">
       <div class="max-w-6xl mx-auto">
         <!-- Header -->
-        <div class="relative mb-8">
+        <div class="relative mb-4 sm:mb-6 lg:mb-8">
           <!-- Theme toggle (top right) -->
-          <div class="absolute top-0 right-0">
+          <div class="absolute top-0 right-0 z-10">
             <Layouts.theme_toggle />
           </div>
 
           <div class="text-center">
-            <h1 class="text-4xl font-bold text-white mb-2">🃏 Coinchette</h1>
-            <p class="text-green-100 text-lg">{@message}</p>
-            <div class="mt-4">
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">🃏 Coinchette</h1>
+            <p class="text-green-100 text-sm sm:text-base lg:text-lg">{@message}</p>
+            <div class="mt-3 sm:mt-4">
               <button
                 phx-click="new_game"
-                class="btn btn-primary"
+                class="btn btn-primary w-full sm:w-auto"
                 data-testid="new-game-button"
               >
                 Nouvelle Partie
