@@ -2,6 +2,7 @@ defmodule CoinchetteWeb.GameLobbyLive do
   use CoinchetteWeb, :live_view
 
   alias Coinchette.{Multiplayer, GameServer, GameServerSupervisor}
+  alias CoinchetteWeb.Presence
 
   on_mount {CoinchetteWeb.Auth, :ensure_authenticated}
 
@@ -18,6 +19,12 @@ defmodule CoinchetteWeb.GameLobbyLive do
           # Subscribe to game events
           Phoenix.PubSub.subscribe(Coinchette.PubSub, "game:#{game_id}")
 
+          # Track user presence in lobby
+          {:ok, _} = Presence.track(self(), "game:#{game_id}", socket.assigns.current_user.id, %{
+            username: socket.assigns.current_user.username,
+            joined_at: System.system_time(:second)
+          })
+
           # Ensure GameServer is running
           case GameServerSupervisor.start_game(game_id) do
             {:ok, _pid} -> :ok
@@ -30,6 +37,7 @@ defmodule CoinchetteWeb.GameLobbyLive do
         |> assign(:game, game)
         |> assign(:game_id, game_id)
         |> assign(:is_creator, is_creator)
+        |> assign(:present_users, get_present_users(game_id))
         |> load_players()
       else
         # User is not in the game, try to join
@@ -152,12 +160,25 @@ defmodule CoinchetteWeb.GameLobbyLive do
      |> push_navigate(to: ~p"/lobby")}
   end
 
+  def handle_info(%Phoenix.Socket.Broadcast{event: "presence_diff"}, socket) do
+    # Update the list of present users when someone joins/leaves
+    present_users = get_present_users(socket.assigns.game_id)
+    {:noreply, assign(socket, :present_users, present_users)}
+  end
+
   defp reload_game_state(socket) do
     game = Multiplayer.get_game!(socket.assigns.game_id)
 
     socket
     |> assign(:game, game)
+    |> assign(:present_users, get_present_users(socket.assigns.game_id))
     |> load_players()
+  end
+
+  defp get_present_users(game_id) do
+    Presence.list("game:#{game_id}")
+    |> Map.keys()
+    |> MapSet.new()
   end
 
   defp load_players(socket) do
@@ -254,6 +275,7 @@ defmodule CoinchetteWeb.GameLobbyLive do
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <%= for position <- 0..3 do %>
               <% player = Enum.find(@players, &(&1.position == position)) %>
+              <% is_connected = player && (player.is_bot || MapSet.member?(@present_users, player.user_id)) %>
               <div class={[
                 "bg-base-200 rounded-box p-6",
                 player && "ring-2 ring-primary"
@@ -261,7 +283,7 @@ defmodule CoinchetteWeb.GameLobbyLive do
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-3 flex-1">
                     <div class={[
-                      "avatar placeholder",
+                      "avatar placeholder relative",
                       !player && "opacity-30"
                     ]}>
                       <div class="bg-neutral text-neutral-content rounded-full w-12">
@@ -277,6 +299,17 @@ defmodule CoinchetteWeb.GameLobbyLive do
                           <% end %>
                         </span>
                       </div>
+                      <%= if player && !player.is_bot do %>
+                        <div
+                          class={[
+                            "absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-base-200",
+                            is_connected && "bg-green-500",
+                            !is_connected && "bg-red-500 animate-pulse"
+                          ]}
+                          title={is_connected && "Connecté" || "Déconnecté"}
+                        >
+                        </div>
+                      <% end %>
                     </div>
 
                     <div class="flex-1">
@@ -287,13 +320,16 @@ defmodule CoinchetteWeb.GameLobbyLive do
                             <%= player.bot_difficulty %> difficulty
                           </div>
                         <% else %>
-                          <div class="font-semibold">
+                          <div class="font-semibold flex items-center gap-2">
                             <%= player.user.username %>
                             <%= if player.user_id == @game.creator_id do %>
-                              <span class="badge badge-sm badge-primary ml-2">Host</span>
+                              <span class="badge badge-sm badge-primary">Host</span>
                             <% end %>
                             <%= if player.user_id == @current_user.id do %>
-                              <span class="badge badge-sm ml-2">You</span>
+                              <span class="badge badge-sm">You</span>
+                            <% end %>
+                            <%= if !is_connected do %>
+                              <span class="badge badge-sm badge-error">Déconnecté</span>
                             <% end %>
                           </div>
                           <div class="text-sm text-base-content/60">

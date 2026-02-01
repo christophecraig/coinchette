@@ -12,6 +12,8 @@ defmodule Coinchette.Application do
       Coinchette.Repo,
       {DNSCluster, query: Application.get_env(:coinchette, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Coinchette.PubSub},
+      # Presence for tracking connected users
+      CoinchetteWeb.Presence,
       # Registry for GameServer process lookup
       {Registry, keys: :unique, name: Coinchette.GameRegistry},
       # DynamicSupervisor for GameServer processes

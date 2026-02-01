@@ -3,6 +3,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
 
   alias Coinchette.{Multiplayer, GameServer}
   alias Coinchette.Games.{Game, Card}
+  alias CoinchetteWeb.Presence
 
   on_mount {CoinchetteWeb.Auth, :ensure_authenticated}
 
@@ -10,6 +11,12 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     if connected?(socket) do
       # Subscribe to game updates
       Phoenix.PubSub.subscribe(Coinchette.PubSub, "game:#{game_id}")
+
+      # Track user presence in this game
+      {:ok, _} = Presence.track(self(), "game:#{game_id}", socket.assigns.current_user.id, %{
+        username: socket.assigns.current_user.username,
+        joined_at: System.system_time(:second)
+      })
     end
 
     # Get game state from GameServer
@@ -22,6 +29,9 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     # Load chat messages and set up stream
     chat_messages = Multiplayer.list_chat_messages(game_id)
 
+    # Get list of present users
+    present_users = get_present_users(game_id)
+
     socket =
       socket
       |> assign(:page_title, "Playing Game")
@@ -33,6 +43,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       |> assign(:selected_card, nil)
       |> assign(:message, get_game_message(game, my_position))
       |> assign(:belote_announcement, nil)
+      |> assign(:present_users, present_users)
       |> stream(:chat_messages, chat_messages)
       |> load_player_names(game_id)
 
@@ -186,6 +197,12 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     {:noreply, stream_insert(socket, :chat_messages, chat_message)}
   end
 
+  def handle_info(%Phoenix.Socket.Broadcast{event: "presence_diff"}, socket) do
+    # Update the list of present users when someone joins/leaves
+    present_users = get_present_users(socket.assigns.game_id)
+    {:noreply, assign(socket, :present_users, present_users)}
+  end
+
   def handle_info(_msg, socket) do
     {:noreply, socket}
   end
@@ -227,6 +244,12 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       |> Enum.into(%{})
 
     assign(socket, :player_names, player_names)
+  end
+
+  defp get_present_users(game_id) do
+    Presence.list("game:#{game_id}")
+    |> Map.keys()
+    |> MapSet.new()
   end
 
   # Generate unique bot names based on position and difficulty
@@ -597,26 +620,39 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
             <%= for player <- @game.players do %>
               <% is_current = player.position == @game.current_player_position %>
               <% is_me = player.position == @my_position %>
+              <% is_bot = MapSet.member?(@bot_positions, player.position) %>
+              <% user_id = Map.get(@player_map, player.position) %>
+              <% is_connected = is_bot || MapSet.member?(@present_users, user_id) %>
               <div class={[
                 "p-3 rounded-lg",
-                is_current && "bg-yellow-500/30 ring-2 ring-yellow-400",
+                is_current && "bg-yellow-500/30 ring-2 ring-2 ring-yellow-400",
                 !is_current && "bg-white/5",
                 is_me && "ring-2 ring-blue-400"
               ]}>
                 <div class="flex items-center justify-between">
-                  <div>
-                    <div class="text-white font-medium">
-                      <%= Map.get(@player_names, player.position, "Joueur #{player.position + 1}") %>
-                      <%= if is_me do %>
-                        <span class="badge badge-sm badge-primary ml-2">Vous</span>
-                      <% end %>
+                  <div class="flex items-center gap-2">
+                    <div
+                      class={[
+                        "w-2 h-2 rounded-full flex-shrink-0",
+                        is_connected && "bg-green-400",
+                        !is_connected && "bg-red-400 animate-pulse"
+                      ]}
+                      title={is_connected && "Connecté" || "Déconnecté"}
+                    />
+                    <div class="flex-1">
+                      <div class="text-white font-medium flex items-center gap-2">
+                        <%= Map.get(@player_names, player.position, "Joueur #{player.position + 1}") %>
+                        <%= if is_me do %>
+                          <span class="badge badge-sm badge-primary">Vous</span>
+                        <% end %>
+                        <%= if !is_connected && !is_bot do %>
+                          <span class="badge badge-sm badge-error">Déco</span>
+                        <% end %>
+                      </div>
+                      <div class="text-white/60 text-sm">
+                        Équipe <%= player.team + 1 %> • <%= length(player.hand) %> cartes
+                      </div>
                     </div>
-                    <div class="text-white/60 text-sm">
-                      Équipe <%= player.team + 1 %> • Position <%= player.position + 1 %>
-                    </div>
-                  </div>
-                  <div class="text-white/40 text-sm">
-                    <%= length(player.hand) %> cartes
                   </div>
                 </div>
               </div>
