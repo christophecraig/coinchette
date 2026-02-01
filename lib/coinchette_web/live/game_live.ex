@@ -346,11 +346,16 @@ defmodule CoinchetteWeb.GameLive do
           </div>
         </div>
 
+    <!-- Game Info Header - Always Visible -->
+        <%= if @game.status != :bidding do %>
+          <.game_info_header game={@game} />
+        <% end %>
+
     <!-- Notification Belote/Rebelote -->
         <%= if @belote_announcement do %>
           <.belote_notification announcement={@belote_announcement} />
         <% end %>
-        
+
     <!-- Notification Annonces -->
         <%= if @game.announcements_result && @game.announcements_result.total_points > 0 && length(@game.tricks_won) <= 1 do %>
           <.announcements_notification result={@game.announcements_result} />
@@ -363,9 +368,11 @@ defmodule CoinchetteWeb.GameLive do
           <!-- Plateau de jeu normal -->
           <.game_board game={@game} />
         <% end %>
-        
-    <!-- Score et info -->
-        <.score_panel game={@game} />
+
+    <!-- Score final (only at game end) -->
+        <%= if Game.game_over?(@game) do %>
+          <.score_panel game={@game} />
+        <% end %>
       </div>
     </div>
     """
@@ -517,55 +524,55 @@ defmodule CoinchetteWeb.GameLive do
   end
 
   # Composant plateau de jeu normal
-  defp game_board(assigns) do
+  # Game Info Header - Scores and Trump (always visible during play)
+  defp game_info_header(assigns) do
     ~H"""
-    <div class="space-y-4">
-      <!-- Game Info Header (always visible) -->
-      <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-        <div class="grid grid-cols-3 gap-4 items-center">
-          <!-- Team 0 Score -->
-          <div class="text-left">
-            <div class="text-xs text-white/70 mb-1">Équipe 1 (Vous + Marcel)</div>
-            <div class="flex items-center gap-2">
-              <span class="text-3xl font-bold text-white">{@game.scores[0]}</span>
-              <span class="text-sm text-white/60">pts</span>
-              <%= if @game.belote_rebelote && elem(@game.belote_rebelote, 0) == 0 do %>
-                <span class="badge badge-success badge-sm">👑 +20</span>
-              <% end %>
-            </div>
-            <div class="text-xs text-white/50">
-              {@game.tricks_won |> Enum.count(fn {team, _} -> team == 0 end)} plis
-            </div>
+    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 mb-4">
+      <div class="grid grid-cols-3 gap-4 items-center">
+        <!-- Team 0 Score -->
+        <div class="text-left">
+          <div class="text-xs text-white/70 mb-1">Équipe 1 (Vous + Marcel)</div>
+          <div class="flex items-center gap-2">
+            <span class="text-3xl font-bold text-white">{@game.scores[0]}</span>
+            <span class="text-sm text-white/60">pts</span>
+            <%= if @game.belote_rebelote && elem(@game.belote_rebelote, 0) == 0 do %>
+              <span class="badge badge-success badge-sm">👑 +20</span>
+            <% end %>
           </div>
-
-          <!-- Trump Info (center) -->
-          <div class="text-center">
-            <div class="text-xs text-white/70 mb-1">Atout</div>
-            <div class="text-6xl">{format_suit(@game.trump_suit)}</div>
-            <div class="text-xs text-white/70 mt-1">
-              Pli {length(@game.tricks_won) + 1}/8
-            </div>
+          <div class="text-xs text-white/50">
+            {@game.tricks_won |> Enum.count(fn {team, _} -> team == 0 end)} plis
           </div>
-
-          <!-- Team 1 Score -->
-          <div class="text-right">
-            <div class="text-xs text-white/70 mb-1">Équipe 2 (Josette + René)</div>
-            <div class="flex items-center gap-2 justify-end">
-              <span class="text-3xl font-bold text-white">{@game.scores[1]}</span>
-              <span class="text-sm text-white/60">pts</span>
-              <%= if @game.belote_rebelote && elem(@game.belote_rebelote, 0) == 1 do %>
-                <span class="badge badge-success badge-sm">👑 +20</span>
-              <% end %>
-            </div>
-            <div class="text-xs text-white/50">
-              {@game.tricks_won |> Enum.count(fn {team, _} -> team == 1 end)} plis
-            </div>
+        </div>
+        <!-- Trump Info (center) -->
+        <div class="text-center">
+          <div class="text-xs text-white/70 mb-1">Atout</div>
+          <div class="text-6xl">{format_suit(@game.trump_suit)}</div>
+          <div class="text-xs text-white/70 mt-1">
+            Pli {length(@game.tricks_won) + 1}/8
+          </div>
+        </div>
+        <!-- Team 1 Score -->
+        <div class="text-right">
+          <div class="text-xs text-white/70 mb-1">Équipe 2 (Josette + René)</div>
+          <div class="flex items-center gap-2 justify-end">
+            <span class="text-3xl font-bold text-white">{@game.scores[1]}</span>
+            <span class="text-sm text-white/60">pts</span>
+            <%= if @game.belote_rebelote && elem(@game.belote_rebelote, 0) == 1 do %>
+              <span class="badge badge-success badge-sm">👑 +20</span>
+            <% end %>
+          </div>
+          <div class="text-xs text-white/50">
+            {@game.tricks_won |> Enum.count(fn {team, _} -> team == 1 end)} plis
           </div>
         </div>
       </div>
+    </div>
+    """
+  end
 
-      <!-- Game Table -->
-      <div class="relative bg-green-700 rounded-3xl shadow-2xl p-12 min-h-[500px]" data-testid="game-board">
+  defp game_board(assigns) do
+    ~H"""
+    <div class="relative bg-green-700 rounded-3xl shadow-2xl p-12 min-h-[500px]" data-testid="game-board">
         <!-- Joueur Nord (Bot 2) -->
         <div class="absolute top-4 left-1/2 transform -translate-x-1/2">
           <.player_hand
@@ -608,7 +615,6 @@ defmodule CoinchetteWeb.GameLive do
             game={@game}
           />
         </div>
-      </div>
     </div>
     """
   end
