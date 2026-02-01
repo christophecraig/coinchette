@@ -12,7 +12,7 @@ defmodule Coinchette.GameServer do
   use GenServer
   require Logger
 
-  alias Coinchette.{Multiplayer, Games}
+  alias Coinchette.{Multiplayer, Games, Accounts}
   alias Coinchette.Bots.{Basic, Bidding}
 
   @type player_map :: %{Games.Player.position() => user_id :: binary() | nil}
@@ -544,6 +544,9 @@ defmodule Coinchette.GameServer do
         scores: scores
       })
 
+      # Update player statistics for human players
+      update_player_statistics(state, winner_team, scores)
+
       # Broadcast
       broadcast_event(state.game_id, {:game_finished, %{winner_team: winner_team, scores: scores}})
       broadcast_system_message(state.game_id, "🏆 Partie terminée ! L'Équipe #{winner_team + 1} remporte la victoire avec #{scores[winner_team]} points !")
@@ -553,6 +556,53 @@ defmodule Coinchette.GameServer do
     end
 
     state
+  end
+
+  defp update_player_statistics(state, winner_team, scores) do
+    # Get all human players (non-bots)
+    human_players =
+      state.player_map
+      |> Enum.reject(fn {position, _user_id} ->
+        MapSet.member?(state.bot_positions, position)
+      end)
+
+    # Check if the game had Belote/Rebelote
+    had_belote_rebelote = state.game.belote_rebelote != nil
+
+    # Update stats for each human player
+    Enum.each(human_players, fn {position, user_id} ->
+      # Determine player's team (0-1 or 2-3)
+      player_team = rem(position, 2)
+
+      # Determine if player won
+      result = if player_team == winner_team, do: :win, else: :loss
+
+      # Get points for player's team and opposing team
+      points_scored = Map.get(scores, player_team, 0)
+      points_conceded = Map.get(scores, 1 - player_team, 0)
+
+      # Check if this specific player had Belote/Rebelote
+      player_had_belote =
+        case state.game.belote_rebelote do
+          {team, _} when team == player_team and had_belote_rebelote -> true
+          _ -> false
+        end
+
+      # Record the game result
+      game_data = %{
+        points_scored: points_scored,
+        points_conceded: points_conceded,
+        had_belote_rebelote: player_had_belote
+      }
+
+      case Accounts.record_game_result(user_id, result, game_data) do
+        {:ok, _stats} ->
+          Logger.debug("Updated stats for user #{user_id}: #{result}")
+
+        {:error, reason} ->
+          Logger.error("Failed to update stats for user #{user_id}: #{inspect(reason)}")
+      end
+    end)
   end
 
   defp get_winner_team(%Games.Game{scores: scores}) do

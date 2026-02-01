@@ -6,6 +6,7 @@ defmodule Coinchette.Accounts do
   import Ecto.Query, warn: false
   alias Coinchette.Repo
   alias Coinchette.Accounts.User
+  alias Coinchette.Accounts.UserStats
 
   @doc """
   Gets a single user by ID.
@@ -147,5 +148,96 @@ defmodule Coinchette.Accounts do
   """
   def change_user_registration(%User{} = user, attrs \\ %{}) do
     User.registration_changeset(user, attrs)
+  end
+
+  ## User Statistics
+
+  @doc """
+  Gets user statistics by user ID.
+
+  Returns nil if the user has no statistics yet.
+
+  ## Examples
+
+      iex> get_stats(user_id)
+      %UserStats{}
+
+      iex> get_stats(unknown_id)
+      nil
+
+  """
+  def get_stats(user_id) do
+    Repo.get_by(UserStats, user_id: user_id)
+  end
+
+  @doc """
+  Gets or creates user statistics.
+
+  If the user doesn't have statistics yet, creates a new record with default values.
+
+  ## Examples
+
+      iex> get_or_create_stats(user_id)
+      {:ok, %UserStats{}}
+
+  """
+  def get_or_create_stats(user_id) do
+    case get_stats(user_id) do
+      nil ->
+        %UserStats{}
+        |> UserStats.create_changeset(%{user_id: user_id})
+        |> Repo.insert()
+
+      stats ->
+        {:ok, stats}
+    end
+  end
+
+  @doc """
+  Records a game result for a user and updates their statistics.
+
+  ## Parameters
+
+    - user_id: The ID of the user
+    - result: :win or :loss
+    - game_data: Map containing:
+      - points_scored: Points the player's team scored
+      - points_conceded: Points the opposing team scored
+      - had_belote_rebelote: Boolean indicating if the player had Belote/Rebelote
+
+  ## Examples
+
+      iex> record_game_result(user_id, :win, %{points_scored: 120, points_conceded: 42, had_belote_rebelote: true})
+      {:ok, %UserStats{}}
+
+  """
+  def record_game_result(user_id, result, game_data)
+      when result in [:win, :loss] and is_map(game_data) do
+    {:ok, stats} = get_or_create_stats(user_id)
+
+    # Calculate new values
+    new_games_played = stats.games_played + 1
+    new_games_won = if result == :win, do: stats.games_won + 1, else: stats.games_won
+    new_games_lost = if result == :loss, do: stats.games_lost + 1, else: stats.games_lost
+    new_total_points_scored = stats.total_points_scored + game_data.points_scored
+    new_total_points_conceded = stats.total_points_conceded + game_data.points_conceded
+    new_best_score = max(stats.best_score, game_data.points_scored)
+    new_belote_count =
+      if game_data.had_belote_rebelote,
+        do: stats.belote_rebelote_count + 1,
+        else: stats.belote_rebelote_count
+
+    # Update stats
+    stats
+    |> UserStats.update_changeset(%{
+      games_played: new_games_played,
+      games_won: new_games_won,
+      games_lost: new_games_lost,
+      total_points_scored: new_total_points_scored,
+      total_points_conceded: new_total_points_conceded,
+      best_score: new_best_score,
+      belote_rebelote_count: new_belote_count
+    })
+    |> Repo.update()
   end
 end
