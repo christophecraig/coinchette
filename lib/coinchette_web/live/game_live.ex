@@ -621,11 +621,10 @@ defmodule CoinchetteWeb.GameLive do
         <div class="alert alert-success shadow-lg">
           <div class="w-full">
             <h2 class="font-bold text-xl mb-2">🎉 Partie terminée !</h2>
-            <div class="grid grid-cols-2 gap-4">
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
               <div class="text-left">
-                <div class="text-lg font-semibold">
-                  Équipe 1 (Vous + Marcel)
-                </div>
+                <div class="text-lg font-semibold">Équipe 1 (Vous + Marcel)</div>
                 <div class="flex items-center gap-2 mt-1">
                   <span class="text-3xl font-bold">{@game.scores[0]}</span>
                   <span>points</span>
@@ -633,17 +632,13 @@ defmodule CoinchetteWeb.GameLive do
                     <span class="badge badge-sm">👑 +20</span>
                   <% end %>
                   <%= if @game.announcements_result && @game.announcements_result.winning_team == 0 && @game.announcements_result.total_points > 0 do %>
-                    <span class="badge badge-sm">
-                      🎺 +{@game.announcements_result.total_points}
-                    </span>
+                    <span class="badge badge-sm">🎺 +{@game.announcements_result.total_points}</span>
                   <% end %>
                 </div>
               </div>
 
               <div class="text-right">
-                <div class="text-lg font-semibold">
-                  Équipe 2 (Josette + René)
-                </div>
+                <div class="text-lg font-semibold">Équipe 2 (Josette + René)</div>
                 <div class="flex items-center gap-2 justify-end mt-1">
                   <span class="text-3xl font-bold">{@game.scores[1]}</span>
                   <span>points</span>
@@ -651,37 +646,22 @@ defmodule CoinchetteWeb.GameLive do
                     <span class="badge badge-sm">👑 +20</span>
                   <% end %>
                   <%= if @game.announcements_result && @game.announcements_result.winning_team == 1 && @game.announcements_result.total_points > 0 do %>
-                    <span class="badge badge-sm">
-                      🎺 +{@game.announcements_result.total_points}
-                    </span>
+                    <span class="badge badge-sm">🎺 +{@game.announcements_result.total_points}</span>
                   <% end %>
                 </div>
-                  </div>
-                </div>
               </div>
-              <%= if Game.game_over?(@game) do %>
-                <div class="alert alert-success mt-2">
-                  <span class="text-sm">
-                    <%= if @game.scores[0] > @game.scores[1] do %>
-                      🎉 Victoire ! Vous gagnez {@game.scores[0]} - {@game.scores[1]}
-                    <% else %>
-                      😢 Défaite. Score: {@game.scores[0]} - {@game.scores[1]}
-                    <% end %>
-                  </span>
-                </div>
-              <% end %>
+            </div>
 
-              <div class="divider"></div>
+            <div class="divider"></div>
 
-              <div class="text-center">
-                <span class="text-2xl font-bold">
-                  <%= if Game.winner(@game) == 0 do %>
-                    🎉 Victoire !
-                  <% else %>
-                    😢 Défaite
-                  <% end %>
-                </span>
-              </div>
+            <div class="text-center">
+              <span class="text-2xl font-bold">
+                <%= if Game.winner(@game) == 0 do %>
+                  🎉 Victoire !
+                <% else %>
+                  😢 Défaite
+                <% end %>
+              </span>
             </div>
           </div>
         </div>
