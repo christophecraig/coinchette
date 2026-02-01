@@ -41,6 +41,15 @@ Hooks.ScrollToBottom = {
   }
 }
 
+Hooks.ChatInput = {
+  mounted() {
+    this.handleEvent("clear-chat-input", () => {
+      this.el.value = ""
+      this.el.focus()
+    })
+  }
+}
+
 // Sound hooks
 Hooks.Sound = SoundHook
 Hooks.VolumeControl = VolumeControlHook

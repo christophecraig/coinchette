@@ -126,7 +126,8 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       )
     end
 
-    {:noreply, socket}
+    # Clear the input field after sending
+    {:noreply, push_event(socket, "clear-chat-input", %{})}
   end
 
   ## PubSub Event Handlers
@@ -356,6 +357,9 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
             </button>
           </div>
         </div>
+
+        <!-- Game Info Bar (Trump and Scores) -->
+        <.game_info_bar game={@game} />
 
         <!-- Belote/Rebelote Notification -->
         <%= if @belote_announcement do %>
@@ -624,38 +628,144 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     """
   end
 
-  defp score_panel(assigns) do
+  defp game_info_bar(assigns) do
     ~H"""
-    <div class="mt-6 bg-white/10 backdrop-blur-sm rounded-lg p-6">
-      <div class="grid grid-cols-2 gap-6 text-center">
-        <div>
-          <h3 class="text-white/80 text-sm mb-2">Équipe 1</h3>
-          <div class="text-3xl font-bold text-white">
-            <%= @game.scores[0] %>
+    <div class="mb-4 bg-white/10 backdrop-blur-sm rounded-lg p-4">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <!-- Trump Display -->
+        <%= if @game.trump_suit do %>
+          <div class="flex items-center gap-2">
+            <span class="text-white/80 text-sm font-medium">Atout:</span>
+            <span class="text-2xl font-bold text-white">
+              <%= suit_symbol(@game.trump_suit) %> <%= suit_name(@game.trump_suit) %>
+            </span>
           </div>
-          <div class="text-white/60 text-sm mt-1">
-            <%= Enum.count(@game.tricks_won, fn {team, _} -> team == 0 end) %> plis
+        <% end %>
+
+        <!-- Scores -->
+        <div class="flex gap-6 text-center">
+          <div>
+            <div class="text-white/80 text-xs mb-1">Équipe 1</div>
+            <div class="text-2xl font-bold text-white">
+              <%= @game.scores[0] %>
+            </div>
+            <div class="text-white/60 text-xs">
+              <%= Enum.count(@game.tricks_won, fn {team, _} -> team == 0 end) %> plis
+            </div>
           </div>
-        </div>
-        <div>
-          <h3 class="text-white/80 text-sm mb-2">Équipe 2</h3>
-          <div class="text-3xl font-bold text-white">
-            <%= @game.scores[1] %>
-          </div>
-          <div class="text-white/60 text-sm mt-1">
-            <%= Enum.count(@game.tricks_won, fn {team, _} -> team == 1 end) %> plis
+          <div>
+            <div class="text-white/80 text-xs mb-1">Équipe 2</div>
+            <div class="text-2xl font-bold text-white">
+              <%= @game.scores[1] %>
+            </div>
+            <div class="text-white/60 text-xs">
+              <%= Enum.count(@game.tricks_won, fn {team, _} -> team == 1 end) %> plis
+            </div>
           </div>
         </div>
       </div>
+    </div>
+    """
+  end
 
-      <%= if @game.trump_suit do %>
-        <div class="mt-4 text-center">
-          <span class="text-white/80 text-sm">Atout: </span>
-          <span class="text-xl font-semibold text-white">
-            <%= suit_symbol(@game.trump_suit) %> <%= suit_name(@game.trump_suit) %>
-          </span>
+  defp score_panel(assigns) do
+    ~H"""
+    <div class="mt-6 bg-white/10 backdrop-blur-sm rounded-lg p-6">
+      <!-- Last Trick Display -->
+      <%= if length(@game.tricks_won) > 0 do %>
+        <div class="mb-6">
+          <h3 class="text-white/80 text-sm font-semibold mb-3 text-center">Dernier pli</h3>
+          <.last_trick_display game={@game} my_position={@my_position} player_names={@player_names} />
         </div>
       <% end %>
+
+      <!-- Final Scores (shown when game is finished) -->
+      <%= if @game.status == :finished do %>
+        <div class="text-center">
+          <h3 class="text-white text-lg font-semibold mb-4">Partie terminée !</h3>
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <h4 class="text-white/80 text-sm mb-2">Équipe 1</h4>
+              <div class="text-4xl font-bold text-white">
+                <%= @game.scores[0] %>
+              </div>
+            </div>
+            <div>
+              <h4 class="text-white/80 text-sm mb-2">Équipe 2</h4>
+              <div class="text-4xl font-bold text-white">
+                <%= @game.scores[1] %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    """
+  end
+
+  defp last_trick_display(assigns) do
+    # Get the last completed trick
+    {_team, last_trick} = List.last(assigns.game.tricks_won)
+    assigns = assign(assigns, :last_trick, last_trick)
+
+    ~H"""
+    <div class="relative w-full h-32">
+      <%= for {{card, position}, _index} <- Enum.with_index(@last_trick.cards) do %>
+        <% player_name = Map.get(@player_names, position, "Joueur #{position + 1}") %>
+        <.last_trick_card
+          card={card}
+          position={position}
+          my_position={@my_position}
+          player_name={player_name}
+        />
+      <% end %>
+    </div>
+    """
+  end
+
+  defp last_trick_card(assigns) do
+    # Position card in a row based on player position relative to viewer
+    position_offset = rem(assigns.position - assigns.my_position + 4, 4)
+
+    left =
+      case position_offset do
+        0 -> "12.5%"
+        # Bottom (me)
+        1 -> "37.5%"
+        # Right
+        2 -> "62.5%"
+        # Top
+        3 -> "87.5%"
+        # Left
+      end
+
+    assigns = Map.merge(assigns, %{left: left, position_offset: position_offset})
+
+    ~H"""
+    <div
+      class="absolute top-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-70"
+      style={"left: #{@left};"}
+    >
+      <div class="flex flex-col items-center gap-1">
+        <div class="text-xs font-semibold text-white bg-black/50 px-2 py-1 rounded whitespace-nowrap">
+          <%= @player_name %>
+        </div>
+        <div class={[
+          "w-12 h-16 bg-white dark:bg-gray-100 rounded shadow-lg flex items-center justify-center",
+          "border transition-colors text-xs",
+          @card.suit in [:hearts, :diamonds] && "text-red-600 dark:text-red-500 border-red-200",
+          @card.suit in [:spades, :clubs] && "text-gray-900 dark:text-gray-800 border-gray-200"
+        ]}>
+          <div class="text-center">
+            <div class="text-lg font-bold">
+              <%= rank_symbol(@card.rank) %>
+            </div>
+            <div class="text-base">
+              <%= suit_symbol(@card.suit) %>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     """
   end
@@ -697,17 +807,19 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       </div>
 
       <!-- Chat Input -->
-      <form phx-submit="send_chat" class="flex gap-2">
+      <form phx-submit="send_chat" class="flex gap-2" id="chat-form">
         <input
           type="text"
           name="message"
+          id="chat-input"
           placeholder="Envoyer un message..."
           autocomplete="off"
+          phx-hook="ChatInput"
           class="flex-1 px-3 py-2 bg-white/20 text-white placeholder-white/50 rounded-lg border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/50"
         />
         <button
           type="submit"
-          class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+          class="flex-shrink-0 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
         >
           Envoyer
         </button>
