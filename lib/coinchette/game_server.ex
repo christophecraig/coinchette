@@ -83,6 +83,13 @@ defmodule Coinchette.GameServer do
     GenServer.cast(via_tuple(game_id), {:send_chat, user_id, message})
   end
 
+  @doc """
+  Deletes a game (only if in waiting status).
+  """
+  def delete_game(game_id, user_id) do
+    GenServer.call(via_tuple(game_id), {:delete_game, user_id})
+  end
+
   ## Server Callbacks
 
   @impl true
@@ -195,29 +202,52 @@ defmodule Coinchette.GameServer do
     # Get all players from database
     db_players = Multiplayer.list_game_players(state.game_id)
 
-    if length(db_players) < 2 do
-      {:reply, {:error, :not_enough_players}, state}
-    else
-      # Deal initial cards and start bidding phase
-      # The deal_initial_cards function creates all 4 players automatically
-      game = Games.Game.deal_initial_cards(state.game)
+    # Auto-fill empty positions with bots
+    occupied_positions = Enum.map(db_players, & &1.position) |> MapSet.new()
+    empty_positions = Enum.filter(0..3, fn pos -> !MapSet.member?(occupied_positions, pos) end)
 
-      # Persist to database
-      Multiplayer.update_game_state(state.game_id, game)
-      Multiplayer.update_game_status(state.game_id, "playing", %{started_at: NaiveDateTime.utc_now()})
-      Multiplayer.add_game_event(state.game_id, "game_started", %{})
+    # Add bots to empty positions
+    Enum.each(empty_positions, fn position ->
+      Multiplayer.add_bot(state.game_id, position, "easy")
+    end)
 
-      new_state = %{state | game: game}
+    # Reload player data after adding bots
+    {new_player_map, new_bot_positions} = build_player_data(state.game_id)
 
-      # Broadcast game started
-      broadcast_game_update(state.game_id, game)
-      broadcast_event(state.game_id, {:game_started, game})
-      broadcast_system_message(state.game_id, "🎮 La partie commence !")
+    # Deal initial cards and start bidding phase
+    # The deal_initial_cards function creates all 4 players automatically
+    game = Games.Game.deal_initial_cards(state.game)
 
-      # Schedule bot turn if first player is a bot (bidding phase)
-      new_state = maybe_schedule_bot_turn(new_state)
+    # Persist to database
+    Multiplayer.update_game_state(state.game_id, game)
+    Multiplayer.update_game_status(state.game_id, "playing", %{started_at: NaiveDateTime.utc_now()})
+    Multiplayer.add_game_event(state.game_id, "game_started", %{})
 
-      {:reply, {:ok, game}, new_state}
+    new_state = %{state | game: game, player_map: new_player_map, bot_positions: new_bot_positions}
+
+    # Broadcast game started
+    broadcast_game_update(state.game_id, game)
+    broadcast_event(state.game_id, {:game_started, game})
+    broadcast_system_message(state.game_id, "🎮 La partie commence !")
+
+    # Schedule bot turn if first player is a bot (bidding phase)
+    new_state = maybe_schedule_bot_turn(new_state)
+
+    {:reply, {:ok, game}, new_state}
+  end
+
+  @impl true
+  def handle_call({:delete_game, user_id}, _from, state) do
+    case Multiplayer.delete_game(state.game_id, user_id) do
+      {:ok, _game} ->
+        # Broadcast game deleted event
+        broadcast_event(state.game_id, {:game_deleted, %{}})
+
+        # Stop the server
+        {:stop, :normal, :ok, state}
+
+      {:error, _reason} = error ->
+        {:reply, error, state}
     end
   end
 

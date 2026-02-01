@@ -30,7 +30,6 @@ defmodule CoinchetteWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
-    live "/game", GameLive
   end
 
   # Authentication routes (guest only)

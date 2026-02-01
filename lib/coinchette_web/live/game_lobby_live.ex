@@ -71,19 +71,17 @@ defmodule CoinchetteWeb.GameLobbyLive do
     end
   end
 
-  def handle_event("add_bot", %{"position" => pos_str}, socket) do
-    position = String.to_integer(pos_str)
-
-    if socket.assigns.is_creator do
-      case GameServer.add_player(socket.assigns.game_id, nil, position, bot: true, difficulty: "easy") do
+  def handle_event("delete_game", _params, socket) do
+    if socket.assigns.is_creator and socket.assigns.game.status == "waiting" do
+      case GameServer.delete_game(socket.assigns.game_id, socket.assigns.current_user.id) do
         :ok ->
-          {:noreply, socket}
+          {:noreply, push_navigate(socket, to: ~p"/lobby")}
 
         {:error, _reason} ->
-          {:noreply, put_flash(socket, :error, "Failed to add bot")}
+          {:noreply, put_flash(socket, :error, "Failed to delete game")}
       end
     else
-      {:noreply, put_flash(socket, :error, "Only the host can add bots")}
+      {:noreply, put_flash(socket, :error, "Only the host can delete a waiting game")}
     end
   end
 
@@ -145,6 +143,13 @@ defmodule CoinchetteWeb.GameLobbyLive do
 
   def handle_info({:game_started, _game}, socket) do
     {:noreply, push_navigate(socket, to: ~p"/game/#{socket.assigns.game_id}/play")}
+  end
+
+  def handle_info({:game_deleted, _data}, socket) do
+    {:noreply,
+     socket
+     |> put_flash(:info, "Game has been deleted")
+     |> push_navigate(to: ~p"/lobby")}
   end
 
   defp reload_game_state(socket) do
@@ -221,13 +226,17 @@ defmodule CoinchetteWeb.GameLobbyLive do
             </div>
           </:subtitle>
           <:actions>
+            <%= if @is_creator and @game.status == "waiting" do %>
+              <.button phx-click="delete_game" class="btn-ghost btn-error">
+                Delete Game
+              </.button>
+            <% end %>
             <.button phx-click="leave_game" class="btn-ghost">
               Leave Game
             </.button>
             <%= if @is_creator do %>
               <.button
                 phx-click="start_game"
-                disabled={length(@players) < 2}
                 variant="primary"
                 data-testid="start-game-button"
               >
@@ -317,17 +326,6 @@ defmodule CoinchetteWeb.GameLobbyLive do
                           </svg>
                         </button>
                       <% end %>
-                    <% else %>
-                      <%= if @is_creator do %>
-                        <button
-                          phx-click="add_bot"
-                          phx-value-position={position}
-                          class="btn btn-sm btn-ghost"
-                          data-testid={"add-bot-button-#{position}"}
-                        >
-                          Add Bot
-                        </button>
-                      <% end %>
                     <% end %>
                   </div>
                 </div>
@@ -352,7 +350,7 @@ defmodule CoinchetteWeb.GameLobbyLive do
               </svg>
               <div class="text-sm">
                 <p>You are the host. Share the room code <strong><%= @game.room_code %></strong> with friends to invite them.</p>
-                <p class="mt-1">You can add bots to fill empty slots or start with at least 2 players.</p>
+                <p class="mt-1">Empty slots will be automatically filled with bots when you start the game.</p>
               </div>
             </div>
           <% end %>

@@ -36,6 +36,27 @@ defmodule CoinchetteWeb.LobbyLive do
     end
   end
 
+  def handle_event("create_solo_game", _params, socket) do
+    case Multiplayer.create_game(socket.assigns.current_user.id, variant: "belote") do
+      {:ok, game} ->
+        # Start the GameServer for this game
+        {:ok, _pid} = GameServerSupervisor.start_game(game.id)
+
+        # Immediately start the game (will auto-fill with bots)
+        alias Coinchette.GameServer
+        case GameServer.start_game(game.id) do
+          {:ok, _started_game} ->
+            {:noreply, push_navigate(socket, to: ~p"/game/#{game.id}/play")}
+
+          {:error, _reason} ->
+            {:noreply, put_flash(socket, :error, "Failed to start game")}
+        end
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to create game")}
+    end
+  end
+
   def handle_event("validate_join", %{"room_code" => code}, socket) do
     {:noreply, assign(socket, :join_room_code, String.upcase(code))}
   end
@@ -125,9 +146,9 @@ defmodule CoinchetteWeb.LobbyLive do
 
             <div class="divider">OR</div>
 
-            <.link navigate="/game" class="btn btn-outline w-full">
+            <.button phx-click="create_solo_game" class="btn-outline w-full">
               Play Solo Game
-            </.link>
+            </.button>
           </div>
         </div>
 

@@ -129,6 +129,26 @@ defmodule Coinchette.Multiplayer do
     |> Repo.update()
   end
 
+  @doc """
+  Deletes a game if it's in waiting status.
+  Only the creator can delete a game.
+  """
+  def delete_game(game_id, user_id) do
+    game = Repo.get!(Game, game_id)
+
+    cond do
+      game.creator_id != user_id ->
+        {:error, :not_creator}
+
+      game.status != "waiting" ->
+        {:error, :game_already_started}
+
+      true ->
+        # Delete related records first (cascading should handle this, but being explicit)
+        Repo.delete(game)
+    end
+  end
+
   defp determine_status(%Coinchette.Games.Game{} = game) do
     cond do
       game.status == :finished -> "finished"
