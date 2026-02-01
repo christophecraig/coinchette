@@ -24,6 +24,7 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/coinchette"
 import topbar from "../vendor/topbar"
+import { SoundHook, VolumeControlHook } from "./sounds"
 
 // Custom hooks
 const Hooks = {}
@@ -39,6 +40,10 @@ Hooks.ScrollToBottom = {
     this.el.scrollTop = this.el.scrollHeight
   }
 }
+
+// Sound hooks
+Hooks.Sound = SoundHook
+Hooks.VolumeControl = VolumeControlHook
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
