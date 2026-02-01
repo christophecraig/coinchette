@@ -216,7 +216,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       |> Enum.map(fn p ->
         name =
           if p.is_bot do
-            "Bot (#{p.bot_difficulty})"
+            bot_name(p.position, p.bot_difficulty)
           else
             p.user.username
           end
@@ -226,6 +226,20 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       |> Enum.into(%{})
 
     assign(socket, :player_names, player_names)
+  end
+
+  # Generate unique bot names based on position and difficulty
+  defp bot_name(position, difficulty) do
+    # French-themed bot names
+    names = ["Marcel", "Josette", "René", "Ginette", "Robert", "Simone", "André", "Yvette"]
+    base_name = Enum.at(names, rem(position, length(names)))
+
+    case difficulty do
+      "easy" -> "#{base_name} 🐌"
+      "medium" -> "#{base_name} ⚡"
+      "hard" -> "#{base_name} 🔥"
+      _ -> base_name
+    end
   end
 
   defp get_player_name(socket_or_map, position) do

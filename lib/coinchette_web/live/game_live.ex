@@ -752,10 +752,10 @@ defmodule CoinchetteWeb.GameLive do
   end
 
   # Helpers de formatage
-  defp position_name("north"), do: "Nord (Bot)"
-  defp position_name("south"), do: "Vous (Sud)"
-  defp position_name("east"), do: "Est (Bot)"
-  defp position_name("west"), do: "Ouest (Bot)"
+  defp position_name("north"), do: "Marcel 🤖"
+  defp position_name("south"), do: "Vous"
+  defp position_name("east"), do: "Josette 🤖"
+  defp position_name("west"), do: "René 🤖"
 
   defp format_rank(:seven), do: "7"
   defp format_rank(:eight), do: "8"
