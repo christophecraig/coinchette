@@ -771,8 +771,8 @@ defmodule CoinchetteWeb.GameLive do
   defp format_suit(:diamonds), do: "♦"
   defp format_suit(:clubs), do: "♣"
 
-  defp card_color(%Card{suit: suit}) when suit in [:hearts, :diamonds], do: "text-red-600"
-  defp card_color(%Card{suit: suit}) when suit in [:spades, :clubs], do: "text-black"
+  defp card_color(%Card{suit: suit}) when suit in [:hearts, :diamonds], do: "text-red-600 dark:text-red-500"
+  defp card_color(%Card{suit: suit}) when suit in [:spades, :clubs], do: "text-gray-900 dark:text-gray-800"
 
   # South
   defp trick_card_position(0), do: "col-start-1 row-start-2 self-end"

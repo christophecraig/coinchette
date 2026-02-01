@@ -705,10 +705,10 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
   defp card_display(assigns) do
     ~H"""
     <div class={[
-      "w-16 h-24 bg-white rounded-lg shadow-lg flex items-center justify-center",
-      "border-2",
-      @card.suit in [:hearts, :diamonds] && "text-red-600 border-red-200",
-      @card.suit in [:spades, :clubs] && "text-gray-800 border-gray-200"
+      "w-16 h-24 bg-white dark:bg-gray-100 rounded-lg shadow-lg flex items-center justify-center",
+      "border-2 transition-colors",
+      @card.suit in [:hearts, :diamonds] && "text-red-600 dark:text-red-500 border-red-200",
+      @card.suit in [:spades, :clubs] && "text-gray-900 dark:text-gray-800 border-gray-200"
     ]}>
       <div class="text-center">
         <div class="text-2xl font-bold">
