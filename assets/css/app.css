@@ -219,7 +219,7 @@
 
     /* Trick zone (center) */
     .trick-zone {
-        @apply bg-green-800 bg-opacity-50 rounded-xl;
+        @apply bg-green-800/50 rounded-xl;
         @apply border-2 border-green-600 border-dashed;
         @apply transition-all duration-300;
         min-height: 200px;
@@ -227,7 +227,7 @@
     }
 
     .trick-zone.has-cards {
-        @apply bg-opacity-70;
+        @apply bg-green-800/70;
         box-shadow: 0 0 30px rgba(34, 197, 94, 0.3);
     }
 
