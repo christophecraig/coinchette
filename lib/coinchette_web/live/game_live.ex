@@ -323,7 +323,7 @@ defmodule CoinchetteWeb.GameLive do
   def render(assigns) do
     ~H"""
     <div class="min-h-screen bg-gradient-to-br from-green-800 to-green-600 p-4 sm:p-6 lg:p-8">
-      <div class="max-w-6xl mx-auto">
+      <div class="max-w-7xl mx-auto px-4">
         <!-- Header -->
         <div class="relative mb-4 sm:mb-6 lg:mb-8">
           <!-- Theme toggle (top right) -->
@@ -745,16 +745,15 @@ defmodule CoinchetteWeb.GameLive do
       data-testid={@data_testid}
       data-playable={to_string(@clickable)}
       class={[
-        "card bg-white shadow-lg border-2 transition-all",
+        "playing-card !bg-white rounded-lg shadow-lg border-2 transition-all",
         @size_classes,
         if(@clickable,
           do: "hover:scale-110 hover:shadow-2xl border-blue-500 cursor-pointer",
-          else: "border-gray-300"
-        ),
-        if(!@clickable, do: "opacity-50")
+          else: "border-gray-300 opacity-50"
+        )
       ]}
     >
-      <div class="card-body p-2 flex flex-col justify-between">
+      <div class="p-2 flex flex-col justify-between h-full">
         <span class={"#{@rank_size} font-bold #{card_color(@card)}"}>
           {format_rank(@card.rank)}
         </span>
