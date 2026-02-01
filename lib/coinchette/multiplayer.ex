@@ -75,6 +75,7 @@ defmodule Coinchette.Multiplayer do
   """
   def list_user_games(user_id, opts \\ []) do
     status = Keyword.get(opts, :status)
+    limit = Keyword.get(opts, :limit)
 
     query =
       from g in Game,
@@ -91,9 +92,24 @@ defmodule Coinchette.Multiplayer do
         query
       end
 
+    query =
+      if limit do
+        limit(query, ^limit)
+      else
+        query
+      end
+
     query
     |> distinct([g], g.id)
     |> Repo.all()
+  end
+
+  @doc """
+  Gets recent finished games for a user.
+  Returns the last N games (default 10).
+  """
+  def list_recent_finished_games(user_id, limit \\ 10) do
+    list_user_games(user_id, status: "finished", limit: limit)
   end
 
   @doc """
