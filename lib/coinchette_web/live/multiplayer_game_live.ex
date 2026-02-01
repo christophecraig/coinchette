@@ -449,8 +449,18 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
                   Cinquante : +<%= announcement.points %> points
                 <% :cent -> %>
                   Cent : +<%= announcement.points %> points
-                <% :carre -> %>
-                  Carré : +<%= announcement.points %> points
+                <% :carre_jacks -> %>
+                  Carré de Valets : +<%= announcement.points %> points
+                <% :carre_nines -> %>
+                  Carré de 9 : +<%= announcement.points %> points
+                <% :carre_aces -> %>
+                  Carré d'As : +<%= announcement.points %> points
+                <% :carre_tens -> %>
+                  Carré de 10 : +<%= announcement.points %> points
+                <% :carre_kings -> %>
+                  Carré de Rois : +<%= announcement.points %> points
+                <% :carre_queens -> %>
+                  Carré de Dames : +<%= announcement.points %> points
               <% end %>
             </div>
           <% end %>
