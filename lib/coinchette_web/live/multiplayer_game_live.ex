@@ -335,9 +335,12 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
             <h1 class="text-2xl sm:text-4xl font-bold">🃏 Coinchette</h1>
             <p class="text-green-100 text-sm sm:text-lg mt-1">{@message}</p>
           </div>
-          <button phx-click="leave_game" class="btn btn-ghost btn-sm text-white">
-            Quitter
-          </button>
+          <div class="flex items-center gap-2">
+            <Layouts.theme_toggle />
+            <button phx-click="leave_game" class="btn btn-ghost btn-sm text-white">
+              Quitter
+            </button>
+          </div>
         </div>
 
         <!-- Belote/Rebelote Notification -->

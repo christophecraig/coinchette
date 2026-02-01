@@ -325,17 +325,24 @@ defmodule CoinchetteWeb.GameLive do
     <div class="min-h-screen bg-gradient-to-br from-green-800 to-green-600 p-8">
       <div class="max-w-6xl mx-auto">
         <!-- Header -->
-        <div class="text-center mb-8">
-          <h1 class="text-4xl font-bold text-white mb-2">🃏 Coinchette</h1>
-          <p class="text-green-100 text-lg">{@message}</p>
-          <div class="mt-4">
-            <button
-              phx-click="new_game"
-              class="btn btn-primary"
-              data-testid="new-game-button"
-            >
-              Nouvelle Partie
-            </button>
+        <div class="relative mb-8">
+          <!-- Theme toggle (top right) -->
+          <div class="absolute top-0 right-0">
+            <Layouts.theme_toggle />
+          </div>
+
+          <div class="text-center">
+            <h1 class="text-4xl font-bold text-white mb-2">🃏 Coinchette</h1>
+            <p class="text-green-100 text-lg">{@message}</p>
+            <div class="mt-4">
+              <button
+                phx-click="new_game"
+                class="btn btn-primary"
+                data-testid="new-game-button"
+              >
+                Nouvelle Partie
+              </button>
+            </div>
           </div>
         </div>
 

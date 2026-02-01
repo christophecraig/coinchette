@@ -79,6 +79,7 @@ defmodule CoinchetteWeb.LobbyLive do
         Game Lobby
         <:subtitle>Welcome, <%= @current_user.username %>!</:subtitle>
         <:actions>
+          <Layouts.theme_toggle />
           <.button phx-click="create_game" data-testid="create-game-button">
             <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
