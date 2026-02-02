@@ -69,8 +69,11 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
 
       case GameServer.play_card(socket.assigns.game_id, socket.assigns.current_user.id, card) do
         {:ok, _game} ->
-          # Play card sound
-          socket = push_event(socket, "play-sound", %{sound: "cardPlay"})
+          # Play card sound and haptic feedback
+          socket =
+            socket
+            |> push_event("play-sound", %{sound: "cardPlay"})
+            |> push_event("haptic-feedback", %{pattern: "cardPlay"})
           # State will update via PubSub
           {:noreply, socket}
 
@@ -92,7 +95,10 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     if is_my_turn?(socket) do
       case GameServer.make_bid(socket.assigns.game_id, socket.assigns.current_user.id, :take) do
         {:ok, _game} ->
-          socket = push_event(socket, "play-sound", %{sound: "bidTake"})
+          socket =
+            socket
+            |> push_event("play-sound", %{sound: "bidTake"})
+            |> push_event("haptic-feedback", %{pattern: "bidTake"})
           {:noreply, socket}
 
         {:error, reason} ->
@@ -107,7 +113,10 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     if is_my_turn?(socket) do
       case GameServer.make_bid(socket.assigns.game_id, socket.assigns.current_user.id, :pass) do
         {:ok, _game} ->
-          socket = push_event(socket, "play-sound", %{sound: "bidPass"})
+          socket =
+            socket
+            |> push_event("play-sound", %{sound: "bidPass"})
+            |> push_event("haptic-feedback", %{pattern: "bidPass"})
           {:noreply, socket}
 
         {:error, reason} ->
@@ -124,7 +133,10 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
 
       case GameServer.make_bid(socket.assigns.game_id, socket.assigns.current_user.id, {:choose, suit}) do
         {:ok, _game} ->
-          socket = push_event(socket, "play-sound", %{sound: "bidTake"})
+          socket =
+            socket
+            |> push_event("play-sound", %{sound: "bidTake"})
+            |> push_event("haptic-feedback", %{pattern: "bidTake"})
           {:noreply, socket}
 
         {:error, reason} ->
@@ -334,23 +346,27 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
   end
 
   defp play_trick_win_sound(socket, old_game, new_game) do
-    # Play trick win sound when a trick is completed
+    # Play trick win sound and haptic when a trick is completed
     if length(new_game.tricks_won) > length(old_game.tricks_won) do
-      push_event(socket, "play-sound", %{sound: "trickWin"})
+      socket
+      |> push_event("play-sound", %{sound: "trickWin"})
+      |> push_event("haptic-feedback", %{pattern: "trickWin"})
     else
       socket
     end
   end
 
   defp play_victory_sound(socket, old_game, new_game) do
-    # Play victory/defeat sound when game finishes
+    # Play victory/defeat sound and haptic when game finishes
     if !Game.game_over?(old_game) && Game.game_over?(new_game) do
       my_position = socket.assigns.my_position
       my_team = if my_position in [0, 2], do: 0, else: 1
       winner_team = Game.winner(new_game)
 
-      sound = if winner_team == my_team, do: "victory", else: "defeat"
-      push_event(socket, "play-sound", %{sound: sound})
+      pattern = if winner_team == my_team, do: "victory", else: "defeat"
+      socket
+      |> push_event("play-sound", %{sound: pattern})
+      |> push_event("haptic-feedback", %{pattern: pattern})
     else
       socket
     end

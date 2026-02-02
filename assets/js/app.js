@@ -25,6 +25,7 @@ import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/coinchette"
 import topbar from "../vendor/topbar"
 import { SoundHook, VolumeControlHook } from "./sounds"
+import { HapticHook, HapticControlHook } from "./haptics"
 
 // Custom hooks
 const Hooks = {}
@@ -53,6 +54,10 @@ Hooks.ChatInput = {
 // Sound hooks
 Hooks.Sound = SoundHook
 Hooks.VolumeControl = VolumeControlHook
+
+// Haptic hooks
+Hooks.Haptic = HapticHook
+Hooks.HapticControl = HapticControlHook
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
