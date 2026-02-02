@@ -449,6 +449,118 @@ defmodule CoinchetteWeb.CoreComponents do
   ## JS Commands
 
   @doc """
+  Renders a skeleton loading placeholder.
+
+  ## Examples
+
+      <.skeleton class="h-4 w-full" />
+      <.skeleton class="h-12 w-12 rounded-full" />
+  """
+  attr :class, :string, default: nil
+  attr :rest, :global
+
+  def skeleton(assigns) do
+    ~H"""
+    <div class={["skeleton animate-pulse", @class]} {@rest}></div>
+    """
+  end
+
+  @doc """
+  Renders a skeleton card for loading game list.
+
+  ## Examples
+
+      <.skeleton_card />
+  """
+  def skeleton_card(assigns) do
+    ~H"""
+    <div class="card bg-base-100 shadow-xl animate-pulse">
+      <div class="card-body">
+        <div class="skeleton h-6 w-3/4 mb-2"></div>
+        <div class="skeleton h-4 w-full mb-2"></div>
+        <div class="skeleton h-4 w-2/3"></div>
+        <div class="flex gap-2 mt-4">
+          <div class="skeleton h-10 w-24"></div>
+          <div class="skeleton h-10 w-24"></div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  @doc """
+  Renders a skeleton for game board loading.
+  """
+  def skeleton_game_board(assigns) do
+    ~H"""
+    <div class="animate-pulse space-y-4">
+      <!-- Header -->
+      <div class="flex justify-between items-center">
+        <div class="skeleton h-8 w-48"></div>
+        <div class="skeleton h-10 w-32"></div>
+      </div>
+
+      <!-- Game info -->
+      <div class="flex gap-4">
+        <div class="skeleton h-20 w-full"></div>
+      </div>
+
+      <!-- Game board -->
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div class="lg:col-span-3">
+          <div class="skeleton h-96 w-full"></div>
+        </div>
+        <div class="lg:col-span-1">
+          <div class="skeleton h-96 w-full"></div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  @doc """
+  Renders a skeleton for player list.
+  """
+  def skeleton_player_list(assigns) do
+    ~H"""
+    <div class="space-y-2 animate-pulse">
+      <div :for={_ <- 1..4} class="flex items-center gap-3 p-3">
+        <div class="skeleton h-12 w-12 rounded-full"></div>
+        <div class="flex-1">
+          <div class="skeleton h-4 w-32 mb-2"></div>
+          <div class="skeleton h-3 w-24"></div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  @doc """
+  Renders a loading overlay with spinner.
+
+  ## Examples
+
+      <.loading_overlay>
+        <p>Loading game...</p>
+      </.loading_overlay>
+  """
+  attr :class, :string, default: nil
+  slot :inner_block, required: true
+
+  def loading_overlay(assigns) do
+    ~H"""
+    <div class={["loading-overlay", @class]}>
+      <div class="text-center">
+        <div class="loading-spinner mx-auto mb-4"></div>
+        <div class="text-base-content/70">
+          {render_slot(@inner_block)}
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  @doc """
   Renders a volume control widget with slider and mute button.
 
   ## Examples
