@@ -11,11 +11,11 @@
 #   - https://pkgs.org/ - resource for finding needed packages
 #   - Ex: hexpm/elixir:1.19.0-erlang-27.2-debian-bullseye-20231009-slim
 #
-ARG ELIXIR_VERSION=1.19.5
+ARG ELIXIR_VERSION=1.19.0
 ARG OTP_VERSION=27.2
-ARG DEBIAN_VERSION=stable-slim
+ARG DEBIAN_VERSION=bookworm-slim
 
-ARG BUILDER_IMAGE="elixir:${ELIXIR_VERSION}-alpine"
+ARG BUILDER_IMAGE="elixir:${ELIXIR_VERSION}-slim"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 
 FROM ${BUILDER_IMAGE} as builder
