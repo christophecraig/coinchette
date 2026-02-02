@@ -58,10 +58,11 @@ COPY assets assets
 WORKDIR /app/assets
 RUN pnpm install
 WORKDIR /app
+COPY lib lib
+
 RUN mix assets.deploy
 
 # Compile the release
-COPY lib lib
 RUN mix compile
 
 # Changes to config/runtime.exs don't require recompiling the code
