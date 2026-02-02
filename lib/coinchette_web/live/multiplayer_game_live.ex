@@ -25,11 +25,10 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
 
     # Handle legacy state without bot_positions/player_map (rebuild if missing)
     {player_map, bot_positions} =
-      if Map.has_key?(state, :player_map) and Map.has_key?(state, :bot_positions) do
-        {state.player_map, state.bot_positions}
-      else
-        # Rebuild from database for legacy GameServers
-        build_player_data(game_id)
+      case {Map.get(state, :player_map), Map.get(state, :bot_positions)} do
+        {nil, _} -> build_player_data(game_id)
+        {_, nil} -> build_player_data(game_id)
+        {pm, bp} -> {pm, bp}
       end
 
     # Find user's position
