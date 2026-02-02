@@ -35,4 +35,33 @@ defmodule CoinchetteWeb.ConnCase do
     Coinchette.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
+
+  @doc """
+  Logs in a user by setting the user_id in the test session.
+
+  ## Examples
+
+      conn = log_in_user(conn, user)
+      conn = log_in_user(build_conn(), user)
+
+  """
+  def log_in_user(conn, %Coinchette.Accounts.User{} = user) do
+    conn
+    |> Phoenix.ConnTest.init_test_session(%{user_id: user.id})
+  end
+
+  @doc """
+  Creates a user and logs them in, returning both the conn and the user.
+
+  ## Examples
+
+      {conn, user} = register_and_log_in_user(conn)
+      {conn, user} = register_and_log_in_user(build_conn(), %{username: "testuser"})
+
+  """
+  def register_and_log_in_user(conn, user_attrs \\ %{}) do
+    user = Coinchette.AccountsFixtures.user_fixture(user_attrs)
+    conn = log_in_user(conn, user)
+    {conn, user}
+  end
 end

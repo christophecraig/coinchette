@@ -278,9 +278,4 @@ defmodule CoinchetteWeb.GameHistoryLiveTest do
     end
   end
 
-  # Helper function to log in a user
-  defp log_in_user(conn, user) do
-    conn
-    |> init_test_session(%{user_id: user.id})
-  end
 end
