@@ -26,6 +26,7 @@ import {hooks as colocatedHooks} from "phoenix-colocated/coinchette"
 import topbar from "../vendor/topbar"
 import { SoundHook, VolumeControlHook } from "./sounds"
 import { HapticHook, HapticControlHook } from "./haptics"
+import { ConfettiHook, ConfettiControlHook } from "./confetti"
 
 // Custom hooks
 const Hooks = {}
@@ -58,6 +59,10 @@ Hooks.VolumeControl = VolumeControlHook
 // Haptic hooks
 Hooks.Haptic = HapticHook
 Hooks.HapticControl = HapticControlHook
+
+// Confetti hooks
+Hooks.Confetti = ConfettiHook
+Hooks.ConfettiControl = ConfettiControlHook
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {

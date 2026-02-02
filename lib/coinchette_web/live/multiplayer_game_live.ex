@@ -357,16 +357,37 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
   end
 
   defp play_victory_sound(socket, old_game, new_game) do
-    # Play victory/defeat sound and haptic when game finishes
+    # Play victory/defeat sound, haptic, and confetti when game finishes
     if !Game.game_over?(old_game) && Game.game_over?(new_game) do
       my_position = socket.assigns.my_position
       my_team = if my_position in [0, 2], do: 0, else: 1
       winner_team = Game.winner(new_game)
 
-      pattern = if winner_team == my_team, do: "victory", else: "defeat"
-      socket
-      |> push_event("play-sound", %{sound: pattern})
-      |> push_event("haptic-feedback", %{pattern: pattern})
+      is_winner = winner_team == my_team
+      pattern = if is_winner, do: "victory", else: "defeat"
+
+      socket =
+        socket
+        |> push_event("play-sound", %{sound: pattern})
+        |> push_event("haptic-feedback", %{pattern: pattern})
+
+      # Launch confetti only for winners
+      if is_winner do
+        # Determine confetti type based on score difference
+        my_team_score = Enum.at(new_game.scores, my_team)
+        other_team_score = Enum.at(new_game.scores, 1 - my_team)
+        score_diff = my_team_score - other_team_score
+
+        confetti_type = cond do
+          my_team_score == 162 -> "perfect"  # Perfect game
+          score_diff >= 100 -> "big_win"     # Dominating win
+          true -> "victory"                   # Standard win
+        end
+
+        push_event(socket, "confetti", %{type: confetti_type})
+      else
+        socket
+      end
     else
       socket
     end

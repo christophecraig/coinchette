@@ -7,14 +7,15 @@
         "deploy": "tailwindcss -i css/app.css -o ../priv/static/assets/app.css --minify && npm run build"
     },
     "dependencies": {
+        "canvas-confetti": "^1.9.4",
         "phoenix": "file:../deps/phoenix",
         "phoenix_html": "file:../deps/phoenix_html",
         "phoenix_live_view": "file:../deps/phoenix_live_view"
     },
     "devDependencies": {
-        "esbuild": "^0.19.5",
         "@tailwindcss/cli": "^4.1.12",
-        "tailwindcss": "^4.1.12",
-        "daisyui": "^5.0.35"
+        "daisyui": "^5.0.35",
+        "esbuild": "^0.19.5",
+        "tailwindcss": "^4.1.12"
     }
 }
