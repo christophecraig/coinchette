@@ -399,6 +399,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
             <p class="text-green-100 text-sm sm:text-lg mt-1">{@message}</p>
           </div>
           <div class="flex items-center gap-2">
+            <.volume_control id="game-volume-control" class="text-white" />
             <Layouts.theme_toggle />
             <button phx-click="leave_game" class="btn btn-ghost btn-sm text-white">
               Quitter

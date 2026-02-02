@@ -51,6 +51,9 @@ defmodule CoinchetteWeb.Layouts do
             <a href="https://github.com/phoenixframework/phoenix" class="btn btn-ghost">GitHub</a>
           </li>
           <li>
+            <.volume_control id="header-volume-control" />
+          </li>
+          <li>
             <.theme_toggle />
           </li>
           <li>

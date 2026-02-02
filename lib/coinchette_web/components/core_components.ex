@@ -448,6 +448,45 @@ defmodule CoinchetteWeb.CoreComponents do
 
   ## JS Commands
 
+  @doc """
+  Renders a volume control widget with slider and mute button.
+
+  ## Examples
+
+      <.volume_control id="volume-control" />
+      <.volume_control id="game-volume" class="my-custom-class" />
+  """
+  attr :id, :string, required: true
+  attr :class, :string, default: nil
+
+  def volume_control(assigns) do
+    ~H"""
+    <div
+      phx-hook="VolumeControl"
+      id={@id}
+      class={["flex items-center gap-3", @class]}
+    >
+      <button
+        data-action="toggle-mute"
+        class="btn btn-ghost btn-sm btn-circle"
+        aria-label="Toggle mute"
+        title="Toggle sound"
+      >
+        🔊
+      </button>
+      <input
+        type="range"
+        min="0"
+        max="100"
+        value="50"
+        class="range range-xs range-primary w-24"
+        aria-label="Volume"
+        title="Volume"
+      />
+    </div>
+    """
+  end
+
   def show(js \\ %JS{}, selector) do
     JS.show(js,
       to: selector,

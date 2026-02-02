@@ -111,6 +111,7 @@ defmodule CoinchetteWeb.LobbyLive do
             </svg>
             Profil
           </.link>
+          <.volume_control id="lobby-volume-control" />
           <Layouts.theme_toggle />
           <.button phx-click="create_game" data-testid="create-game-button">
             <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
