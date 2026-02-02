@@ -11,11 +11,11 @@
 #   - https://pkgs.org/ - resource for finding needed packages
 #   - Ex: hexpm/elixir:1.19.0-erlang-27.2-debian-bullseye-20231009-slim
 #
-ARG ELIXIR_VERSION=1.19.0
+ARG ELIXIR_VERSION=1.19.5
 ARG OTP_VERSION=27.2
-ARG DEBIAN_VERSION=bullseye-20231009-slim
+ARG DEBIAN_VERSION=stable-slim
 
-ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
+ARG BUILDER_IMAGE="elixir:${ELIXIR_VERSION}-alpine"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 
 FROM ${BUILDER_IMAGE} as builder
@@ -25,7 +25,7 @@ RUN apt-get update -y && apt-get install -y build-essential git curl \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # Install Node.js for asset compilation
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g pnpm
 
