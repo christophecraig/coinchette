@@ -1,11 +1,9 @@
-services:
-  # PostgreSQL Database
-  - type: pserv
-    name: coinchette-db
+databases:
+  - name: coinchette-db
     plan: free
     region: frankfurt
-    ipAllowList: []
 
+services:
   # Phoenix Web Service
   - type: web
     name: coinchette-staging
