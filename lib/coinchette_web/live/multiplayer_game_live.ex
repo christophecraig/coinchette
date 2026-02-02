@@ -23,8 +23,17 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     state = GameServer.get_state(game_id)
     game = state.game
 
+    # Handle legacy state without bot_positions/player_map (rebuild if missing)
+    {player_map, bot_positions} =
+      if Map.has_key?(state, :player_map) and Map.has_key?(state, :bot_positions) do
+        {state.player_map, state.bot_positions}
+      else
+        # Rebuild from database for legacy GameServers
+        build_player_data(game_id)
+      end
+
     # Find user's position
-    my_position = find_user_position(state.player_map, socket.assigns.current_user.id)
+    my_position = find_user_position(player_map, socket.assigns.current_user.id)
 
     # Load chat messages and set up stream
     chat_messages = Multiplayer.list_chat_messages(game_id)
@@ -38,8 +47,8 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       |> assign(:game, game)
       |> assign(:game_id, game_id)
       |> assign(:my_position, my_position)
-      |> assign(:player_map, state.player_map)
-      |> assign(:bot_positions, state.bot_positions)
+      |> assign(:player_map, player_map)
+      |> assign(:bot_positions, bot_positions)
       |> assign(:selected_card, nil)
       |> assign(:message, get_game_message(game, my_position))
       |> assign(:belote_announcement, nil)
@@ -208,6 +217,23 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
   end
 
   ## Helper Functions
+
+  defp build_player_data(game_id) do
+    players = Multiplayer.list_game_players(game_id)
+
+    player_map =
+      players
+      |> Enum.map(fn player -> {player.position, player.user_id} end)
+      |> Enum.into(%{})
+
+    bot_positions =
+      players
+      |> Enum.filter(& &1.is_bot)
+      |> Enum.map(& &1.position)
+      |> MapSet.new()
+
+    {player_map, bot_positions}
+  end
 
   defp find_user_position(player_map, user_id) do
     Enum.find_value(player_map, fn {pos, uid} -> if uid == user_id, do: pos end)

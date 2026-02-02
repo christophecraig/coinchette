@@ -50,7 +50,8 @@ defmodule Coinchette.GameServerTest do
 
       assert state.game_id == game.id
       assert state.game.status == :waiting
-      assert state.player_map == %{}
+      # Creator is automatically added at position 0
+      assert state.player_map == %{0 => user1.id}
       assert MapSet.size(state.bot_positions) == 0
     end
   end
@@ -60,7 +61,7 @@ defmodule Coinchette.GameServerTest do
       {:ok, game} = Multiplayer.create_game(user1.id)
       {:ok, _pid} = start_game_server(game.id)
 
-      assert :ok = GameServer.add_player(game.id, user1.id, 0)
+      # user1 is already at position 0 from create_game
       assert :ok = GameServer.add_player(game.id, user2.id, 2)
 
       state = GameServer.get_state(game.id)
@@ -85,7 +86,7 @@ defmodule Coinchette.GameServerTest do
       {:ok, game} = Multiplayer.create_game(user1.id)
       {:ok, _pid} = start_game_server(game.id)
 
-      :ok = GameServer.add_player(game.id, user1.id, 0)
+      # user1 is already at position 0 from create_game
       :ok = GameServer.add_player(game.id, user2.id, 2)
 
       assert :ok = GameServer.remove_player(game.id, user1.id)
@@ -101,7 +102,7 @@ defmodule Coinchette.GameServerTest do
       {:ok, game} = Multiplayer.create_game(user1.id)
       {:ok, _pid} = start_game_server(game.id)
 
-      :ok = GameServer.add_player(game.id, user1.id, 0)
+      # user1 is already at position 0 from create_game
       :ok = GameServer.add_player(game.id, user2.id, 2)
 
       assert {:ok, updated_game} = GameServer.start_game(game.id)
@@ -109,28 +110,31 @@ defmodule Coinchette.GameServerTest do
       assert length(updated_game.players) == 4
     end
 
-    test "rejects start with insufficient players", %{user1: user1} do
+    test "auto-fills with bots when starting", %{user1: user1} do
       {:ok, game} = Multiplayer.create_game(user1.id)
       {:ok, _pid} = start_game_server(game.id)
 
-      :ok = GameServer.add_player(game.id, user1.id, 0)
-
-      assert {:error, :not_enough_players} = GameServer.start_game(game.id)
+      # user1 is already at position 0 from create_game
+      # Start game with only 1 player - should auto-fill with bots
+      assert {:ok, updated_game} = GameServer.start_game(game.id)
+      assert updated_game.status == :bidding
+      assert length(updated_game.players) == 4
     end
   end
 
   describe "PubSub broadcasting" do
-    test "broadcasts player joined event", %{user1: user1} do
+    test "broadcasts player joined event", %{user1: user1, user2: user2} do
       {:ok, game} = Multiplayer.create_game(user1.id)
       {:ok, _pid} = start_game_server(game.id)
 
       # Subscribe to game events
       Phoenix.PubSub.subscribe(Coinchette.PubSub, "game:#{game.id}")
 
-      :ok = GameServer.add_player(game.id, user1.id, 0)
+      # user1 is already at position 0, add user2
+      :ok = GameServer.add_player(game.id, user2.id, 1)
 
-      assert_receive {:player_joined, %{user_id: user_id, position: 0}}, 1000
-      assert user_id == user1.id
+      assert_receive {:player_joined, %{user_id: user_id, position: 1}}, 1000
+      assert user_id == user2.id
     end
 
     test "broadcasts game started event", %{user1: user1, user2: user2} do
@@ -139,7 +143,7 @@ defmodule Coinchette.GameServerTest do
 
       Phoenix.PubSub.subscribe(Coinchette.PubSub, "game:#{game.id}")
 
-      :ok = GameServer.add_player(game.id, user1.id, 0)
+      # user1 is already at position 0 from create_game
       :ok = GameServer.add_player(game.id, user2.id, 2)
 
       {:ok, _updated_game} = GameServer.start_game(game.id)
@@ -155,7 +159,7 @@ defmodule Coinchette.GameServerTest do
       {:ok, game} = Multiplayer.create_game(user1.id)
       {:ok, _pid} = start_game_server(game.id)
 
-      :ok = GameServer.add_player(game.id, user1.id, 0)
+      # user1 is already at position 0 from create_game
       :ok = GameServer.add_player(game.id, user2.id, 2)
       {:ok, _updated_game} = GameServer.start_game(game.id)
 
@@ -174,13 +178,13 @@ defmodule Coinchette.GameServerTest do
       {:ok, game} = Multiplayer.create_game(user1.id)
       {:ok, _pid} = start_game_server(game.id)
 
-      :ok = GameServer.add_player(game.id, user1.id, 0)
+      # user1 is already at position 0 from create_game
       :ok = GameServer.add_player(game.id, user2.id, 2)
       {:ok, _updated_game} = GameServer.start_game(game.id)
 
       events = Multiplayer.list_game_events(game.id)
 
-      # Should have: game_created, 2x player_joined, game_started
+      # Should have: game_created, 2x player_joined (from create_game + add_player), game_started
       assert length(events) >= 4
 
       event_types = Enum.map(events, & &1.event_type)

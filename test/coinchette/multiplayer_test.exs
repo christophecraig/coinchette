@@ -95,15 +95,7 @@ defmodule Coinchette.MultiplayerTest do
     end
 
     test "add_player/3 adds a human player", %{user: user, game: game} do
-      assert {:ok, %GamePlayer{} = player} = Multiplayer.add_player(game.id, user.id, 0)
-      assert player.user_id == user.id
-      assert player.position == 0
-      assert player.is_bot == false
-    end
-
-    test "add_player/3 prevents duplicate positions", %{user: user, game: game} do
-      {:ok, _player} = Multiplayer.add_player(game.id, user.id, 0)
-
+      # Position 0 is already taken by creator, add to position 1
       {:ok, user2} =
         Accounts.register_user(%{
           email: "player2@example.com",
@@ -112,6 +104,23 @@ defmodule Coinchette.MultiplayerTest do
           password_confirmation: "password123"
         })
 
+      assert {:ok, %GamePlayer{} = player} = Multiplayer.add_player(game.id, user2.id, 1)
+      assert player.user_id == user2.id
+      assert player.position == 1
+      assert player.is_bot == false
+    end
+
+    test "add_player/3 prevents duplicate positions", %{user: user, game: game} do
+      # Position 0 is already taken by creator (user)
+      {:ok, user2} =
+        Accounts.register_user(%{
+          email: "player2@example.com",
+          username: "player2",
+          password: "password123",
+          password_confirmation: "password123"
+        })
+
+      # Try to add user2 to position 0 (already occupied)
       assert {:error, changeset} = Multiplayer.add_player(game.id, user2.id, 0)
       # The constraint is on [:game_id, :position] but Ecto reports it as :game_id
       assert %{game_id: ["has already been taken"]} = errors_on(changeset)
@@ -126,7 +135,7 @@ defmodule Coinchette.MultiplayerTest do
     end
 
     test "remove_player/2 removes a player", %{user: user, game: game} do
-      {:ok, _player} = Multiplayer.add_player(game.id, user.id, 0)
+      # Creator (user) is already at position 0 from create_game
       assert {:ok, 1} = Multiplayer.remove_player(game.id, user.id)
 
       players = Multiplayer.list_game_players(game.id)
@@ -134,13 +143,13 @@ defmodule Coinchette.MultiplayerTest do
     end
 
     test "list_game_players/1 returns players in position order", %{user: user, game: game} do
-      {:ok, _player} = Multiplayer.add_player(game.id, user.id, 2)
-      {:ok, _bot1} = Multiplayer.add_bot(game.id, 0, "easy")
+      # Position 0 is already taken by creator (user) from create_game
+      {:ok, _bot1} = Multiplayer.add_bot(game.id, 1, "easy")
       {:ok, _bot2} = Multiplayer.add_bot(game.id, 3, "medium")
 
       players = Multiplayer.list_game_players(game.id)
       assert length(players) == 3
-      assert Enum.map(players, & &1.position) == [0, 2, 3]
+      assert Enum.map(players, & &1.position) == [0, 1, 3]
     end
   end
 
@@ -186,8 +195,8 @@ defmodule Coinchette.MultiplayerTest do
       Multiplayer.add_game_event(game.id, "card_played", %{})
 
       events = Multiplayer.list_game_events(game.id)
-      # +3 for the events we added, +1 for game_created from create_game
-      assert length(events) == 4
+      # +3 for the events we added, +2 for game_created and player_joined from create_game
+      assert length(events) == 5
 
       sequences = Enum.map(events, & &1.sequence)
       assert sequences == Enum.sort(sequences)

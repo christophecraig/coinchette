@@ -220,7 +220,9 @@ defmodule Coinchette.GameServer do
 
     # Persist to database
     Multiplayer.update_game_state(state.game_id, game)
-    Multiplayer.update_game_status(state.game_id, "playing", %{started_at: NaiveDateTime.utc_now()})
+    Multiplayer.update_game_status(state.game_id, "playing", %{
+      started_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    })
     Multiplayer.add_game_event(state.game_id, "game_started", %{})
 
     new_state = %{state | game: game, player_map: new_player_map, bot_positions: new_bot_positions}
@@ -536,7 +538,7 @@ defmodule Coinchette.GameServer do
       Multiplayer.update_game_status(state.game_id, "finished", %{
         winner_team: winner_team,
         scores: scores,
-        finished_at: NaiveDateTime.utc_now()
+        finished_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       })
 
       Multiplayer.add_game_event(state.game_id, "game_finished", %{
