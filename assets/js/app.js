@@ -27,6 +27,7 @@ import topbar from "../vendor/topbar"
 import { SoundHook, VolumeControlHook } from "./sounds"
 import { HapticHook, HapticControlHook } from "./haptics"
 import { ConfettiHook, ConfettiControlHook } from "./confetti"
+import { ToastHook } from "./toast"
 
 // Custom hooks
 const Hooks = {}
@@ -63,6 +64,9 @@ Hooks.HapticControl = HapticControlHook
 // Confetti hooks
 Hooks.Confetti = ConfettiHook
 Hooks.ConfettiControl = ConfettiControlHook
+
+// Toast hook
+Hooks.Toast = ToastHook
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
