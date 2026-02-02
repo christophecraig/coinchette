@@ -479,4 +479,213 @@
             @apply hidden;
         }
     }
+
+    /* ========================================
+       Page Transitions & Navigation
+       ======================================== */
+
+    /* Smooth scroll behavior */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    /* Page transition (LiveView navigation) */
+    .page-transition {
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* LiveView loading states */
+    .phx-page-loading-indicator {
+        @apply fixed top-0 left-0 right-0 h-1 bg-primary z-50;
+        animation: progressBar 2s ease-in-out infinite;
+    }
+
+    @keyframes progressBar {
+        0% {
+            width: 0%;
+            opacity: 1;
+        }
+        50% {
+            width: 70%;
+            opacity: 1;
+        }
+        100% {
+            width: 100%;
+            opacity: 0;
+        }
+    }
+
+    /* Loading overlay for slow operations */
+    .loading-overlay {
+        @apply fixed inset-0 bg-base-100/80 backdrop-blur-sm flex items-center justify-center z-50;
+        animation: fadeIn 0.2s ease-in;
+    }
+
+    .loading-spinner {
+        @apply w-16 h-16 border-4 border-primary border-t-transparent rounded-full;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Enhanced click/submit loading states */
+    .phx-click-loading,
+    .phx-submit-loading {
+        @apply opacity-75 cursor-wait pointer-events-none;
+        position: relative;
+    }
+
+    .phx-click-loading::after,
+    .phx-submit-loading::after {
+        content: "";
+        @apply absolute inset-0 bg-base-100/20 rounded;
+        animation: pulse 1s ease-in-out infinite;
+    }
+
+    /* Route transition effects */
+    [data-phx-main] {
+        animation: pageSlideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes pageSlideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Modal transitions (if needed) */
+    .modal-backdrop {
+        animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal-content {
+        animation: modalSlideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes modalSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* Link hover transitions */
+    a {
+        @apply transition-colors duration-200;
+    }
+
+    /* Input focus transitions */
+    input,
+    textarea,
+    select {
+        @apply transition-all duration-200;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        @apply ring-2 ring-primary ring-offset-2;
+    }
+
+    /* Card entrance animation */
+    .card-entrance {
+        animation: cardEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes cardEnter {
+        from {
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* Staggered list animations */
+    .stagger-item {
+        animation: fadeIn 0.4s ease-out backwards;
+    }
+
+    .stagger-item:nth-child(1) { animation-delay: 0.05s; }
+    .stagger-item:nth-child(2) { animation-delay: 0.1s; }
+    .stagger-item:nth-child(3) { animation-delay: 0.15s; }
+    .stagger-item:nth-child(4) { animation-delay: 0.2s; }
+    .stagger-item:nth-child(5) { animation-delay: 0.25s; }
+    .stagger-item:nth-child(6) { animation-delay: 0.3s; }
+    .stagger-item:nth-child(7) { animation-delay: 0.35s; }
+    .stagger-item:nth-child(8) { animation-delay: 0.4s; }
+
+    /* Skeleton loading animation */
+    .skeleton {
+        @apply bg-base-300 rounded;
+        animation: skeleton-loading 1.5s ease-in-out infinite;
+    }
+
+    @keyframes skeleton-loading {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.5;
+        }
+    }
+
+    /* Shimmer effect for loading */
+    .shimmer {
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.1) 50%,
+            transparent 100%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: -200% 0;
+        }
+        100% {
+            background-position: 200% 0;
+        }
+    }
+
+    /* Reduced motion: disable all transitions */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
 }
