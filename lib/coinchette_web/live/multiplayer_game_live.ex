@@ -28,6 +28,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       case {Map.get(state, :player_map), Map.get(state, :bot_positions)} do
         {nil, _} -> build_player_data(game_id)
         {_, nil} -> build_player_data(game_id)
+        {pm, bp} when is_list(bp) -> {pm, MapSet.new(bp)}
         {pm, bp} -> {pm, bp}
       end
 
@@ -40,13 +41,16 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     # Get list of present users
     present_users = get_present_users(game_id)
 
+    # Ensure bot_positions is always a MapSet
+    bot_positions = if is_struct(bot_positions, MapSet), do: bot_positions, else: MapSet.new(bot_positions || [])
+
     socket =
       socket
       |> assign(:page_title, "Playing Game")
       |> assign(:game, game)
       |> assign(:game_id, game_id)
       |> assign(:my_position, my_position)
-      |> assign(:player_map, player_map)
+      |> assign(:player_map, player_map || %{})
       |> assign(:bot_positions, bot_positions)
       |> assign(:selected_card, nil)
       |> assign(:message, get_game_message(game, my_position))
