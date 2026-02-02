@@ -3,8 +3,7 @@ services:
   - type: pserv
     name: coinchette-db
     plan: free
-    databaseName: coinchette_prod
-    databaseUser: coinchette
+    region: frankfurt
     ipAllowList: []
 
   # Phoenix Web Service
