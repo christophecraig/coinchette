@@ -661,22 +661,6 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           Phase d'enchères - <%= if @game.bidding.round == 1, do: "Premier", else: "Second" %> tour
         </h2>
 
-        <%= if @game.bidding.taker do %>
-          <div class="bg-green-500/20 border-2 border-green-500 rounded-lg p-3 mb-4 animate-pulse-soft">
-            <div class="flex items-center justify-center gap-2 text-green-200">
-              <span class="text-2xl">✓</span>
-              <span class="font-bold text-lg">
-                <%= Map.get(@player_names, @game.bidding.taker, "Joueur") %> a pris
-              </span>
-              <%= if @game.bidding.trump_suit do %>
-                <span class="text-2xl font-bold">
-                  <%= suit_symbol(@game.bidding.trump_suit) %>
-                </span>
-              <% end %>
-            </div>
-          </div>
-        <% end %>
-
         <%= if @game.bidding.proposed_trump do %>
           <div class="mb-4">
             <p class="text-white/80 mb-2">Carte proposée :</p>
@@ -781,6 +765,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
               <% is_bot = MapSet.member?(@bot_positions, player.position) %>
               <% user_id = Map.get(@player_map, player.position) %>
               <% is_connected = is_bot || MapSet.member?(@present_users, user_id) %>
+              <% is_taker = @game.trump_suit && @game.bidding && @game.bidding.taker == player.position %>
               <div class={[
                 "p-3 rounded-lg",
                 is_current && "bg-yellow-500/30 ring-2 ring-2 ring-yellow-400",
@@ -798,13 +783,19 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
                       title={is_connected && "Connecté" || "Déconnecté"}
                     />
                     <div class="flex-1">
-                      <div class="text-white font-medium flex items-center gap-2">
+                      <div class="text-white font-medium flex items-center gap-2 flex-wrap">
                         <%= Map.get(@player_names, player.position, "Joueur #{player.position + 1}") %>
                         <%= if is_me do %>
                           <span class="badge badge-sm badge-primary">Vous</span>
                         <% end %>
                         <%= if !is_connected && !is_bot do %>
                           <span class="badge badge-sm badge-error">Déco</span>
+                        <% end %>
+                        <%= if is_taker do %>
+                          <span class="badge badge-sm badge-success gap-1">
+                            <span>A pris</span>
+                            <span class="text-base"><%= suit_symbol(@game.trump_suit) %></span>
+                          </span>
                         <% end %>
                       </div>
                       <div class="text-white/60 text-sm">
