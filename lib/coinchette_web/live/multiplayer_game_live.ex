@@ -661,6 +661,22 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           Phase d'enchères - <%= if @game.bidding.round == 1, do: "Premier", else: "Second" %> tour
         </h2>
 
+        <%= if @game.bidding.taker do %>
+          <div class="bg-green-500/20 border-2 border-green-500 rounded-lg p-3 mb-4 animate-pulse-soft">
+            <div class="flex items-center justify-center gap-2 text-green-200">
+              <span class="text-2xl">✓</span>
+              <span class="font-bold text-lg">
+                <%= Map.get(@player_names, @game.bidding.taker, "Joueur") %> a pris
+              </span>
+              <%= if @game.bidding.trump_suit do %>
+                <span class="text-2xl font-bold">
+                  <%= suit_symbol(@game.bidding.trump_suit) %>
+                </span>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
         <%= if @game.bidding.proposed_trump do %>
           <div class="mb-4">
             <p class="text-white/80 mb-2">Carte proposée :</p>
