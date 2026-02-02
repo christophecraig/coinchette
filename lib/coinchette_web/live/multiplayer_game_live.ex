@@ -24,7 +24,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     game = state.game
 
     # Always rebuild player data to ensure consistency
-    # This handles all edge cases (missing fields, wrong types, etc.)
+    # build_player_data always returns {%{}, MapSet.new()}
     {player_map, bot_positions} = build_player_data(game_id)
 
     # Find user's position
@@ -36,15 +36,13 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     # Get list of present users
     present_users = get_present_users(game_id)
 
-    # bot_positions from build_player_data is already a MapSet, no conversion needed
-
     socket =
       socket
       |> assign(:page_title, "Playing Game")
       |> assign(:game, game)
       |> assign(:game_id, game_id)
       |> assign(:my_position, my_position)
-      |> assign(:player_map, player_map || %{})
+      |> assign(:player_map, player_map)
       |> assign(:bot_positions, bot_positions)
       |> assign(:selected_card, nil)
       |> assign(:message, get_game_message(game, my_position))
