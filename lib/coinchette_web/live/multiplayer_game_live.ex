@@ -550,6 +550,9 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
               game={@game}
               my_position={@my_position}
               player_names={@player_names}
+              bot_positions={@bot_positions}
+              player_map={@player_map}
+              present_users={@present_users}
               is_my_turn={is_my_turn?(@game, @my_position)}
             />
           </div>
