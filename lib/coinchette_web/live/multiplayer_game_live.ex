@@ -69,6 +69,8 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
 
       case GameServer.play_card(socket.assigns.game_id, socket.assigns.current_user.id, card) do
         {:ok, _game} ->
+          # Play card sound
+          socket = push_event(socket, "play-sound", %{sound: "cardPlay"})
           # State will update via PubSub
           {:noreply, socket}
 
@@ -90,6 +92,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     if is_my_turn?(socket) do
       case GameServer.make_bid(socket.assigns.game_id, socket.assigns.current_user.id, :take) do
         {:ok, _game} ->
+          socket = push_event(socket, "play-sound", %{sound: "bidTake"})
           {:noreply, socket}
 
         {:error, reason} ->
@@ -104,6 +107,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     if is_my_turn?(socket) do
       case GameServer.make_bid(socket.assigns.game_id, socket.assigns.current_user.id, :pass) do
         {:ok, _game} ->
+          socket = push_event(socket, "play-sound", %{sound: "bidPass"})
           {:noreply, socket}
 
         {:error, reason} ->
@@ -120,6 +124,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
 
       case GameServer.make_bid(socket.assigns.game_id, socket.assigns.current_user.id, {:choose, suit}) do
         {:ok, _game} ->
+          socket = push_event(socket, "play-sound", %{sound: "bidTake"})
           {:noreply, socket}
 
         {:error, reason} ->
@@ -152,14 +157,21 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
   ## PubSub Event Handlers
 
   def handle_info({:game_updated, game}, socket) do
-    # Detect belote announcement
-    announcement = detect_belote_announcement(socket.assigns.game, game)
+    old_game = socket.assigns.game
 
-    {:noreply,
-     socket
-     |> assign(:game, game)
-     |> assign(:message, get_game_message(game, socket.assigns.my_position))
-     |> assign(:belote_announcement, announcement)}
+    # Detect belote announcement
+    announcement = detect_belote_announcement(old_game, game)
+
+    # Detect game events and play sounds
+    socket =
+      socket
+      |> play_game_sounds(old_game, game)
+      |> play_belote_sound(announcement)
+      |> assign(:game, game)
+      |> assign(:message, get_game_message(game, socket.assigns.my_position))
+      |> assign(:belote_announcement, announcement)
+
+    {:noreply, socket}
   end
 
   def handle_info({:card_played, _data}, socket) do
@@ -299,6 +311,74 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       end
 
     Map.get(player_names, position, "Joueur #{position + 1}")
+  end
+
+  # Sound Effects Helpers
+
+  defp play_game_sounds(socket, old_game, new_game) do
+    socket
+    |> play_shuffle_sound(old_game, new_game)
+    |> play_trick_win_sound(old_game, new_game)
+    |> play_victory_sound(old_game, new_game)
+    |> play_announcement_sound(old_game, new_game)
+  end
+
+  defp play_shuffle_sound(socket, old_game, new_game) do
+    # Play shuffle when cards are dealt (transition to bidding or playing)
+    if (old_game.status == :waiting && new_game.status in [:bidding, :playing]) ||
+         (old_game.status == :bidding_failed && new_game.status == :bidding) do
+      push_event(socket, "play-sound", %{sound: "cardShuffle"})
+    else
+      socket
+    end
+  end
+
+  defp play_trick_win_sound(socket, old_game, new_game) do
+    # Play trick win sound when a trick is completed
+    if length(new_game.tricks_won) > length(old_game.tricks_won) do
+      push_event(socket, "play-sound", %{sound: "trickWin"})
+    else
+      socket
+    end
+  end
+
+  defp play_victory_sound(socket, old_game, new_game) do
+    # Play victory/defeat sound when game finishes
+    if !Game.game_over?(old_game) && Game.game_over?(new_game) do
+      my_position = socket.assigns.my_position
+      my_team = if my_position in [0, 2], do: 0, else: 1
+      winner_team = Game.winner(new_game)
+
+      sound = if winner_team == my_team, do: "victory", else: "defeat"
+      push_event(socket, "play-sound", %{sound: sound})
+    else
+      socket
+    end
+  end
+
+  defp play_announcement_sound(socket, old_game, new_game) do
+    # Play announcement sound when announcements are revealed
+    if old_game.announcements_result == nil &&
+         new_game.announcements_result != nil &&
+         new_game.announcements_result.total_points > 0 do
+      push_event(socket, "play-sound", %{sound: "announcement"})
+    else
+      socket
+    end
+  end
+
+  defp play_belote_sound(socket, announcement) do
+    # Play belote sound when belote/rebelote is announced
+    case announcement do
+      {:belote, _team} ->
+        push_event(socket, "play-sound", %{sound: "belote"})
+
+      {:rebelote, _team} ->
+        push_event(socket, "play-sound", %{sound: "belote"})
+
+      nil ->
+        socket
+    end
   end
 
   defp detect_belote_announcement(old_game, new_game) do
