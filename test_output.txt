@@ -1,0 +1,3427 @@
+Running ExUnit with seed: 59879, max_cases: 20
+
+    warning: variable "stats" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 20 │       {:ok, stats} = Accounts.get_or_create_stats(user.id)
+    │             ~~~~~
+    │
+    └─ test/coinchette_web/live/profile_live_test.exs:20:13: CoinchetteWeb.ProfileLiveTest.__ex_unit_setup_0_0/1
+
+    warning: variable "conn" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 97 │     test "shows empty state when no games played", %{conn: conn} do
+    │                                                            ~~~~
+    │
+    └─ test/coinchette_web/live/profile_live_test.exs:97:60: CoinchetteWeb.ProfileLiveTest."test ProfileLive shows empty state when no games played"/1
+
+     warning: variable "html" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 101 │       {:ok, _view, html} = live(conn, ~p"/game/#{game.id}/play")
+     │                    ~~~~
+     │
+     └─ test/coinchette_web/live/multiplayer_game_live_test.exs:101:20: CoinchetteWeb.MultiplayerGameLiveTest."test Game phase game is in bidding or playing phase after start"/1
+
+     warning: variable "view" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 119 │       {:ok, view, _html} = live(conn, ~p"/game/#{game.id}/play")
+     │             ~~~~
+     │
+     └─ test/coinchette_web/live/multiplayer_game_live_test.exs:119:13: CoinchetteWeb.MultiplayerGameLiveTest."test Real-time updates game progresses with bot turns"/1
+
+     warning: variable "html" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 136 │       {:ok, _view, html} = live(conn, ~p"/game/#{game.id}/play")
+     │                    ~~~~
+     │
+     └─ test/coinchette_web/live/multiplayer_game_live_test.exs:136:20: CoinchetteWeb.MultiplayerGameLiveTest."test Player info display shows all 4 players in game"/1
+
+    warning: variable "user" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 97 │     test "add_player/3 adds a human player", %{user: user, game: game} do
+    │                                                      ~~~~
+    │
+    └─ test/coinchette/multiplayer_test.exs:97:54: Coinchette.MultiplayerTest."test game players add_player/3 adds a human player"/1
+
+     warning: variable "user" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 113 │     test "add_player/3 prevents duplicate positions", %{user: user, game: game} do
+     │                                                               ~~~~
+     │
+     └─ test/coinchette/multiplayer_test.exs:113:63: Coinchette.MultiplayerTest."test game players add_player/3 prevents duplicate positions"/1
+
+     warning: variable "user" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 145 │     test "list_game_players/1 returns players in position order", %{user: user, game: game} do
+     │                                                                           ~~~~
+     │
+     └─ test/coinchette/multiplayer_test.exs:145:75: Coinchette.MultiplayerTest."test game players list_game_players/1 returns players in position order"/1
+
+............................................    warning: unused alias UserStats
+    │
+  5 │   alias Coinchette.Accounts.UserStats
+    │   ~
+    │
+    └─ test/coinchette/accounts/user_stats_test.exs:5:3
+
+.............................................................................    warning: variable "finished_game" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 55 │       finished_game = %{started_game | status: :finished, scores: %{0 => 120, 1 => 42}}
+    │       ~~~~~~~~~~~~~
+    │
+    └─ test/coinchette/game_stats_integration_test.exs:55:7: Coinchette.GameStatsIntegrationTest."test game statistics integration stats are updated when a game finishes"/1
+
+    warning: variable "scores" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 63 │       scores = %{0 => 120, 1 => 42}
+    │       ~~~~~~
+    │
+    └─ test/coinchette/game_stats_integration_test.exs:63:7: Coinchette.GameStatsIntegrationTest."test game statistics integration stats are updated when a game finishes"/1
+
+    warning: variable "state" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 58 │       state = GameServer.get_state(game.id)
+    │       ~~~~~
+    │
+    └─ test/coinchette/game_stats_integration_test.exs:58:7: Coinchette.GameStatsIntegrationTest."test game statistics integration stats are updated when a game finishes"/1
+
+    warning: variable "winner_team" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 62 │       winner_team = 0
+    │       ~~~~~~~~~~~
+    │
+    └─ test/coinchette/game_stats_integration_test.exs:62:7: Coinchette.GameStatsIntegrationTest."test game statistics integration stats are updated when a game finishes"/1
+
+....................................    warning: unused alias Game
+    │
+  5 │   alias Coinchette.Games.Game
+    │   ~
+    │
+    └─ test/coinchette/game_stats_integration_test.exs:5:3
+
+.....................................................
+
+  1) test Leave game allows player to leave and redirects to lobby (CoinchetteWeb.GameLobbyLiveTest)
+     test/coinchette_web/live/game_lobby_live_test.exs:89
+     Assertion with == failed
+     code:  assert redirect_path == "/lobby"
+     left:  {"/lobby", %{}}
+     right: "/lobby"
+     stacktrace:
+       test/coinchette_web/live/game_lobby_live_test.exs:98: (test)
+
+.
+
+  2) test Delete game creator can delete waiting game (CoinchetteWeb.GameLobbyLiveTest)
+     test/coinchette_web/live/game_lobby_live_test.exs:132
+     Assertion with == failed
+     code:  assert redirect_path == "/lobby"
+     left:  {"/lobby", %{}}
+     right: "/lobby"
+     stacktrace:
+       test/coinchette_web/live/game_lobby_live_test.exs:141: (test)
+
+.......07:58:35.864 [error] GenServer #PID<0.1084.0> terminating
+** (KeyError) key :present_users not found in:
+
+    %{
+      socket: #Phoenix.LiveView.Socket<
+        id: "phx-GJCqUGb49lYtbANl",
+        endpoint: CoinchetteWeb.Endpoint,
+        view: CoinchetteWeb.GameLobbyLive,
+        parent_pid: nil,
+        root_pid: #PID<0.1084.0>,
+        router: CoinchetteWeb.Router,
+        assigns: #Phoenix.LiveView.Socket.AssignsNotInSocket<>,
+        transport_pid: #PID<0.1083.0>,
+        sticky?: nil,
+        ...
+      >,
+      __changed__: %{
+        flash: %{},
+        game: %Coinchette.Multiplayer.Game{
+          __meta__: #Ecto.Schema.Metadata<:loaded, "games">,
+          id: "9c0bebb3-068b-48ba-891f-cfc40f904312",
+          variant: "belote",
+          mode: "multi",
+          status: "waiting",
+          state: nil,
+          winner_team: nil,
+          scores: nil,
+          started_at: nil,
+          finished_at: nil,
+          room_code: "JB2T2N",
+          is_private: true,
+          max_players: 4,
+          version: 0,
+          creator_id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899",
+          creator: %Coinchette.Accounts.User{
+            __meta__: #Ecto.Schema.Metadata<:loaded, "users">,
+            id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899",
+            email: "player1@example.com",
+            username: "player1",
+            hashed_password: "$2b$12$O94m5wiNhxwnmj4gX6/SQOw59qB1M3VclJo4qKbvBG2A8WfJplQ8y",
+            confirmed_at: nil,
+            password: nil,
+            password_confirmation: nil,
+            inserted_at: ~N[2026-02-03 06:58:35],
+            updated_at: ~N[2026-02-03 06:58:35]
+          },
+          current_turn_player_id: nil,
+          current_turn_player: nil,
+          game_players: [
+            %Coinchette.Multiplayer.GamePlayer{
+              __meta__: #Ecto.Schema.Metadata<:loaded, "game_players">,
+              id: "4140e129-86a2-49e6-9bd0-f990eb27129f",
+              position: 0,
+              is_bot: false,
+              bot_difficulty: nil,
+              game_id: "9c0bebb3-068b-48ba-891f-cfc40f904312",
+              game: #Ecto.Association.NotLoaded<association :game is not loaded>,
+              user_id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899",
+              user: #Ecto.Association.NotLoaded<association :user is not loaded>,
+              inserted_at: ~N[2026-02-03 06:58:35],
+              updated_at: ~N[2026-02-03 06:58:35]
+            }
+          ],
+          game_events: #Ecto.Association.NotLoaded<association :game_events is not loaded>,
+          chat_messages: #Ecto.Association.NotLoaded<association :chat_messages is not loaded>,
+          inserted_at: ~N[2026-02-03 06:58:35],
+          updated_at: ~N[2026-02-03 06:58:35]
+        },
+        players: true,
+        joining: true
+      },
+      flash: %{"info" => "Joined game!"},
+      current_user: %Coinchette.Accounts.User{
+        __meta__: #Ecto.Schema.Metadata<:loaded, "users">,
+        id: "c5f127fb-9f63-4669-a5e7-2a04e7f3be30",
+        email: "player2@example.com",
+        username: "player2",
+        hashed_password: "$2b$12$PwPVM5/NEFiow7t6n0QbJugmvssjZsXfPKvfZ4.FmzTEbvLedCMz6",
+        confirmed_at: nil,
+        password: nil,
+        password_confirmation: nil,
+        inserted_at: ~N[2026-02-03 06:58:35],
+        updated_at: ~N[2026-02-03 06:58:35]
+      },
+      game: %Coinchette.Multiplayer.Game{
+        __meta__: #Ecto.Schema.Metadata<:loaded, "games">,
+        id: "9c0bebb3-068b-48ba-891f-cfc40f904312",
+        variant: "belote",
+        mode: "multi",
+        status: "waiting",
+        state: nil,
+        winner_team: nil,
+        scores: nil,
+        started_at: nil,
+        finished_at: nil,
+        room_code: "JB2T2N",
+        is_private: true,
+        max_players: 4,
+        version: 0,
+        creator_id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899",
+        creator: %Coinchette.Accounts.User{
+          __meta__: #Ecto.Schema.Metadata<:loaded, "users">,
+          id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899",
+          email: "player1@example.com",
+          username: "player1",
+          hashed_password: "$2b$12$O94m5wiNhxwnmj4gX6/SQOw59qB1M3VclJo4qKbvBG2A8WfJplQ8y",
+          confirmed_at: nil,
+          password: nil,
+          password_confirmation: nil,
+          inserted_at: ~N[2026-02-03 06:58:35],
+          updated_at: ~N[2026-02-03 06:58:35]
+        },
+        current_turn_player_id: nil,
+        current_turn_player: nil,
+        game_players: [
+          %Coinchette.Multiplayer.GamePlayer{
+            __meta__: #Ecto.Schema.Metadata<:loaded, "game_players">,
+            id: "4140e129-86a2-49e6-9bd0-f990eb27129f",
+            position: 0,
+            is_bot: false,
+            bot_difficulty: nil,
+            ...
+          },
+          ...
+        ],
+        ...
+      },
+      ...
+    }
+
+    (coinchette 0.1.0) lib/coinchette_web/live/game_lobby_live.ex:280: anonymous fn/5 in CoinchetteWeb.GameLobbyLive.render/1
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:729: Phoenix.LiveView.Diff.process_keyed/5
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:665: anonymous fn/6 in Phoenix.LiveView.Diff.traverse_keyed/8
+    (elixir 1.19.0) lib/enum.ex:2520: Enum."-reduce/3-lists^foldl/2-0-"/3
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:646: Phoenix.LiveView.Diff.traverse_keyed/8
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:529: Phoenix.LiveView.Diff.traverse/6
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:609: anonymous fn/3 in Phoenix.LiveView.Diff.traverse_dynamic/6
+    (elixir 1.19.0) lib/enum.ex:2520: Enum."-reduce/3-lists^foldl/2-0-"/3
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:419: Phoenix.LiveView.Diff.traverse/6
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:609: anonymous fn/3 in Phoenix.LiveView.Diff.traverse_dynamic/6
+    (elixir 1.19.0) lib/enum.ex:2520: Enum."-reduce/3-lists^foldl/2-0-"/3
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:398: Phoenix.LiveView.Diff.traverse/6
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:146: Phoenix.LiveView.Diff.render/4
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/channel.ex:1020: anonymous fn/4 in Phoenix.LiveView.Channel.render_diff/3
+    (telemetry 1.3.0) /home/christophecraig/projects/coinchette/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/channel.ex:1013: Phoenix.LiveView.Channel.render_diff/3
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/channel.ex:843: Phoenix.LiveView.Channel.handle_changed/4
+    (stdlib 6.2) gen_server.erl:2345: :gen_server.try_handle_info/3
+    (stdlib 6.2) gen_server.erl:2433: :gen_server.handle_msg/6
+    (stdlib 6.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+Process Label: {Phoenix.LiveView, CoinchetteWeb.GameLobbyLive, "lv:phx-GJCqUGb49lYtbANl"}
+Last message: %Phoenix.Socket.Message{topic: "lv:phx-GJCqUGb49lYtbANl", event: "event", payload: %{"event" => "join_game", "type" => "click", "value" => %{}}, ref: "1", join_ref: 0}
+07:58:35.896 [error] GenServer #PID<0.1082.0> terminating
+** (KeyError) key :present_users not found in:
+
+    %{
+      socket: #Phoenix.LiveView.Socket<
+        id: "phx-GJCqUGb49lYtbANl",
+        endpoint: CoinchetteWeb.Endpoint,
+        view: CoinchetteWeb.GameLobbyLive,
+        parent_pid: nil,
+        root_pid: #PID<0.1084.0>,
+        router: CoinchetteWeb.Router,
+        assigns: #Phoenix.LiveView.Socket.AssignsNotInSocket<>,
+        transport_pid: #PID<0.1083.0>,
+        sticky?: nil,
+        ...
+      >,
+      __changed__: %{
+        flash: %{},
+        game: %Coinchette.Multiplayer.Game{
+          __meta__: #Ecto.Schema.Metadata<:loaded, "games">,
+          id: "9c0bebb3-068b-48ba-891f-cfc40f904312",
+          variant: "belote",
+          mode: "multi",
+          status: "waiting",
+          state: nil,
+          winner_team: nil,
+          scores: nil,
+          started_at: nil,
+          finished_at: nil,
+          room_code: "JB2T2N",
+          is_private: true,
+          max_players: 4,
+          version: 0,
+          creator_id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899",
+          creator: %Coinchette.Accounts.User{
+            __meta__: #Ecto.Schema.Metadata<:loaded, "users">,
+            id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899",
+            email: "player1@example.com",
+            username: "player1",
+            hashed_password: "$2b$12$O94m5wiNhxwnmj4gX6/SQOw59qB1M3VclJo4qKbvBG2A8WfJplQ8y",
+            confirmed_at: nil,
+            password: nil,
+            password_confirmation: nil,
+            inserted_at: ~N[2026-02-03 06:58:35],
+            updated_at: ~N[2026-02-03 06:58:35]
+          },
+          current_turn_player_id: nil,
+          current_turn_player: nil,
+          game_players: [
+            %Coinchette.Multiplayer.GamePlayer{
+              __meta__: #Ecto.Schema.Metadata<:loaded, "game_players">,
+              id: "4140e129-86a2-49e6-9bd0-f990eb27129f",
+              position: 0,
+              is_bot: false,
+              bot_difficulty: nil,
+              game_id: "9c0bebb3-068b-48ba-891f-cfc40f904312",
+              game: #Ecto.Association.NotLoaded<association :game is not loaded>,
+              user_id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899",
+              user: #Ecto.Association.NotLoaded<association :user is not loaded>,
+              inserted_at: ~N[2026-02-03 06:58:35],
+              updated_at: ~N[2026-02-03 06:58:35]
+            }
+          ],
+          game_events: #Ecto.Association.NotLoaded<association :game_events is not loaded>,
+          chat_messages: #Ecto.Association.NotLoaded<association :chat_messages is not loaded>,
+          inserted_at: ~N[2026-02-03 06:58:35],
+          updated_at: ~N[2026-02-03 06:58:35]
+        },
+        players: true,
+        joining: true
+      },
+      flash: %{"info" => "Joined game!"},
+      current_user: %Coinchette.Accounts.User{
+        __meta__: #Ecto.Schema.Metadata<:loaded, "users">,
+        id: "c5f127fb-9f63-4669-a5e7-2a04e7f3be30",
+        email: "player2@example.com",
+        username: "player2",
+        hashed_password: "$2b$12$PwPVM5/NEFiow7t6n0QbJugmvssjZsXfPKvfZ4.FmzTEbvLedCMz6",
+        confirmed_at: nil,
+        password: nil,
+        password_confirmation: nil,
+        inserted_at: ~N[2026-02-03 06:58:35],
+        updated_at: ~N[2026-02-03 06:58:35]
+      },
+      game: %Coinchette.Multiplayer.Game{
+        __meta__: #Ecto.Schema.Metadata<:loaded, "games">,
+        id: "9c0bebb3-068b-48ba-891f-cfc40f904312",
+        variant: "belote",
+        mode: "multi",
+        status: "waiting",
+        state: nil,
+        winner_team: nil,
+        scores: nil,
+        started_at: nil,
+        finished_at: nil,
+        room_code: "JB2T2N",
+        is_private: true,
+        max_players: 4,
+        version: 0,
+        creator_id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899",
+        creator: %Coinchette.Accounts.User{
+          __meta__: #Ecto.Schema.Metadata<:loaded, "users">,
+          id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899",
+          email: "player1@example.com",
+          username: "player1",
+          hashed_password: "$2b$12$O94m5wiNhxwnmj4gX6/SQOw59qB1M3VclJo4qKbvBG2A8WfJplQ8y",
+          confirmed_at: nil,
+          password: nil,
+          password_confirmation: nil,
+          inserted_at: ~N[2026-02-03 06:58:35],
+          updated_at: ~N[2026-02-03 06:58:35]
+        },
+        current_turn_player_id: nil,
+        current_turn_player: nil,
+        game_players: [
+          %Coinchette.Multiplayer.GamePlayer{
+            __meta__: #Ecto.Schema.Metadata<:loaded, "game_players">,
+            id: "4140e129-86a2-49e6-9bd0-f990eb27129f",
+            position: 0,
+            is_bot: false,
+            bot_difficulty: nil,
+            ...
+          },
+          ...
+        ],
+        ...
+      },
+      ...
+    }
+
+    (coinchette 0.1.0) lib/coinchette_web/live/game_lobby_live.ex:280: anonymous fn/5 in CoinchetteWeb.GameLobbyLive.render/1
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:729: Phoenix.LiveView.Diff.process_keyed/5
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:665: anonymous fn/6 in Phoenix.LiveView.Diff.traverse_keyed/8
+    (elixir 1.19.0) lib/enum.ex:2520: Enum."-reduce/3-lists^foldl/2-0-"/3
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:646: Phoenix.LiveView.Diff.traverse_keyed/8
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:529: Phoenix.LiveView.Diff.traverse/6
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:609: anonymous fn/3 in Phoenix.LiveView.Diff.traverse_dynamic/6
+    (elixir 1.19.0) lib/enum.ex:2520: Enum."-reduce/3-lists^foldl/2-0-"/3
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:419: Phoenix.LiveView.Diff.traverse/6
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:609: anonymous fn/3 in Phoenix.LiveView.Diff.traverse_dynamic/6
+    (elixir 1.19.0) lib/enum.ex:2520: Enum."-reduce/3-lists^foldl/2-0-"/3
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:398: Phoenix.LiveView.Diff.traverse/6
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:146: Phoenix.LiveView.Diff.render/4
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/channel.ex:1020: anonymous fn/4 in Phoenix.LiveView.Channel.render_diff/3
+    (telemetry 1.3.0) /home/christophecraig/projects/coinchette/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/channel.ex:1013: Phoenix.LiveView.Channel.render_diff/3
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/channel.ex:843: Phoenix.LiveView.Channel.handle_changed/4
+    (stdlib 6.2) gen_server.erl:2345: :gen_server.try_handle_info/3
+    (stdlib 6.2) gen_server.erl:2433: :gen_server.handle_msg/6
+    (stdlib 6.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+Last message: {:EXIT, #PID<0.1072.0>, {{:badkey, :present_users, %{socket: #Phoenix.LiveView.Socket<id: "phx-GJCqUGb49lYtbANl", endpoint: CoinchetteWeb.Endpoint, view: CoinchetteWeb.GameLobbyLive, parent_pid: nil, root_pid: #PID<0.1084.0>, router: CoinchetteWeb.Router, assigns: #Phoenix.LiveView.Socket.AssignsNotInSocket<>, transport_pid: #PID<0.1083.0>, sticky?: nil, ...>, __changed__: %{flash: %{}, game: %Coinchette.Multiplayer.Game{__meta__: #Ecto.Schema.Metadata<:loaded, "games">, id: "9c0bebb3-068b-48ba-891f-cfc40f904312", variant: "belote", mode: "multi", status: "waiting", state: nil, winner_team: nil, scores: nil, started_at: nil, finished_at: nil, room_code: "JB2T2N", is_private: true, max_players: 4, version: 0, creator_id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899", creator: %Coinchette.Accounts.User{__meta__: #Ecto.Schema.Metadata<:loaded, "users">, id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899", email: "player1@example.com", username: "player1", hashed_password: "$2b$12$O94m5wiNhxwnmj4gX6/SQOw59qB1M3VclJo4qKbvBG2A8WfJplQ8y", confirmed_at: nil, password: nil, password_confirmation: nil, inserted_at: ~N[2026-02-03 06:58:35], updated_at: ~N[2026-02-03 06:58:35]}, current_turn_player_id: nil, current_turn_player: nil, game_players: [%Coinchette.Multiplayer.GamePlayer{__meta__: #Ecto.Schema.Metadata<:loaded, "game_players">,  (truncated)
+
+
+  3) test Join game allows non-player to join (CoinchetteWeb.GameLobbyLiveTest)
+     test/coinchette_web/live/game_lobby_live_test.exs:75
+     ** (EXIT from #PID<0.1072.0>) an exception was raised:
+         ** (KeyError) key :present_users not found in:
+
+         %{
+           socket: #Phoenix.LiveView.Socket<
+             id: "phx-GJCqUGb49lYtbANl",
+             endpoint: CoinchetteWeb.Endpoint,
+             view: CoinchetteWeb.GameLobbyLive,
+             parent_pid: nil,
+             root_pid: #PID<0.1084.0>,
+             router: CoinchetteWeb.Router,
+             assigns: #Phoenix.LiveView.Socket.AssignsNotInSocket<>,
+             transport_pid: #PID<0.1083.0>,
+             sticky?: nil,
+             ...
+           >,
+           __changed__: %{
+             flash: %{},
+             game: %Coinchette.Multiplayer.Game{
+               __meta__: #Ecto.Schema.Metadata<:loaded, "games">,
+               id: "9c0bebb3-068b-48ba-891f-cfc40f904312",
+               variant: "belote",
+               mode: "multi",
+               status: "waiting",
+               state: nil,
+               winner_team: nil,
+               scores: nil,
+               started_at: nil,
+               finished_at: nil,
+               room_code: "JB2T2N",
+               is_private: true,
+               max_players: 4,
+               version: 0,
+               creator_id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899",
+               creator: %Coinchette.Accounts.User{
+                 __meta__: #Ecto.Schema.Metadata<:loaded, "users">,
+                 id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899",
+                 email: "player1@example.com",
+                 username: "player1",
+                 hashed_password: "$2b$12$O94m5wiNhxwnmj4gX6/SQOw59qB1M3VclJo4qKbvBG2A8WfJplQ8y",
+                 confirmed_at: nil,
+                 password: nil,
+                 password_confirmation: nil,
+                 inserted_at: ~N[2026-02-03 06:58:35],
+                 updated_at: ~N[2026-02-03 06:58:35]
+               },
+               current_turn_player_id: nil,
+               current_turn_player: nil,
+               game_players: [
+                 %Coinchette.Multiplayer.GamePlayer{
+                   __meta__: #Ecto.Schema.Metadata<:loaded, "game_players">,
+                   id: "4140e129-86a2-49e6-9bd0-f990eb27129f",
+                   position: 0,
+                   is_bot: false,
+                   bot_difficulty: nil,
+                   game_id: "9c0bebb3-068b-48ba-891f-cfc40f904312",
+                   game: #Ecto.Association.NotLoaded<association :game is not loaded>,
+                   user_id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899",
+                   user: #Ecto.Association.NotLoaded<association :user is not loaded>,
+                   inserted_at: ~N[2026-02-03 06:58:35],
+                   updated_at: ~N[2026-02-03 06:58:35]
+                 }
+               ],
+               game_events: #Ecto.Association.NotLoaded<association :game_events is not loaded>,
+               chat_messages: #Ecto.Association.NotLoaded<association :chat_messages is not loaded>,
+               inserted_at: ~N[2026-02-03 06:58:35],
+               updated_at: ~N[2026-02-03 06:58:35]
+             },
+             players: true,
+             joining: true
+           },
+           flash: %{"info" => "Joined game!"},
+           current_user: %Coinchette.Accounts.User{
+             __meta__: #Ecto.Schema.Metadata<:loaded, "users">,
+             id: "c5f127fb-9f63-4669-a5e7-2a04e7f3be30",
+             email: "player2@example.com",
+             username: "player2",
+             hashed_password: "$2b$12$PwPVM5/NEFiow7t6n0QbJugmvssjZsXfPKvfZ4.FmzTEbvLedCMz6",
+             confirmed_at: nil,
+             password: nil,
+             password_confirmation: nil,
+             inserted_at: ~N[2026-02-03 06:58:35],
+             updated_at: ~N[2026-02-03 06:58:35]
+           },
+           game: %Coinchette.Multiplayer.Game{
+             __meta__: #Ecto.Schema.Metadata<:loaded, "games">,
+             id: "9c0bebb3-068b-48ba-891f-cfc40f904312",
+             variant: "belote",
+             mode: "multi",
+             status: "waiting",
+             state: nil,
+             winner_team: nil,
+             scores: nil,
+             started_at: nil,
+             finished_at: nil,
+             room_code: "JB2T2N",
+             is_private: true,
+             max_players: 4,
+             version: 0,
+             creator_id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899",
+             creator: %Coinchette.Accounts.User{
+               __meta__: #Ecto.Schema.Metadata<:loaded, "users">,
+               id: "4eb5869e-eadc-4fae-b31a-47c17c5e9899",
+               email: "player1@example.com",
+               username: "player1",
+               hashed_password: "$2b$12$O94m5wiNhxwnmj4gX6/SQOw59qB1M3VclJo4qKbvBG2A8WfJplQ8y",
+               confirmed_at: nil,
+               password: nil,
+               password_confirmation: nil,
+               inserted_at: ~N[2026-02-03 06:58:35],
+               updated_at: ~N[2026-02-03 06:58:35]
+             },
+             current_turn_player_id: nil,
+             current_turn_player: nil,
+             game_players: [
+               %Coinchette.Multiplayer.GamePlayer{
+                 __meta__: #Ecto.Schema.Metadata<:loaded, "game_players">,
+                 id: "4140e129-86a2-49e6-9bd0-f990eb27129f",
+                 position: 0,
+                 is_bot: false,
+                 bot_difficulty: nil,
+                 ...
+               },
+               ...
+             ],
+             ...
+           },
+           ...
+         }
+
+             (coinchette 0.1.0) lib/coinchette_web/live/game_lobby_live.ex:280: anonymous fn/5 in CoinchetteWeb.GameLobbyLive.render/1
+             (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:729: Phoenix.LiveView.Diff.process_keyed/5
+             (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:665: anonymous fn/6 in Phoenix.LiveView.Diff.traverse_keyed/8
+             (elixir 1.19.0) lib/enum.ex:2520: Enum."-reduce/3-lists^foldl/2-0-"/3
+             (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:646: Phoenix.LiveView.Diff.traverse_keyed/8
+             (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:529: Phoenix.LiveView.Diff.traverse/6
+             (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:609: anonymous fn/3 in Phoenix.LiveView.Diff.traverse_dynamic/6
+             (elixir 1.19.0) lib/enum.ex:2520: Enum."-reduce/3-lists^foldl/2-0-"/3
+             (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:419: Phoenix.LiveView.Diff.traverse/6
+             (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:609: anonymous fn/3 in Phoenix.LiveView.Diff.traverse_dynamic/6
+             (elixir 1.19.0) lib/enum.ex:2520: Enum."-reduce/3-lists^foldl/2-0-"/3
+             (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:398: Phoenix.LiveView.Diff.traverse/6
+             (phoenix_live_view 1.1.22) lib/phoenix_live_view/diff.ex:146: Phoenix.LiveView.Diff.render/4
+             (phoenix_live_view 1.1.22) lib/phoenix_live_view/channel.ex:1020: anonymous fn/4 in Phoenix.LiveView.Channel.render_diff/3
+             (telemetry 1.3.0) /home/christophecraig/projects/coinchette/deps/telemetry/src/telemetry.erl:324: :telemetry.span/3
+             (phoenix_live_view 1.1.22) lib/phoenix_live_view/channel.ex:1013: Phoenix.LiveView.Channel.render_diff/3
+             (phoenix_live_view 1.1.22) lib/phoenix_live_view/channel.ex:843: Phoenix.LiveView.Channel.handle_changed/4
+             (stdlib 6.2) gen_server.erl:2345: :gen_server.try_handle_info/3
+             (stdlib 6.2) gen_server.erl:2433: :gen_server.handle_msg/6
+             (stdlib 6.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+...07:58:37.839 [error] GenServer {Coinchette.GameRegistry, "461d8ea9-057d-4a40-b36f-ccfdb81c32d2"} terminating
+** (Ecto.NoResultsError) expected at least one result but got none in query:
+
+from g0 in Coinchette.Multiplayer.Game,
+  where: g0.id == ^"461d8ea9-057d-4a40-b36f-ccfdb81c32d2"
+
+    (ecto 3.13.5) lib/ecto/repo/queryable.ex:173: Ecto.Repo.Queryable.one!/3
+    (coinchette 0.1.0) lib/coinchette/multiplayer.ex:119: Coinchette.Multiplayer.update_game_state/2
+    (coinchette 0.1.0) lib/coinchette/game_server.ex:419: Coinchette.GameServer.handle_info/2
+    (stdlib 6.2) gen_server.erl:2345: :gen_server.try_handle_info/3
+    (stdlib 6.2) gen_server.erl:2433: :gen_server.handle_msg/6
+    (stdlib 6.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+Last message: :play_bot_turn
+
+
+  4) test Start game creator can start game and gets redirected (CoinchetteWeb.GameLobbyLiveTest)
+     test/coinchette_web/live/game_lobby_live_test.exs:103
+     ** (FunctionClauseError) no function clause matching in Kernel.=~/2
+
+     The following arguments were given to Kernel.=~/2:
+
+         # 1
+         {"/game/986a7c3e-cce8-436e-b566-ca1a08c67cc2/play", %{}}
+
+         # 2
+         ~r/\/game\/.+\/play/
+
+     Attempted function clauses (showing 3 out of 3):
+
+         def =~(left, -""-) when -is_binary(left)-
+         def =~(left, right) when -is_binary(left)- and -is_binary(right)-
+         def =~(left, right) when -is_binary(left)-
+
+     code: assert redirect_path =~ ~r"/game/.+/play"
+     stacktrace:
+       (elixir 1.19.0) lib/kernel.ex:2394: Kernel.=~/2
+       test/coinchette_web/live/game_lobby_live_test.exs:112: (test)
+
+.
+
+  5) test Game state display displays bots with robot emoji (CoinchetteWeb.MultiplayerGameLiveTest)
+     test/coinchette_web/live/multiplayer_game_live_test.exs:66
+     Assertion with =~ failed
+     code:  assert html =~ "🤖"
+     left:  "<html lang=\"en\"><head><meta charset=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><meta name=\"csrf-token\" content=\"KRZlNUcZGVZnbBQIDysBXgMFCho8ZwgNLP6BrqA503Zkhrkk0cbvTWpj\"/><title data-default=\"Coinchette\" data-suffix=\" · Phoenix Framework\">\n      Playing Game\n     · Phoenix Framework</title><link phx-track-static=\"\" rel=\"stylesheet\" href=\"/assets/css/app.css\"/><script defer=\"\" phx-track-static=\"\" type=\"text/javascript\" src=\"/assets/js/app.js\"></script><script>\n      (() => {\n        const setTheme = (theme) => {\n          if (theme === \"system\") {\n            localStorage.removeItem(\"phx:theme\");\n            document.documentElement.removeAttribute(\"data-theme\");\n          } else {\n            localStorage.setItem(\"phx:theme\", theme);\n            document.documentElement.setAttribute(\"data-theme\", theme);\n          }\n        };\n        if (!document.documentElement.hasAttribute(\"data-theme\")) {\n          setTheme(localStorage.getItem(\"phx:theme\") || \"system\");\n        }\n        window.addEventListener(\"storage\", (e) => e.key === \"phx:theme\" && setTheme(e.newValue || \"system\"));\n        \n        window.addEventListener(\"phx:set-theme\", (e) => setTheme(e.target.dataset.phxTheme));\n      })();\n    </script></head><body><div id=\"phx-GJCqUSOQFD6FfgNi\" data-phx-main=\"\" data-phx-session=\"SFMyNTY.g2gDaAJhBnQAAAAIdwJpZG0AAAAUcGh4LUdKQ3FVU09RRkQ2RmZnTml3B3Nlc3Npb250AAAAAHcGcm91dGVydxtFbGl4aXIuQ29pbmNoZXR0ZVdlYi5Sb3V0ZXJ3CnBhcmVudF9waWR3A25pbHcEdmlld3coRWxpeGlyLkNvaW5jaGV0dGVXZWIuTXVsdGlwbGF5ZXJHYW1lTGl2ZXcIcm9vdF9waWR3A25pbHcJcm9vdF92aWV3dyhFbGl4aXIuQ29pbmNoZXR0ZVdlYi5NdWx0aXBsYXllckdhbWVMaXZldxFsaXZlX3Nlc3Npb25fbmFtZXcHZGVmYXVsdG4GADDNSyKcAWIAAVGA.nb3meN-UNTcgn6rpNgMDJybJ5dm_XKp1_eHP_qtJldM\" data-phx-static=\"SFMyNTY.g2gDaAJhBnQAAAADdwJpZG0AAAAUcGh4LUdKQ3FVU09RRkQ2RmZnTml3BWZsYXNodAAAAAB3CmFzc2lnbl9uZXdqbgYAMM1LIpwBYgABUYA.o5H2jpQAu-2PkqWiy58dS05N0e0dkHWsIPUL2Yrpsjw\"><div class=\"min-h-screen bg-gradient-to-br from-green-800 to-green-600 p-4 sm:p-8\"><div class=\"max-w-6xl mx-auto\"><!-- Header --><div class=\"flex items-center justify-between mb-6\"><div class=\"text-white\"><h1 class=\"text-2xl sm:text-4xl font-bold\">🃏 Coinchette</h1><p class=\"text-green-100 text-sm sm:text-lg mt-1\">Premier tour - Joueur 2 enchérit...</p></div><div class=\"flex items-center gap-2\"><div phx-hook=\"VolumeControl\" id=\"game-volume-control\" class=\"flex items-center gap-3 text-white\"><button data-action=\"toggle-mute\" class=\"btn btn-ghost btn-sm btn-circle\" aria-label=\"Toggle mute\" title=\"Toggle sound\">\n    🔊\n  </button><input type=\"range\" min=\"0\" max=\"100\" value=\"50\" class=\"range range-xs range-primary w-24\" aria-label=\"Volume\" title=\"Volume\"/></div><div class=\"card relative flex flex-row items-center border-2 border-base-300 bg-base-300 rounded-full\"><div class=\"absolute w-1/3 h-full rounded-full border-1 border-base-200 bg-base-100 brightness-200 left-0 [[data-theme=light]_&amp;]:left-1/3 [[data-theme=dark]_&amp;]:left-2/3 transition-[left]\"></div><button class=\"flex p-2 cursor-pointer w-1/3\" phx-click=\"[[&quot;dispatch&quot;,{&quot;event&quot;:&quot;phx:set-theme&quot;}]]\" data-phx-theme=\"system\"><span class=\"hero-computer-desktop-micro size-4 opacity-75 hover:opacity-100\"></span></button><button class=\"flex p-2 cursor-pointer w-1/3\" phx-click=\"[[&quot;dispatch&quot;,{&quot;event&quot;:&quot;phx:set-theme&quot;}]]\" data-phx-theme=\"light\"><span class=\"hero-sun-micro size-4 opacity-75 hover:opacity-100\"></span></button><button class=\"flex p-2 cursor-pointer w-1/3\" phx-click=\"[[&quot;dispatch&quot;,{&quot;event&quot;:&quot;phx:set-theme&quot;}]]\" data-phx-theme=\"dark\"><span class=\"hero-moon-micro size-4 opacity-75 hover:opacity-100\"></span></button></div><button phx-click=\"leave_game\" class=\"btn btn-ghost btn-sm text-white\">\n          Quitter\n        </button></div></div><!-- Game Info Bar (Trump and Scores) --><div class=\"mb-4 bg-white/10 backdrop-blur-sm rounded-lg p-4\"><div class=\"flex flex-wrap items-center justify-between gap-4\"><!-- Trump Display --><!-- Scores --><div class=\"flex gap-6 text-center\"><div><div class=\"text-w" <> ...
+     right: "🤖"
+     stacktrace:
+       test/coinchette_web/live/multiplayer_game_live_test.exs:70: (test)
+
+07:58:39.077 [error] GenServer {Coinchette.GameRegistry, "986a7c3e-cce8-436e-b566-ca1a08c67cc2"} terminating
+** (Ecto.NoResultsError) expected at least one result but got none in query:
+
+from g0 in Coinchette.Multiplayer.Game,
+  where: g0.id == ^"986a7c3e-cce8-436e-b566-ca1a08c67cc2"
+
+    (ecto 3.13.5) lib/ecto/repo/queryable.ex:173: Ecto.Repo.Queryable.one!/3
+    (coinchette 0.1.0) lib/coinchette/multiplayer.ex:119: Coinchette.Multiplayer.update_game_state/2
+    (coinchette 0.1.0) lib/coinchette/game_server.ex:419: Coinchette.GameServer.handle_info/2
+    (stdlib 6.2) gen_server.erl:2345: :gen_server.try_handle_info/3
+    (stdlib 6.2) gen_server.erl:2433: :gen_server.handle_msg/6
+    (stdlib 6.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+Last message: :play_bot_turn
+07:58:40.158 [error] GenServer #PID<0.1226.0> terminating
+** (ArgumentError) errors were found at the given arguments:
+
+  * 2nd argument: not a tuple
+
+    :erlang.element(1, nil)
+    (coinchette 0.1.0) lib/coinchette_web/live/multiplayer_game_live.ex:439: CoinchetteWeb.MultiplayerGameLive.detect_belote_announcement/2
+    (coinchette 0.1.0) lib/coinchette_web/live/multiplayer_game_live.ex:180: CoinchetteWeb.MultiplayerGameLive.handle_info/2
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/channel.ex:362: Phoenix.LiveView.Channel.handle_info/2
+    (stdlib 6.2) gen_server.erl:2345: :gen_server.try_handle_info/3
+    (stdlib 6.2) gen_server.erl:2433: :gen_server.handle_msg/6
+    (stdlib 6.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+Process Label: {Phoenix.LiveView, CoinchetteWeb.MultiplayerGameLive, "lv:phx-GJCqUTc6gmKn1wbj"}
+Last message: {:game_updated, %Coinchette.Games.Game{trump_suit: nil, proposed_trump_card: %Coinchette.Games.Card{rank: :king, suit: :spades}, bidding: %Coinchette.Games.Bidding{proposed_trump: :spades, dealer_position: 0, current_bidder: 2, taker: nil, trump_suit: nil, round: 1, status: :in_progress}, belote_announced: nil, belote_rebelote: nil, announcements_result: nil, status: :bidding, players: [%Coinchette.Games.Player{position: 0, hand: [%Coinchette.Games.Card{rank: :ace, suit: :hearts}, %Coinchette.Games.Card{rank: :queen, suit: :clubs}, %Coinchette.Games.Card{rank: :ten, suit: :diamonds}, %Coinchette.Games.Card{rank: :ten, suit: :hearts}, %Coinchette.Games.Card{rank: :queen, suit: :spades}], team: 0}, %Coinchette.Games.Player{position: 1, hand: [%Coinchette.Games.Card{rank: :ace, suit: :spades}, %Coinchette.Games.Card{rank: :nine, suit: :spades}, %Coinchette.Games.Card{rank: :nine, suit: :diamonds}, %Coinchette.Games.Card{rank: :jack, suit: :spades}, %Coinchette.Games.Card{rank: :eight, suit: :spades}], team: 1}, %Coinchette.Games.Player{position: 2, hand: [%Coinchette.Games.Card{rank: :ace, suit: :diamonds}, %Coinchette.Games.Card{rank: :seven, suit: :spades}, %Coinchette.Games.Card{rank: :seven, suit: :clubs}, %Coinchette.Games.Card{rank: :nine, suit: :hearts}, %Coinchette.Games.Card{rank: :jack, suit: :hearts}], team: 0}, %Coinchette.Games.Player{position: 3, hand: [%Coinchette.Games.Card{rank: :eight, suit: :clubs}, %Coinchette.Games.Card{rank: :king, suit: :hearts}, %Coinchette.Games.Card{rank: :king, suit: :diamonds}, %Coinchette.Games.Card{rank: :ten, suit: :clubs}, %Coinchette.Games.Card{rank: :queen, suit: :hearts}], team: 1}], current_trick: nil, current_player_position: 0, tricks_won: [], scores: %{0 => 0, ...}, ...}}
+07:58:40.167 [error] GenServer #PID<0.1224.0> terminating
+** (ArgumentError) errors were found at the given arguments:
+
+  * 2nd argument: not a tuple
+
+    :erlang.element(1, nil)
+    (coinchette 0.1.0) lib/coinchette_web/live/multiplayer_game_live.ex:439: CoinchetteWeb.MultiplayerGameLive.detect_belote_announcement/2
+    (coinchette 0.1.0) lib/coinchette_web/live/multiplayer_game_live.ex:180: CoinchetteWeb.MultiplayerGameLive.handle_info/2
+    (phoenix_live_view 1.1.22) lib/phoenix_live_view/channel.ex:362: Phoenix.LiveView.Channel.handle_info/2
+    (stdlib 6.2) gen_server.erl:2345: :gen_server.try_handle_info/3
+    (stdlib 6.2) gen_server.erl:2433: :gen_server.handle_msg/6
+    (stdlib 6.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+Last message: {:EXIT, #PID<0.1210.0>, {:badarg, [{:erlang, :element, [1, nil], [error_info: %{module: :erl_erts_errors}]}, {CoinchetteWeb.MultiplayerGameLive, :detect_belote_announcement, 2, [file: ~c"lib/coinchette_web/live/multiplayer_game_live.ex", line: 439]}, {CoinchetteWeb.MultiplayerGameLive, :handle_info, 2, [file: ~c"lib/coinchette_web/live/multiplayer_game_live.ex", line: 180]}, {Phoenix.LiveView.Channel, :handle_info, 2, [file: ~c"lib/phoenix_live_view/channel.ex", line: 362]}, {:gen_server, :try_handle_info, 3, [file: ~c"gen_server.erl", line: 2345]}, {:gen_server, :handle_msg, 6, [file: ~c"gen_server.erl", line: 2433]}, {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}]}}
+
+
+  6) test Real-time updates game progresses with bot turns (CoinchetteWeb.MultiplayerGameLiveTest)
+     test/coinchette_web/live/multiplayer_game_live_test.exs:117
+     ** (EXIT from #PID<0.1210.0>) an exception was raised:
+         ** (ArgumentError) errors were found at the given arguments:
+
+       * 2nd argument: not a tuple
+
+             :erlang.element(1, nil)
+             (coinchette 0.1.0) lib/coinchette_web/live/multiplayer_game_live.ex:439: CoinchetteWeb.MultiplayerGameLive.detect_belote_announcement/2
+             (coinchette 0.1.0) lib/coinchette_web/live/multiplayer_game_live.ex:180: CoinchetteWeb.MultiplayerGameLive.handle_info/2
+             (phoenix_live_view 1.1.22) lib/phoenix_live_view/channel.ex:362: Phoenix.LiveView.Channel.handle_info/2
+             (stdlib 6.2) gen_server.erl:2345: :gen_server.try_handle_info/3
+             (stdlib 6.2) gen_server.erl:2433: :gen_server.handle_msg/6
+             (stdlib 6.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+
+..07:58:40.963 [error] GenServer {Coinchette.GameRegistry, "2d1fec6d-4dc2-4ab4-80a4-58f562ec994b"} terminating
+** (Ecto.NoResultsError) expected at least one result but got none in query:
+
+from g0 in Coinchette.Multiplayer.Game,
+  where: g0.id == ^"2d1fec6d-4dc2-4ab4-80a4-58f562ec994b"
+
+    (ecto 3.13.5) lib/ecto/repo/queryable.ex:173: Ecto.Repo.Queryable.one!/3
+    (coinchette 0.1.0) lib/coinchette/multiplayer.ex:119: Coinchette.Multiplayer.update_game_state/2
+    (coinchette 0.1.0) lib/coinchette/game_server.ex:419: Coinchette.GameServer.handle_info/2
+    (stdlib 6.2) gen_server.erl:2345: :gen_server.try_handle_info/3
+    (stdlib 6.2) gen_server.erl:2433: :gen_server.handle_msg/6
+    (stdlib 6.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+Last message: :play_bot_turn
+...07:58:41.949 [error] GenServer {Coinchette.GameRegistry, "2f96efbc-6a7c-4214-9c65-864ecd758320"} terminating
+** (Ecto.NoResultsError) expected at least one result but got none in query:
+
+from g0 in Coinchette.Multiplayer.Game,
+  where: g0.id == ^"2f96efbc-6a7c-4214-9c65-864ecd758320"
+
+    (ecto 3.13.5) lib/ecto/repo/queryable.ex:173: Ecto.Repo.Queryable.one!/3
+    (coinchette 0.1.0) lib/coinchette/multiplayer.ex:119: Coinchette.Multiplayer.update_game_state/2
+    (coinchette 0.1.0) lib/coinchette/game_server.ex:419: Coinchette.GameServer.handle_info/2
+    (stdlib 6.2) gen_server.erl:2345: :gen_server.try_handle_info/3
+    (stdlib 6.2) gen_server.erl:2433: :gen_server.handle_msg/6
+    (stdlib 6.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+Last message: :play_bot_turn
+
+
+  7) test Player info display marks user's position (CoinchetteWeb.MultiplayerGameLiveTest)
+     test/coinchette_web/live/multiplayer_game_live_test.exs:142
+     ** (RuntimeError) could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist
+     stacktrace:
+       (ecto 3.13.5) lib/ecto/repo/registry.ex:22: Ecto.Repo.Registry.lookup/1
+       (ecto 3.13.5) lib/ecto/repo/supervisor.ex:176: Ecto.Repo.Supervisor.tuplet/2
+       (coinchette 0.1.0) lib/coinchette/repo.ex:2: Coinchette.Repo.insert/2
+       test/coinchette_web/live/multiplayer_game_live_test.exs:10: CoinchetteWeb.MultiplayerGameLiveTest.__ex_unit_setup_1/1
+       test/coinchette_web/live/multiplayer_game_live_test.exs:1: CoinchetteWeb.MultiplayerGameLiveTest.__ex_unit__/2
+
+
+
+  8) test Chat functionality displays chat panel (CoinchetteWeb.MultiplayerGameLiveTest)
+     test/coinchette_web/live/multiplayer_game_live_test.exs:75
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/multiplayer_game_live_test.exs:1: CoinchetteWeb.MultiplayerGameLiveTest.__ex_unit__/2
+
+
+
+  9) test Game phase shows game interface elements (CoinchetteWeb.MultiplayerGameLiveTest)
+     test/coinchette_web/live/multiplayer_game_live_test.exs:107
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/multiplayer_game_live_test.exs:1: CoinchetteWeb.MultiplayerGameLiveTest.__ex_unit__/2
+
+
+
+ 10) test Game phase game is in bidding or playing phase after start (CoinchetteWeb.MultiplayerGameLiveTest)
+     test/coinchette_web/live/multiplayer_game_live_test.exs:99
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/multiplayer_game_live_test.exs:1: CoinchetteWeb.MultiplayerGameLiveTest.__ex_unit__/2
+
+
+
+ 11) test Presence tracking tracks users in a game (CoinchetteWeb.PresenceTest)
+     test/coinchette_web/presence_test.exs:7
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/presence_test.exs:1: CoinchetteWeb.PresenceTest.__ex_unit__/2
+
+
+
+ 12) test Presence tracking removes users when process terminates (CoinchetteWeb.PresenceTest)
+     test/coinchette_web/presence_test.exs:28
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/presence_test.exs:1: CoinchetteWeb.PresenceTest.__ex_unit__/2
+
+
+
+ 13) test Presence tracking tracks multiple users in the same game (CoinchetteWeb.PresenceTest)
+     test/coinchette_web/presence_test.exs:64
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/presence_test.exs:1: CoinchetteWeb.PresenceTest.__ex_unit__/2
+
+
+
+ 14) test users get_user_by_email_and_password/2 with valid credentials returns user (Coinchette.AccountsTest)
+     test/coinchette/accounts_test.exs:65
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/accounts_test.exs:1: Coinchette.AccountsTest.__ex_unit__/2
+
+
+
+ 15) test users register_user/1 validates password length (Coinchette.AccountsTest)
+     test/coinchette/accounts_test.exs:47
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/accounts_test.exs:1: Coinchette.AccountsTest.__ex_unit__/2
+
+
+
+ 16) test users get_user!/1 returns the user with given id (Coinchette.AccountsTest)
+     test/coinchette/accounts_test.exs:86
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/accounts_test.exs:1: Coinchette.AccountsTest.__ex_unit__/2
+
+
+
+ 17) test users register_user/1 with valid data creates a user (Coinchette.AccountsTest)
+     test/coinchette/accounts_test.exs:17
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/accounts_test.exs:1: Coinchette.AccountsTest.__ex_unit__/2
+
+
+
+ 18) test users register_user/1 requires unique username (Coinchette.AccountsTest)
+     test/coinchette/accounts_test.exs:38
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/accounts_test.exs:1: Coinchette.AccountsTest.__ex_unit__/2
+
+
+
+ 19) test users register_user/1 with invalid data returns error changeset (Coinchette.AccountsTest)
+     test/coinchette/accounts_test.exs:25
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/accounts_test.exs:1: Coinchette.AccountsTest.__ex_unit__/2
+
+
+
+ 20) test users register_user/1 requires unique email (Coinchette.AccountsTest)
+     test/coinchette/accounts_test.exs:29
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/accounts_test.exs:1: Coinchette.AccountsTest.__ex_unit__/2
+
+
+
+ 21) test users register_user/1 validates password confirmation (Coinchette.AccountsTest)
+     test/coinchette/accounts_test.exs:58
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/accounts_test.exs:1: Coinchette.AccountsTest.__ex_unit__/2
+
+
+
+ 22) test users get_user_by_email_and_password/2 with invalid email returns error (Coinchette.AccountsTest)
+     test/coinchette/accounts_test.exs:81
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/accounts_test.exs:1: Coinchette.AccountsTest.__ex_unit__/2
+
+
+
+ 23) test users get_user_by_email_and_password/2 with invalid password returns error (Coinchette.AccountsTest)
+     test/coinchette/accounts_test.exs:74
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/accounts_test.exs:1: Coinchette.AccountsTest.__ex_unit__/2
+
+
+
+ 24) test GET / (CoinchetteWeb.PageControllerTest)
+     test/coinchette_web/controllers/page_controller_test.exs:4
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/controllers/page_controller_test.exs:1: CoinchetteWeb.PageControllerTest.__ex_unit__/2
+
+
+
+ 25) test Active games list displays user's active games (CoinchetteWeb.LobbyLiveTest)
+     test/coinchette_web/live/lobby_live_test.exs:108
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/lobby_live_test.exs:1: CoinchetteWeb.LobbyLiveTest.__ex_unit__/2
+
+
+
+ 26) test Join game joins a game by room code (CoinchetteWeb.LobbyLiveTest)
+     test/coinchette_web/live/lobby_live_test.exs:70
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/lobby_live_test.exs:1: CoinchetteWeb.LobbyLiveTest.__ex_unit__/2
+
+
+
+ 27) test Profile navigation has link to profile page (CoinchetteWeb.LobbyLiveTest)
+     test/coinchette_web/live/lobby_live_test.exs:143
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/lobby_live_test.exs:1: CoinchetteWeb.LobbyLiveTest.__ex_unit__/2
+
+
+
+ 28) test LobbyLive mount displays the lobby page when logged in (CoinchetteWeb.LobbyLiveTest)
+     test/coinchette_web/live/lobby_live_test.exs:23
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/lobby_live_test.exs:1: CoinchetteWeb.LobbyLiveTest.__ex_unit__/2
+
+
+
+ 29) test Create game creates game with belote variant by default (CoinchetteWeb.LobbyLiveTest)
+     test/coinchette_web/live/lobby_live_test.exs:52
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/lobby_live_test.exs:1: CoinchetteWeb.LobbyLiveTest.__ex_unit__/2
+
+
+
+ 30) test LobbyLive mount redirects to login when not authenticated (CoinchetteWeb.LobbyLiveTest)
+     test/coinchette_web/live/lobby_live_test.exs:30
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/lobby_live_test.exs:1: CoinchetteWeb.LobbyLiveTest.__ex_unit__/2
+
+
+
+ 31) test Create game creates a new game and redirects to game lobby (CoinchetteWeb.LobbyLiveTest)
+     test/coinchette_web/live/lobby_live_test.exs:39
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/lobby_live_test.exs:1: CoinchetteWeb.LobbyLiveTest.__ex_unit__/2
+
+
+
+ 32) test Join game shows error for invalid room code (CoinchetteWeb.LobbyLiveTest)
+     test/coinchette_web/live/lobby_live_test.exs:94
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/lobby_live_test.exs:1: CoinchetteWeb.LobbyLiveTest.__ex_unit__/2
+
+
+
+ 33) test Active games list allows clicking on game to navigate (CoinchetteWeb.LobbyLiveTest)
+     test/coinchette_web/live/lobby_live_test.exs:127
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/lobby_live_test.exs:1: CoinchetteWeb.LobbyLiveTest.__ex_unit__/2
+
+
+
+ 34) test Active games list shows empty state when no games (CoinchetteWeb.LobbyLiveTest)
+     test/coinchette_web/live/lobby_live_test.exs:120
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/lobby_live_test.exs:1: CoinchetteWeb.LobbyLiveTest.__ex_unit__/2
+
+
+
+ 35) test game start auto-fills with bots when starting (Coinchette.GameServerTest)
+     test/coinchette/game_server_test.exs:113
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/game_server_test.exs:1: Coinchette.GameServerTest.__ex_unit__/2
+
+
+
+ 36) test player management removes players (Coinchette.GameServerTest)
+     test/coinchette/game_server_test.exs:85
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/game_server_test.exs:1: Coinchette.GameServerTest.__ex_unit__/2
+
+
+
+ 37) test persistence persists game state to database (Coinchette.GameServerTest)
+     test/coinchette/game_server_test.exs:158
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/game_server_test.exs:1: Coinchette.GameServerTest.__ex_unit__/2
+
+
+
+ 38) test persistence creates game events (Coinchette.GameServerTest)
+     test/coinchette/game_server_test.exs:177
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/game_server_test.exs:1: Coinchette.GameServerTest.__ex_unit__/2
+
+
+
+ 39) test GameServer lifecycle starts and stops successfully (Coinchette.GameServerTest)
+     test/coinchette/game_server_test.exs:35
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/game_server_test.exs:1: Coinchette.GameServerTest.__ex_unit__/2
+
+
+
+ 40) test player management adds bot players (Coinchette.GameServerTest)
+     test/coinchette/game_server_test.exs:73
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/game_server_test.exs:1: Coinchette.GameServerTest.__ex_unit__/2
+
+
+
+ 41) test GameServer lifecycle can retrieve game state (Coinchette.GameServerTest)
+     test/coinchette/game_server_test.exs:45
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/game_server_test.exs:1: Coinchette.GameServerTest.__ex_unit__/2
+
+
+
+ 42) test player management adds human players (Coinchette.GameServerTest)
+     test/coinchette/game_server_test.exs:60
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/game_server_test.exs:1: Coinchette.GameServerTest.__ex_unit__/2
+
+
+
+ 43) test game start starts game with enough players (Coinchette.GameServerTest)
+     test/coinchette/game_server_test.exs:101
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/game_server_test.exs:1: Coinchette.GameServerTest.__ex_unit__/2
+
+
+
+ 44) test PubSub broadcasting broadcasts game started event (Coinchette.GameServerTest)
+     test/coinchette/game_server_test.exs:140
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/game_server_test.exs:1: Coinchette.GameServerTest.__ex_unit__/2
+
+
+
+ 45) test PubSub broadcasting broadcasts player joined event (Coinchette.GameServerTest)
+     test/coinchette/game_server_test.exs:126
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/game_server_test.exs:1: Coinchette.GameServerTest.__ex_unit__/2
+
+
+
+ 46) test room code generation generate_room_code/0 generates 6-character code (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:257
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 47) test games list_user_games/2 lists games for creator (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:59
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 48) test games get_game_by_room_code/1 returns game (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:49
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 49) test game players add_player/3 prevents duplicate positions (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:113
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 50) test game players add_bot/3 adds a bot player (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:129
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 51) test chat messages send_chat_message/4 with system message (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:228
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 52) test games create_game/2 creates a game with valid data (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:20
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 53) test game players list_game_players/1 returns players in position order (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:145
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 54) test game events list_game_events/1 returns events in order (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:192
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 55) test games get_game!/1 returns game with preloaded associations (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:42
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 56) test games create_game/2 with custom variant (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:31
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 57) test games create_game/2 generates unique room codes (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:36
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 58) test game players remove_player/2 removes a player (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:137
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 59) test games get_game_by_room_code/1 returns nil for invalid code (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:55
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 60) test game events add_game_event/3 maintains sequence order (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:183
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 61) test chat messages send_chat_message/4 creates a message (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:221
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 62) test chat messages list_chat_messages/2 respects limit (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:246
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 63) test game players add_player/3 adds a human player (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:97
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 64) test game events add_game_event/3 creates an event (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:171
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 65) test chat messages list_chat_messages/2 returns messages in chronological order (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:236
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 66) test room code generation generate_room_code/0 does not include confusing characters (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:263
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 67) test games list_user_games/2 with status filter (Coinchette.MultiplayerTest)
+     test/coinchette/multiplayer_test.exs:69
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/multiplayer_test.exs:1: Coinchette.MultiplayerTest.__ex_unit__/2
+
+
+
+ 68) test game statistics integration stats are updated when a game finishes (Coinchette.GameStatsIntegrationTest)
+     test/coinchette/game_stats_integration_test.exs:29
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/data_case.ex:31: Coinchette.DataCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/data_case.ex:1: Coinchette.DataCase.__ex_unit__/2
+       test/coinchette/game_stats_integration_test.exs:1: Coinchette.GameStatsIntegrationTest.__ex_unit__/2
+
+
+
+ 69) test mount identifies current user in player list (CoinchetteWeb.GameHistoryLiveTest)
+     test/coinchette_web/live/game_history_live_test.exs:119
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/game_history_live_test.exs:1: CoinchetteWeb.GameHistoryLiveTest.__ex_unit__/2
+
+
+
+ 70) test mount highlights winning team (CoinchetteWeb.GameHistoryLiveTest)
+     test/coinchette_web/live/game_history_live_test.exs:99
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/game_history_live_test.exs:1: CoinchetteWeb.GameHistoryLiveTest.__ex_unit__/2
+
+
+
+ 71) test game details panel displays trump suit when present in game state (CoinchetteWeb.GameHistoryLiveTest)
+     test/coinchette_web/live/game_history_live_test.exs:142
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/game_history_live_test.exs:1: CoinchetteWeb.GameHistoryLiveTest.__ex_unit__/2
+
+
+
+ 72) test game details panel displays tricks won breakdown (CoinchetteWeb.GameHistoryLiveTest)
+     test/coinchette_web/live/game_history_live_test.exs:163
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/game_history_live_test.exs:1: CoinchetteWeb.GameHistoryLiveTest.__ex_unit__/2
+
+
+
+ 73) test mount redirects if game is not finished (CoinchetteWeb.GameHistoryLiveTest)
+     test/coinchette_web/live/game_history_live_test.exs:49
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/game_history_live_test.exs:1: CoinchetteWeb.GameHistoryLiveTest.__ex_unit__/2
+
+
+
+ 74) test helper functions calculates game duration correctly (CoinchetteWeb.GameHistoryLiveTest)
+     test/coinchette_web/live/game_history_live_test.exs:227
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/game_history_live_test.exs:1: CoinchetteWeb.GameHistoryLiveTest.__ex_unit__/2
+
+
+
+ 75) test mount shows player information organized by teams (CoinchetteWeb.GameHistoryLiveTest)
+     test/coinchette_web/live/game_history_live_test.exs:88
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/game_history_live_test.exs:1: CoinchetteWeb.GameHistoryLiveTest.__ex_unit__/2
+
+
+
+ 76) test mount loads finished game with all data (CoinchetteWeb.GameHistoryLiveTest)
+     test/coinchette_web/live/game_history_live_test.exs:69
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/game_history_live_test.exs:1: CoinchetteWeb.GameHistoryLiveTest.__ex_unit__/2
+
+
+
+ 77) test mount displays game summary information (CoinchetteWeb.GameHistoryLiveTest)
+     test/coinchette_web/live/game_history_live_test.exs:76
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/game_history_live_test.exs:1: CoinchetteWeb.GameHistoryLiveTest.__ex_unit__/2
+
+
+
+ 78) test game details panel displays Belote/Rebelote when present (CoinchetteWeb.GameHistoryLiveTest)
+     test/coinchette_web/live/game_history_live_test.exs:205
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/game_history_live_test.exs:1: CoinchetteWeb.GameHistoryLiveTest.__ex_unit__/2
+
+
+
+ 79) test mount displays event timeline (CoinchetteWeb.GameHistoryLiveTest)
+     test/coinchette_web/live/game_history_live_test.exs:108
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/game_history_live_test.exs:1: CoinchetteWeb.GameHistoryLiveTest.__ex_unit__/2
+
+
+
+ 80) test mount shows back to profile link (CoinchetteWeb.GameHistoryLiveTest)
+     test/coinchette_web/live/game_history_live_test.exs:133
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/game_history_live_test.exs:1: CoinchetteWeb.GameHistoryLiveTest.__ex_unit__/2
+
+
+
+ 81) test helper functions displays N/A when no events recorded (CoinchetteWeb.GameHistoryLiveTest)
+     test/coinchette_web/live/game_history_live_test.exs:253
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/game_history_live_test.exs:1: CoinchetteWeb.GameHistoryLiveTest.__ex_unit__/2
+
+
+
+ 82) test mount displays game duration (CoinchetteWeb.GameHistoryLiveTest)
+     test/coinchette_web/live/game_history_live_test.exs:126
+     ** (MatchError) no match of right hand side value:
+
+         {:error,
+          {%RuntimeError{
+             message: "could not lookup Ecto repo Coinchette.Repo because it was not started or it does not exist"
+           },
+           [
+             {Ecto.Repo.Registry, :lookup, 1,
+              [
+                file: ~c"lib/ecto/repo/registry.ex",
+                line: 22,
+                error_info: %{module: Exception}
+              ]},
+             {Ecto.Adapters.SQL.Sandbox, :lookup_meta!, 1,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 640]},
+             {Ecto.Adapters.SQL.Sandbox, :checkout, 2,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 544]},
+             {Ecto.Adapters.SQL.Sandbox, :"-start_owner!/2-fun-0-", 3,
+              [file: ~c"lib/ecto/adapters/sql/sandbox.ex", line: 454]},
+             {Agent.Server, :init, 1, [file: ~c"lib/agent/server.ex", line: 12]},
+             {:gen_server, :init_it, 2, [file: ~c"gen_server.erl", line: 2229]},
+             {:gen_server, :init_it, 6, [file: ~c"gen_server.erl", line: 2184]},
+             {:proc_lib, :init_p_do_apply, 3, [file: ~c"proc_lib.erl", line: 329]}
+           ]}}
+
+     stacktrace:
+       (ecto_sql 3.13.4) lib/ecto/adapters/sql/sandbox.ex:451: Ecto.Adapters.SQL.Sandbox.start_owner!/2
+       (coinchette 0.1.0) test/support/data_case.ex:39: Coinchette.DataCase.setup_sandbox/1
+       (coinchette 0.1.0) test/support/conn_case.ex:35: CoinchetteWeb.ConnCase.__ex_unit_setup_0/1
+       (coinchette 0.1.0) test/support/conn_case.ex:1: CoinchetteWeb.ConnCase.__ex_unit__/2
+       test/coinchette_web/live/game_history_live_test.exs:1: CoinchetteWeb.GameHistoryLiveTest.__ex_unit__/2
+
+
+Finished in 17.9 seconds (0.4s async, 17.5s sync)
+309 tests, 82 failures

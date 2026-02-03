@@ -436,8 +436,9 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
         {:belote, player.team}
 
       # Rebelote (deuxième carte de la paire jouée)
-      old_game.belote_rebelote == {new_game.belote_rebelote |> elem(0), false} &&
-        new_game.belote_rebelote != nil && elem(new_game.belote_rebelote, 1) == true ->
+      new_game.belote_rebelote != nil && old_game.belote_rebelote != nil &&
+        old_game.belote_rebelote == {elem(new_game.belote_rebelote, 0), false} &&
+        elem(new_game.belote_rebelote, 1) == true ->
         {team, _} = new_game.belote_rebelote
         {:rebelote, team}
 

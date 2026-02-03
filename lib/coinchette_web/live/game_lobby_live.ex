@@ -71,6 +71,7 @@ defmodule CoinchetteWeb.GameLobbyLive do
              socket
              |> assign(:game, game)
              |> assign(:joining, false)
+             |> assign(:present_users, get_present_users(game_id))
              |> load_players()
              |> put_flash(:info, "Joined game!")}
 
