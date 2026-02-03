@@ -4,8 +4,6 @@ defmodule CoinchetteWeb.RegistrationLive do
   alias Coinchette.Accounts
   alias Coinchette.Accounts.User
 
-  on_mount {CoinchetteWeb.Auth, :mount_current_user}
-
   def mount(_params, _session, socket) do
     changeset = Accounts.change_user_registration(%User{})
 
@@ -42,37 +40,39 @@ defmodule CoinchetteWeb.RegistrationLive do
   def render(assigns) do
     ~H"""
     <div class="mx-auto max-w-sm">
-      <h1 class="text-2xl font-bold text-center mb-4">Register for Coinchette</h1>
+      <.header class="text-center">
+        Register for Coinchette
+        <:subtitle>
+          Already have an account?
+          <.link navigate="/login" class="font-semibold text-brand hover:underline">
+            Log in
+          </.link>
+        </:subtitle>
+      </.header>
 
-      <form phx-submit="save" phx-change="validate">
-        <div class="mb-4">
-          <label for="email">Email</label>
-          <input type="email" name="user[email]" id="email" required class="w-full border rounded px-3 py-2" />
+      <.form
+        :let={f}
+        for={@changeset}
+        id="registration_form"
+        phx-submit="save"
+        phx-change="validate"
+      >
+        <.input field={f[:email]} type="email" label="Email" required />
+        <.input field={f[:username]} type="text" label="Username" required />
+        <.input field={f[:password]} type="password" label="Password" required />
+        <.input
+          field={f[:password_confirmation]}
+          type="password"
+          label="Confirm Password"
+          required
+        />
+
+        <div class="mt-6">
+          <.button type="submit" phx-disable-with="Creating account..." class="w-full">
+            Create an account
+          </.button>
         </div>
-
-        <div class="mb-4">
-          <label for="username">Username</label>
-          <input type="text" name="user[username]" id="username" required class="w-full border rounded px-3 py-2" />
-        </div>
-
-        <div class="mb-4">
-          <label for="password">Password</label>
-          <input type="password" name="user[password]" id="password" required class="w-full border rounded px-3 py-2" />
-        </div>
-
-        <div class="mb-4">
-          <label for="password_confirmation">Confirm Password</label>
-          <input type="password" name="user[password_confirmation]" id="password_confirmation" required class="w-full border rounded px-3 py-2" />
-        </div>
-
-        <button type="submit" class="w-full bg-blue-600 text-white rounded px-4 py-2">
-          Create an account
-        </button>
-      </form>
-
-      <p class="mt-4 text-center">
-        Already have an account? <a href="/login" class="text-blue-600">Log in</a>
-      </p>
+      </.form>
     </div>
     """
   end
