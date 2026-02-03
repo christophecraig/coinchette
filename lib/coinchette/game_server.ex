@@ -145,6 +145,7 @@ defmodule Coinchette.GameServer do
       {:ok, _player} ->
         # Update player map and bot positions
         new_player_map = Map.put(state.player_map, position, user_id)
+
         new_bot_positions =
           if is_bot do
             MapSet.put(state.bot_positions, position)
@@ -155,7 +156,10 @@ defmodule Coinchette.GameServer do
         new_state = %{state | player_map: new_player_map, bot_positions: new_bot_positions}
 
         # Broadcast player joined
-        broadcast_event(state.game_id, {:player_joined, %{user_id: user_id, position: position, is_bot: is_bot}})
+        broadcast_event(
+          state.game_id,
+          {:player_joined, %{user_id: user_id, position: position, is_bot: is_bot}}
+        )
 
         {:reply, :ok, new_state}
 
@@ -220,12 +224,19 @@ defmodule Coinchette.GameServer do
 
     # Persist to database
     Multiplayer.update_game_state(state.game_id, game)
+
     Multiplayer.update_game_status(state.game_id, "playing", %{
       started_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
     })
+
     Multiplayer.add_game_event(state.game_id, "game_started", %{})
 
-    new_state = %{state | game: game, player_map: new_player_map, bot_positions: new_bot_positions}
+    new_state = %{
+      state
+      | game: game,
+        player_map: new_player_map,
+        bot_positions: new_bot_positions
+    }
 
     # Broadcast game started
     broadcast_game_update(state.game_id, game)
@@ -257,12 +268,14 @@ defmodule Coinchette.GameServer do
   def handle_call({:make_bid, user_id, bid_action}, _from, state) do
     with :ok <- validate_turn(state, user_id),
          {:ok, new_game} <- Games.Game.make_bid(state.game, bid_action) do
-
       # Auto-complete deal and announcements if bidding is done
       new_game =
         cond do
           new_game.status == :bidding_completed ->
-            Logger.info("Bidding completed for game #{state.game_id}, completing deal and announcements")
+            Logger.info(
+              "Bidding completed for game #{state.game_id}, completing deal and announcements"
+            )
+
             # Complete the deal (distribute remaining cards)
             game_with_cards = Games.Game.complete_deal(new_game)
             Logger.info("Deal completed, status: #{game_with_cards.status}")
@@ -273,7 +286,11 @@ defmodule Coinchette.GameServer do
 
           new_game.status == :bidding_failed ->
             # Send system message about failed bidding and schedule redeal
-            broadcast_system_message(state.game_id, "Tous ont passé ! Redistribution dans 2 secondes...")
+            broadcast_system_message(
+              state.game_id,
+              "Tous ont passé ! Redistribution dans 2 secondes..."
+            )
+
             Process.send_after(self(), :redeal_cards, 2000)
             new_game
 
@@ -283,6 +300,7 @@ defmodule Coinchette.GameServer do
 
       # Persist
       Multiplayer.update_game_state(state.game_id, new_game)
+
       Multiplayer.add_game_event(state.game_id, "bid_made", %{
         user_id: user_id,
         bid: bid_action,
@@ -309,9 +327,9 @@ defmodule Coinchette.GameServer do
   def handle_call({:play_card, user_id, card}, _from, state) do
     with :ok <- validate_turn(state, user_id),
          {:ok, new_game} <- Games.Game.play_card(state.game, card) do
-
       # Persist
       Multiplayer.update_game_state(state.game_id, new_game)
+
       Multiplayer.add_game_event(state.game_id, "card_played", %{
         user_id: user_id,
         card: card_to_string(card),
@@ -372,7 +390,10 @@ defmodule Coinchette.GameServer do
           new_game =
             cond do
               new_game.status == :bidding_completed ->
-                Logger.info("Bot completed bidding for game #{state.game_id}, completing deal and announcements")
+                Logger.info(
+                  "Bot completed bidding for game #{state.game_id}, completing deal and announcements"
+                )
+
                 # Complete the deal (distribute remaining cards)
                 game_with_cards = Games.Game.complete_deal(new_game)
                 # Complete announcements (transition to :playing)
@@ -382,7 +403,11 @@ defmodule Coinchette.GameServer do
 
               new_game.status == :bidding_failed ->
                 # Send system message about failed bidding and schedule redeal
-                broadcast_system_message(state.game_id, "Tous ont passé ! Redistribution dans 2 secondes...")
+                broadcast_system_message(
+                  state.game_id,
+                  "Tous ont passé ! Redistribution dans 2 secondes..."
+                )
+
                 Process.send_after(self(), :redeal_cards, 2000)
                 new_game
 
@@ -394,6 +419,7 @@ defmodule Coinchette.GameServer do
           Multiplayer.update_game_state(state.game_id, new_game)
 
           event_type = if state.game.status == :bidding, do: "bid_made", else: "card_played"
+
           Multiplayer.add_game_event(state.game_id, event_type, %{
             position: current_pos,
             is_bot: true
@@ -458,7 +484,12 @@ defmodule Coinchette.GameServer do
   ## Private Functions
 
   # Détermine l'action de bidding du bot en fonction de sa main
-  defp decide_bot_bid(%Games.Game{bidding: bidding, players: players, current_player_position: pos}) when bidding != nil do
+  defp decide_bot_bid(%Games.Game{
+         bidding: bidding,
+         players: players,
+         current_player_position: pos
+       })
+       when bidding != nil do
     current_player = Enum.at(players, pos)
     proposed_trump = bidding.proposed_trump
     round = bidding.round
@@ -501,7 +532,8 @@ defmodule Coinchette.GameServer do
     end
   end
 
-  defp current_player_position(%Games.Game{status: :bidding, bidding: bidding}) when bidding != nil do
+  defp current_player_position(%Games.Game{status: :bidding, bidding: bidding})
+       when bidding != nil do
     bidding.current_bidder
   end
 
@@ -550,8 +582,15 @@ defmodule Coinchette.GameServer do
       update_player_statistics(state, winner_team, scores)
 
       # Broadcast
-      broadcast_event(state.game_id, {:game_finished, %{winner_team: winner_team, scores: scores}})
-      broadcast_system_message(state.game_id, "🏆 Partie terminée ! L'Équipe #{winner_team + 1} remporte la victoire avec #{scores[winner_team]} points !")
+      broadcast_event(
+        state.game_id,
+        {:game_finished, %{winner_team: winner_team, scores: scores}}
+      )
+
+      broadcast_system_message(
+        state.game_id,
+        "🏆 Partie terminée ! L'Équipe #{winner_team + 1} remporte la victoire avec #{scores[winner_team]} points !"
+      )
 
       # Schedule shutdown after 5 minutes
       Process.send_after(self(), :shutdown, 300_000)

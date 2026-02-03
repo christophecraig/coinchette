@@ -7,19 +7,21 @@ defmodule Coinchette.GameStatsIntegrationTest do
   describe "game statistics integration" do
     setup do
       # Create test users
-      {:ok, user1} = Accounts.register_user(%{
-        email: "player1@example.com",
-        username: "player1",
-        password: "password123",
-        password_confirmation: "password123"
-      })
+      {:ok, user1} =
+        Accounts.register_user(%{
+          email: "player1@example.com",
+          username: "player1",
+          password: "password123",
+          password_confirmation: "password123"
+        })
 
-      {:ok, user2} = Accounts.register_user(%{
-        email: "player2@example.com",
-        username: "player2",
-        password: "password123",
-        password_confirmation: "password123"
-      })
+      {:ok, user2} =
+        Accounts.register_user(%{
+          email: "player2@example.com",
+          username: "player2",
+          password: "password123",
+          password_confirmation: "password123"
+        })
 
       %{user1: user1, user2: user2}
     end
@@ -50,31 +52,31 @@ defmodule Coinchette.GameStatsIntegrationTest do
       # For testing, we'll manually set a finished game state with specific scores
 
       # Create a finished game state with team 0 winning (user1)
-      finished_game = %{started_game |
-        status: :finished,
-        scores: %{0 => 120, 1 => 42}
-      }
+      finished_game = %{started_game | status: :finished, scores: %{0 => 120, 1 => 42}}
 
       # Get the server state and simulate game finish
       state = GameServer.get_state(game.id)
 
       # Manually trigger the stats update (simulating what happens in maybe_handle_game_finish)
-      winner_team = 0  # Team 0 (user1 + bot at position 2)
+      # Team 0 (user1 + bot at position 2)
+      winner_team = 0
       scores = %{0 => 120, 1 => 42}
 
       # Update stats for user1 (position 0, team 0) - WINNER
-      {:ok, stats1} = Accounts.record_game_result(user1.id, :win, %{
-        points_scored: 120,
-        points_conceded: 42,
-        had_belote_rebelote: false
-      })
+      {:ok, stats1} =
+        Accounts.record_game_result(user1.id, :win, %{
+          points_scored: 120,
+          points_conceded: 42,
+          had_belote_rebelote: false
+        })
 
       # Update stats for user2 (position 1, team 1) - LOSER
-      {:ok, stats2} = Accounts.record_game_result(user2.id, :loss, %{
-        points_scored: 42,
-        points_conceded: 120,
-        had_belote_rebelote: false
-      })
+      {:ok, stats2} =
+        Accounts.record_game_result(user2.id, :loss, %{
+          points_scored: 42,
+          points_conceded: 120,
+          had_belote_rebelote: false
+        })
 
       # Verify user1 stats (winner)
       assert stats1.games_played == 1

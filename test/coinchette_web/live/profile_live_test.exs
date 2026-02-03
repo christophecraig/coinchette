@@ -8,28 +8,31 @@ defmodule CoinchetteWeb.ProfileLiveTest do
   describe "ProfileLive" do
     setup do
       # Create a test user
-      {:ok, user} = Accounts.register_user(%{
-        email: "test@example.com",
-        username: "testplayer",
-        password: "password123",
-        password_confirmation: "password123"
-      })
+      {:ok, user} =
+        Accounts.register_user(%{
+          email: "test@example.com",
+          username: "testplayer",
+          password: "password123",
+          password_confirmation: "password123"
+        })
 
       # Create some stats for the user
       {:ok, stats} = Accounts.get_or_create_stats(user.id)
 
       # Simulate some game results
-      {:ok, _} = Accounts.record_game_result(user.id, :win, %{
-        points_scored: 120,
-        points_conceded: 42,
-        had_belote_rebelote: true
-      })
+      {:ok, _} =
+        Accounts.record_game_result(user.id, :win, %{
+          points_scored: 120,
+          points_conceded: 42,
+          had_belote_rebelote: true
+        })
 
-      {:ok, _} = Accounts.record_game_result(user.id, :loss, %{
-        points_scored: 60,
-        points_conceded: 102,
-        had_belote_rebelote: false
-      })
+      {:ok, _} =
+        Accounts.record_game_result(user.id, :loss, %{
+          points_scored: 60,
+          points_conceded: 102,
+          had_belote_rebelote: false
+        })
 
       # Log in the user
       conn = log_in_user(build_conn(), user)
@@ -50,9 +53,12 @@ defmodule CoinchetteWeb.ProfileLiveTest do
       assert html =~ "Meilleur score"
 
       # Check specific stat values
-      assert html =~ "2"  # games_played
-      assert html =~ "1"  # games_won
-      assert html =~ "120"  # best_score
+      # games_played
+      assert html =~ "2"
+      # games_won
+      assert html =~ "1"
+      # best_score
+      assert html =~ "120"
     end
 
     test "displays win rate", %{conn: conn} do
@@ -90,12 +96,13 @@ defmodule CoinchetteWeb.ProfileLiveTest do
 
     test "shows empty state when no games played", %{conn: conn} do
       # Create a new user with no games
-      {:ok, new_user} = Accounts.register_user(%{
-        email: "newuser@example.com",
-        username: "newuser",
-        password: "password123",
-        password_confirmation: "password123"
-      })
+      {:ok, new_user} =
+        Accounts.register_user(%{
+          email: "newuser@example.com",
+          username: "newuser",
+          password: "password123",
+          password_confirmation: "password123"
+        })
 
       conn = log_in_user(build_conn(), new_user)
       {:ok, _view, html} = live(conn, ~p"/profile")
@@ -111,5 +118,4 @@ defmodule CoinchetteWeb.ProfileLiveTest do
       assert html =~ "Retour au lobby"
     end
   end
-
 end

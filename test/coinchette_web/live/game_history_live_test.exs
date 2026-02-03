@@ -26,15 +26,17 @@ defmodule CoinchetteWeb.GameHistoryLiveTest do
     # Update game to finished status with scores using Repo directly
     now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
     game = Coinchette.Repo.get!(Multiplayer.Game, game.id)
-    {:ok, game} = Coinchette.Repo.update(
-      Ecto.Changeset.change(game, %{
-        status: "finished",
-        winner_team: 0,
-        scores: %{"0" => 152, "1" => 91},
-        started_at: now,
-        finished_at: now
-      })
-    )
+
+    {:ok, game} =
+      Coinchette.Repo.update(
+        Ecto.Changeset.change(game, %{
+          status: "finished",
+          winner_team: 0,
+          scores: %{"0" => 152, "1" => 91},
+          started_at: now,
+          finished_at: now
+        })
+      )
 
     # Add more game events (game_created and player_joined already added by create_game)
     {:ok, _event3} = Multiplayer.add_game_event(game.id, "game_started", %{})
@@ -148,9 +150,7 @@ defmodule CoinchetteWeb.GameHistoryLiveTest do
 
       # Update game with encoded state using Repo
       game = Coinchette.Repo.get!(Multiplayer.Game, game.id)
-      {:ok, _game} = Coinchette.Repo.update(
-        Ecto.Changeset.change(game, %{state: encoded_state})
-      )
+      {:ok, _game} = Coinchette.Repo.update(Ecto.Changeset.change(game, %{state: encoded_state}))
 
       conn = log_in_user(build_conn(), user)
       {:ok, _view, html} = live(conn, ~p"/game/#{game.id}/history")
@@ -191,9 +191,7 @@ defmodule CoinchetteWeb.GameHistoryLiveTest do
       encoded_state = Coinchette.Multiplayer.Game.encode_game_state(game_struct)
 
       game = Coinchette.Repo.get!(Multiplayer.Game, game.id)
-      {:ok, _game} = Coinchette.Repo.update(
-        Ecto.Changeset.change(game, %{state: encoded_state})
-      )
+      {:ok, _game} = Coinchette.Repo.update(Ecto.Changeset.change(game, %{state: encoded_state}))
 
       conn = log_in_user(build_conn(), user)
       {:ok, _view, html} = live(conn, ~p"/game/#{game.id}/history")
@@ -214,9 +212,7 @@ defmodule CoinchetteWeb.GameHistoryLiveTest do
       encoded_state = Coinchette.Multiplayer.Game.encode_game_state(game_struct)
 
       game = Coinchette.Repo.get!(Multiplayer.Game, game.id)
-      {:ok, _game} = Coinchette.Repo.update(
-        Ecto.Changeset.change(game, %{state: encoded_state})
-      )
+      {:ok, _game} = Coinchette.Repo.update(Ecto.Changeset.change(game, %{state: encoded_state}))
 
       conn = log_in_user(build_conn(), user)
       {:ok, _view, html} = live(conn, ~p"/game/#{game.id}/history")
@@ -236,15 +232,17 @@ defmodule CoinchetteWeb.GameHistoryLiveTest do
 
       # Update using Repo directly
       game = Coinchette.Repo.get!(Multiplayer.Game, game.id)
-      {:ok, game} = Coinchette.Repo.update(
-        Ecto.Changeset.change(game, %{
-          status: "finished",
-          started_at: started_at,
-          finished_at: finished_at,
-          winner_team: 0,
-          scores: %{"0" => 100, "1" => 50}
-        })
-      )
+
+      {:ok, game} =
+        Coinchette.Repo.update(
+          Ecto.Changeset.change(game, %{
+            status: "finished",
+            started_at: started_at,
+            finished_at: finished_at,
+            winner_team: 0,
+            scores: %{"0" => 100, "1" => 50}
+          })
+        )
 
       conn = log_in_user(build_conn(), user)
       {:ok, _view, html} = live(conn, ~p"/game/#{game.id}/history")
@@ -257,16 +255,19 @@ defmodule CoinchetteWeb.GameHistoryLiveTest do
 
       # Update using Repo directly
       game = Coinchette.Repo.get!(Multiplayer.Game, game.id)
-      {:ok, game} = Coinchette.Repo.update(
-        Ecto.Changeset.change(game, %{
-          status: "finished",
-          winner_team: 0,
-          scores: %{"0" => 100, "1" => 50}
-        })
-      )
+
+      {:ok, game} =
+        Coinchette.Repo.update(
+          Ecto.Changeset.change(game, %{
+            status: "finished",
+            winner_team: 0,
+            scores: %{"0" => 100, "1" => 50}
+          })
+        )
 
       # Delete all events
       game_id = game.id
+
       Coinchette.Repo.delete_all(
         from e in Coinchette.Multiplayer.GameEvent, where: e.game_id == ^game_id
       )
@@ -277,5 +278,4 @@ defmodule CoinchetteWeb.GameHistoryLiveTest do
       assert html =~ "Aucun événement enregistré"
     end
   end
-
 end

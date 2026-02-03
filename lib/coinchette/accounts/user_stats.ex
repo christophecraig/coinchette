@@ -85,7 +85,10 @@ defmodule Coinchette.Accounts.UserStats do
   """
   def average_points_conceded(%__MODULE__{games_played: 0}), do: 0.0
 
-  def average_points_conceded(%__MODULE__{games_played: games_played, total_points_conceded: total}) do
+  def average_points_conceded(%__MODULE__{
+        games_played: games_played,
+        total_points_conceded: total
+      }) do
     Float.round(total / games_played, 2)
   end
 end

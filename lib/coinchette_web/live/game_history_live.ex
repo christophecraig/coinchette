@@ -56,11 +56,11 @@ defmodule CoinchetteWeb.GameHistoryLive do
             Historique de partie
           </h1>
           <p class="text-base-content/60 mt-2">
-            Partie terminée le <%= format_datetime(@game.finished_at) %>
+            Partie terminée le {format_datetime(@game.finished_at)}
           </p>
         </div>
-
-        <!-- Game Summary -->
+        
+    <!-- Game Summary -->
         <div class="card bg-base-100 shadow-xl mb-6">
           <div class="card-body">
             <h2 class="card-title">📊 Résumé</h2>
@@ -70,50 +70,48 @@ defmodule CoinchetteWeb.GameHistoryLive do
               <div class="stat bg-base-200 rounded-lg">
                 <div class="stat-title">Vainqueur</div>
                 <div class="stat-value text-2xl">
-                  Équipe <%= (@game.winner_team || 0) + 1 %>
+                  Équipe {(@game.winner_team || 0) + 1}
                 </div>
                 <div class="stat-desc">
                   <%= if @game.winner_team do %>
-                    <%= get_team_players(@players, @game.winner_team, @player_names)
-                    |> Enum.join(" & ") %>
+                    {get_team_players(@players, @game.winner_team, @player_names)
+                    |> Enum.join(" & ")}
                   <% end %>
                 </div>
               </div>
-
-              <!-- Scores -->
+              
+    <!-- Scores -->
               <div class="stat bg-base-200 rounded-lg">
                 <div class="stat-title">Score final</div>
                 <div class="stat-value text-2xl">
                   <%= if @game.scores do %>
-                    <%= Map.get(@game.scores, "0", 0) %> - <%= Map.get(@game.scores, "1", 0) %>
+                    {Map.get(@game.scores, "0", 0)} - {Map.get(@game.scores, "1", 0)}
                   <% else %>
                     N/A
                   <% end %>
                 </div>
                 <div class="stat-desc">
                   <%= if @game.scores do %>
-                    Différence: <%= abs(
-                      Map.get(@game.scores, "0", 0) - Map.get(@game.scores, "1", 0)
-                    ) %> points
+                    Différence: {abs(Map.get(@game.scores, "0", 0) - Map.get(@game.scores, "1", 0))} points
                   <% end %>
                 </div>
               </div>
-
-              <!-- Duration -->
+              
+    <!-- Duration -->
               <div class="stat bg-base-200 rounded-lg">
                 <div class="stat-title">Durée</div>
                 <div class="stat-value text-2xl">
-                  <%= calculate_duration(@game.started_at, @game.finished_at) %>
+                  {calculate_duration(@game.started_at, @game.finished_at)}
                 </div>
                 <div class="stat-desc">
-                  <%= Enum.count(@events) %> événements
+                  {Enum.count(@events)} événements
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Players -->
+        
+    <!-- Players -->
         <div class="card bg-base-100 shadow-xl mb-6">
           <div class="card-body">
             <h2 class="card-title">👥 Joueurs</h2>
@@ -126,7 +124,7 @@ defmodule CoinchetteWeb.GameHistoryLive do
                   @game.winner_team != team && "bg-base-200"
                 ]}>
                   <h3 class="font-semibold mb-3 flex items-center gap-2">
-                    Équipe <%= team + 1 %>
+                    Équipe {team + 1}
                     <%= if @game.winner_team == team do %>
                       <span class="badge badge-success">Vainqueur</span>
                     <% end %>
@@ -141,20 +139,20 @@ defmodule CoinchetteWeb.GameHistoryLive do
                               <%= if player.is_bot do %>
                                 🤖
                               <% else %>
-                                <%= String.first(player.user.username) |> String.upcase() %>
+                                {String.first(player.user.username) |> String.upcase()}
                               <% end %>
                             </span>
                           </div>
                         </div>
                         <div>
                           <div class="font-medium">
-                            <%= Map.get(@player_names, player.position) %>
+                            {Map.get(@player_names, player.position)}
                             <%= if player.position == @user_position do %>
                               <span class="badge badge-sm badge-primary ml-2">Vous</span>
                             <% end %>
                           </div>
                           <div class="text-sm text-base-content/60">
-                            Position <%= player.position + 1 %>
+                            Position {player.position + 1}
                           </div>
                         </div>
                       </div>
@@ -164,7 +162,7 @@ defmodule CoinchetteWeb.GameHistoryLive do
                   <%= if @game.scores do %>
                     <div class="mt-3 pt-3 border-t border-base-300">
                       <div class="text-2xl font-bold">
-                        <%= Map.get(@game.scores, Integer.to_string(team), 0) %> points
+                        {Map.get(@game.scores, Integer.to_string(team), 0)} points
                       </div>
                     </div>
                   <% end %>
@@ -173,13 +171,13 @@ defmodule CoinchetteWeb.GameHistoryLive do
             </div>
           </div>
         </div>
-
-        <!-- Game Details -->
+        
+    <!-- Game Details -->
         <%= if @game_state do %>
           <.game_details_panel game_state={@game_state} player_names={@player_names} />
         <% end %>
-
-        <!-- Events Timeline -->
+        
+    <!-- Events Timeline -->
         <div class="card bg-base-100 shadow-xl">
           <div class="card-body">
             <h2 class="card-title">📜 Chronologie des événements</h2>
@@ -214,12 +212,12 @@ defmodule CoinchetteWeb.GameHistoryLive do
             <div>
               <h3 class="font-semibold mb-2">Atout</h3>
               <div class="text-2xl">
-                <%= suit_symbol(@game_state.trump_suit) %> <%= suit_name(@game_state.trump_suit) %>
+                {suit_symbol(@game_state.trump_suit)} {suit_name(@game_state.trump_suit)}
               </div>
             </div>
           <% end %>
-
-          <!-- Tricks Won -->
+          
+    <!-- Tricks Won -->
           <%= if @game_state.tricks_won && length(@game_state.tricks_won) > 0 do %>
             <div>
               <h3 class="font-semibold mb-2">Plis remportés</h3>
@@ -227,27 +225,27 @@ defmodule CoinchetteWeb.GameHistoryLive do
                 <div>
                   <span class="text-base-content/60">Équipe 1:</span>
                   <span class="font-bold ml-2">
-                    <%= Enum.count(@game_state.tricks_won, fn {team, _} -> team == 0 end) %> plis
+                    {Enum.count(@game_state.tricks_won, fn {team, _} -> team == 0 end)} plis
                   </span>
                 </div>
                 <div>
                   <span class="text-base-content/60">Équipe 2:</span>
                   <span class="font-bold ml-2">
-                    <%= Enum.count(@game_state.tricks_won, fn {team, _} -> team == 1 end) %> plis
+                    {Enum.count(@game_state.tricks_won, fn {team, _} -> team == 1 end)} plis
                   </span>
                 </div>
               </div>
             </div>
-
-            <!-- Show all tricks -->
+            
+    <!-- Show all tricks -->
             <div>
               <h3 class="font-semibold mb-3">Historique des plis</h3>
               <div class="space-y-4">
                 <%= for {{team, trick}, index} <- Enum.with_index(@game_state.tricks_won) do %>
                   <div class="bg-base-200 rounded-lg p-4">
                     <div class="flex items-center justify-between mb-3">
-                      <h4 class="font-medium">Pli <%= index + 1 %></h4>
-                      <span class="badge badge-primary">Remporté par l'Équipe <%= team + 1 %></span>
+                      <h4 class="font-medium">Pli {index + 1}</h4>
+                      <span class="badge badge-primary">Remporté par l'Équipe {team + 1}</span>
                     </div>
                     <div class="flex flex-wrap gap-2">
                       <%= for {{card, position}, _} <- Enum.with_index(trick.cards) do %>
@@ -258,12 +256,12 @@ defmodule CoinchetteWeb.GameHistoryLive do
                             card.suit in [:spades, :clubs] && "text-gray-900 border-gray-200"
                           ]}>
                             <div class="text-center">
-                              <div class="text-lg font-bold"><%= rank_symbol(card.rank) %></div>
-                              <div class="text-base"><%= suit_symbol(card.suit) %></div>
+                              <div class="text-lg font-bold">{rank_symbol(card.rank)}</div>
+                              <div class="text-base">{suit_symbol(card.suit)}</div>
                             </div>
                           </div>
                           <div class="text-xs mt-1 text-base-content/60">
-                            <%= Map.get(@player_names, position, "P#{position + 1}") %>
+                            {Map.get(@player_names, position, "P#{position + 1}")}
                           </div>
                         </div>
                       <% end %>
@@ -273,22 +271,23 @@ defmodule CoinchetteWeb.GameHistoryLive do
               </div>
             </div>
           <% end %>
-
-          <!-- Announcements -->
+          
+    <!-- Announcements -->
           <%= if @game_state.announcements_result do %>
             <div>
               <h3 class="font-semibold mb-2">Annonces</h3>
               <div class="bg-base-200 rounded-lg p-3">
                 <div class="text-sm">
-                  Points d'annonces: <span class="font-bold">
-                    <%= @game_state.announcements_result.total_points %>
+                  Points d'annonces:
+                  <span class="font-bold">
+                    {@game_state.announcements_result.total_points}
                   </span>
                 </div>
               </div>
             </div>
           <% end %>
-
-          <!-- Belote/Rebelote -->
+          
+    <!-- Belote/Rebelote -->
           <%= if @game_state.belote_rebelote do %>
             <div>
               <h3 class="font-semibold mb-2">Belote/Rebelote</h3>
@@ -296,7 +295,7 @@ defmodule CoinchetteWeb.GameHistoryLive do
                 <% {team, _} = @game_state.belote_rebelote %>
                 <div class="flex items-center gap-2">
                   <span class="text-2xl">👑</span>
-                  <span>Annoncée par l'Équipe <%= team + 1 %> (+20 points)</span>
+                  <span>Annoncée par l'Équipe {team + 1} (+20 points)</span>
                 </div>
               </div>
             </div>
@@ -311,14 +310,14 @@ defmodule CoinchetteWeb.GameHistoryLive do
     ~H"""
     <div class="flex items-start gap-3 p-3 bg-base-200 rounded-lg">
       <div class="text-2xl flex-shrink-0">
-        <%= event_icon(@event.event_type) %>
+        {event_icon(@event.event_type)}
       </div>
       <div class="flex-1">
         <div class="font-medium">
-          <%= format_event_description(@event, @player_names) %>
+          {format_event_description(@event, @player_names)}
         </div>
         <div class="text-xs text-base-content/60">
-          <%= format_datetime(@event.inserted_at) %>
+          {format_datetime(@event.inserted_at)}
         </div>
       </div>
     </div>

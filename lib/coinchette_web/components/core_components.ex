@@ -499,13 +499,13 @@ defmodule CoinchetteWeb.CoreComponents do
         <div class="skeleton h-8 w-48"></div>
         <div class="skeleton h-10 w-32"></div>
       </div>
-
-      <!-- Game info -->
+      
+    <!-- Game info -->
       <div class="flex gap-4">
         <div class="skeleton h-20 w-full"></div>
       </div>
-
-      <!-- Game board -->
+      
+    <!-- Game board -->
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div class="lg:col-span-3">
           <div class="skeleton h-96 w-full"></div>

@@ -46,7 +46,11 @@ defmodule Coinchette.AccountsTest do
 
     test "register_user/1 validates password length" do
       assert {:error, changeset} =
-               Accounts.register_user(%{@valid_attrs | password: "short", password_confirmation: "short"})
+               Accounts.register_user(%{
+                 @valid_attrs
+                 | password: "short",
+                   password_confirmation: "short"
+               })
 
       assert %{password: ["should be at least 8 character(s)"]} = errors_on(changeset)
     end
@@ -60,17 +64,23 @@ defmodule Coinchette.AccountsTest do
 
     test "get_user_by_email_and_password/2 with valid credentials returns user" do
       {:ok, user} = Accounts.register_user(@valid_attrs)
-      assert {:ok, returned_user} = Accounts.get_user_by_email_and_password(user.email, "password123")
+
+      assert {:ok, returned_user} =
+               Accounts.get_user_by_email_and_password(user.email, "password123")
+
       assert returned_user.id == user.id
     end
 
     test "get_user_by_email_and_password/2 with invalid password returns error" do
       {:ok, user} = Accounts.register_user(@valid_attrs)
-      assert {:error, :unauthorized} = Accounts.get_user_by_email_and_password(user.email, "wrongpassword")
+
+      assert {:error, :unauthorized} =
+               Accounts.get_user_by_email_and_password(user.email, "wrongpassword")
     end
 
     test "get_user_by_email_and_password/2 with invalid email returns error" do
-      assert {:error, :unauthorized} = Accounts.get_user_by_email_and_password("invalid@example.com", "password")
+      assert {:error, :unauthorized} =
+               Accounts.get_user_by_email_and_password("invalid@example.com", "password")
     end
 
     test "get_user!/1 returns the user with given id" do

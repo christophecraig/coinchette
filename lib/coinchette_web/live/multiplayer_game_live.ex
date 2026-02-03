@@ -13,10 +13,11 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       Phoenix.PubSub.subscribe(Coinchette.PubSub, "game:#{game_id}")
 
       # Track user presence in this game
-      {:ok, _} = Presence.track(self(), "game:#{game_id}", socket.assigns.current_user.id, %{
-        username: socket.assigns.current_user.username,
-        joined_at: System.system_time(:second)
-      })
+      {:ok, _} =
+        Presence.track(self(), "game:#{game_id}", socket.assigns.current_user.id, %{
+          username: socket.assigns.current_user.username,
+          joined_at: System.system_time(:second)
+        })
     end
 
     # Get game state from GameServer
@@ -70,6 +71,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
             socket
             |> push_event("play-sound", %{sound: "cardPlay"})
             |> push_event("haptic-feedback", %{pattern: "cardPlay"})
+
           # State will update via PubSub
           {:noreply, socket}
 
@@ -95,6 +97,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
             socket
             |> push_event("play-sound", %{sound: "bidTake"})
             |> push_event("haptic-feedback", %{pattern: "bidTake"})
+
           {:noreply, socket}
 
         {:error, reason} ->
@@ -113,6 +116,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
             socket
             |> push_event("play-sound", %{sound: "bidPass"})
             |> push_event("haptic-feedback", %{pattern: "bidPass"})
+
           {:noreply, socket}
 
         {:error, reason} ->
@@ -127,12 +131,17 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     if is_my_turn?(socket) do
       suit = String.to_existing_atom(suit_str)
 
-      case GameServer.make_bid(socket.assigns.game_id, socket.assigns.current_user.id, {:choose, suit}) do
+      case GameServer.make_bid(
+             socket.assigns.game_id,
+             socket.assigns.current_user.id,
+             {:choose, suit}
+           ) do
         {:ok, _game} ->
           socket =
             socket
             |> push_event("play-sound", %{sound: "bidTake"})
             |> push_event("haptic-feedback", %{pattern: "bidTake"})
+
           {:noreply, socket}
 
         {:error, reason} ->
@@ -374,11 +383,15 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
         other_team_score = Enum.at(new_game.scores, 1 - my_team)
         score_diff = my_team_score - other_team_score
 
-        confetti_type = cond do
-          my_team_score == 162 -> "perfect"  # Perfect game
-          score_diff >= 100 -> "big_win"     # Dominating win
-          true -> "victory"                   # Standard win
-        end
+        confetti_type =
+          cond do
+            # Perfect game
+            my_team_score == 162 -> "perfect"
+            # Dominating win
+            score_diff >= 100 -> "big_win"
+            # Standard win
+            true -> "victory"
+          end
 
         push_event(socket, "confetti", %{type: confetti_type})
       else
@@ -424,7 +437,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
 
       # Rebelote (deuxième carte de la paire jouée)
       old_game.belote_rebelote == {new_game.belote_rebelote |> elem(0), false} &&
-          new_game.belote_rebelote != nil && elem(new_game.belote_rebelote, 1) == true ->
+        new_game.belote_rebelote != nil && elem(new_game.belote_rebelote, 1) == true ->
         {team, _} = new_game.belote_rebelote
         {:rebelote, team}
 
@@ -519,21 +532,21 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
             </button>
           </div>
         </div>
-
-        <!-- Game Info Bar (Trump and Scores) -->
+        
+    <!-- Game Info Bar (Trump and Scores) -->
         <.game_info_bar game={@game} />
-
-        <!-- Belote/Rebelote Notification -->
+        
+    <!-- Belote/Rebelote Notification -->
         <%= if @belote_announcement do %>
           <.belote_notification announcement={@belote_announcement} player_names={@player_names} />
         <% end %>
-
-        <!-- Announcements Notification -->
+        
+    <!-- Announcements Notification -->
         <%= if @game.announcements_result && @game.announcements_result.total_points > 0 && length(@game.tricks_won) <= 1 do %>
           <.announcements_notification result={@game.announcements_result} />
         <% end %>
-
-        <!-- Game Board with Chat (always visible) -->
+        
+    <!-- Game Board with Chat (always visible) -->
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div class="lg:col-span-3">
             <%= if @game.status == :bidding do %>
@@ -544,8 +557,8 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
                 player_names={@player_names}
               />
             <% end %>
-
-            <!-- Game Board (always show hand) -->
+            
+    <!-- Game Board (always show hand) -->
             <.game_board
               game={@game}
               my_position={@my_position}
@@ -556,14 +569,14 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
               is_my_turn={is_my_turn?(@game, @my_position)}
             />
           </div>
-
-          <!-- Chat Sidebar -->
+          
+    <!-- Chat Sidebar -->
           <div class="lg:col-span-1">
             <.chat_panel streams={@streams} />
           </div>
         </div>
-
-        <!-- Score Panel -->
+        
+    <!-- Score Panel -->
         <.score_panel game={@game} my_position={@my_position} player_names={@player_names} />
       </div>
     </div>
@@ -620,30 +633,30 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     <div class="alert alert-info shadow-lg mb-4">
       <div>
         <h3 class="font-bold text-lg">
-          Annonces : +<%= @result.total_points %> points pour l'Équipe <%= @result.winning_team + 1 %>
+          Annonces : +{@result.total_points} points pour l'Équipe {@result.winning_team + 1}
         </h3>
         <div class="text-sm mt-1 space-y-1">
           <%= for announcement <- @winning_announcements do %>
             <div>
               <%= case announcement.type do %>
                 <% :tierce -> %>
-                  Tierce : +<%= announcement.points %> points
+                  Tierce : +{announcement.points} points
                 <% :cinquante -> %>
-                  Cinquante : +<%= announcement.points %> points
+                  Cinquante : +{announcement.points} points
                 <% :cent -> %>
-                  Cent : +<%= announcement.points %> points
+                  Cent : +{announcement.points} points
                 <% :carre_jacks -> %>
-                  Carré de Valets : +<%= announcement.points %> points
+                  Carré de Valets : +{announcement.points} points
                 <% :carre_nines -> %>
-                  Carré de 9 : +<%= announcement.points %> points
+                  Carré de 9 : +{announcement.points} points
                 <% :carre_aces -> %>
-                  Carré d'As : +<%= announcement.points %> points
+                  Carré d'As : +{announcement.points} points
                 <% :carre_tens -> %>
-                  Carré de 10 : +<%= announcement.points %> points
+                  Carré de 10 : +{announcement.points} points
                 <% :carre_kings -> %>
-                  Carré de Rois : +<%= announcement.points %> points
+                  Carré de Rois : +{announcement.points} points
                 <% :carre_queens -> %>
-                  Carré de Dames : +<%= announcement.points %> points
+                  Carré de Dames : +{announcement.points} points
               <% end %>
             </div>
           <% end %>
@@ -658,7 +671,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-6">
       <div class="text-center">
         <h2 class="text-2xl font-bold text-white mb-4">
-          Phase d'enchères - <%= if @game.bidding.round == 1, do: "Premier", else: "Second" %> tour
+          Phase d'enchères - {if @game.bidding.round == 1, do: "Premier", else: "Second"} tour
         </h2>
 
         <%= if @game.bidding.proposed_trump do %>
@@ -686,7 +699,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
                   phx-value-suit={suit}
                   class="btn btn-primary"
                 >
-                  <%= suit_symbol(suit) %> <%= suit_name(suit) %>
+                  {suit_symbol(suit)} {suit_name(suit)}
                 </button>
               <% end %>
               <button phx-click="bid_pass" class="btn btn-error">
@@ -695,7 +708,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
             <% end %>
           <% else %>
             <div class="text-white/60">
-              En attente de <%= Map.get(@player_names, @game.bidding.current_bidder, "Joueur") %>...
+              En attente de {Map.get(@player_names, @game.bidding.current_bidder, "Joueur")}...
             </div>
           <% end %>
         </div>
@@ -713,7 +726,8 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           <!-- Trick Area -->
           <%= if @game.current_trick && length(@game.current_trick.cards) > 0 do %>
             <div class="relative aspect-square max-w-md mx-auto mb-6">
-              <div class="absolute inset-0 bg-green-700/50 rounded-full border-4 border-white/20"></div>
+              <div class="absolute inset-0 bg-green-700/50 rounded-full border-4 border-white/20">
+              </div>
               <%= for {card, pos} <- @game.current_trick.cards do %>
                 <.trick_card
                   card={card}
@@ -724,8 +738,8 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
               <% end %>
             </div>
           <% end %>
-
-          <!-- Player Hand -->
+          
+    <!-- Player Hand -->
           <%= if @my_position != nil do %>
             <% my_player = Enum.at(@game.players, @my_position) %>
             <%= if my_player do %>
@@ -753,8 +767,8 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           <% end %>
         </div>
       </div>
-
-      <!-- Players Info -->
+      
+    <!-- Players Info -->
       <div class="lg:col-span-1">
         <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
           <h3 class="text-white font-semibold mb-4">Joueurs</h3>
@@ -765,7 +779,8 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
               <% is_bot = MapSet.member?(@bot_positions, player.position) %>
               <% user_id = Map.get(@player_map, player.position) %>
               <% is_connected = is_bot || MapSet.member?(@present_users, user_id) %>
-              <% is_taker = @game.trump_suit && @game.bidding && @game.bidding.taker == player.position %>
+              <% is_taker =
+                @game.trump_suit && @game.bidding && @game.bidding.taker == player.position %>
               <div class={[
                 "p-3 rounded-lg",
                 is_current && "bg-yellow-500/30 ring-2 ring-2 ring-yellow-400",
@@ -780,11 +795,11 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
                         is_connected && "bg-green-400",
                         !is_connected && "bg-red-400 animate-pulse"
                       ]}
-                      title={is_connected && "Connecté" || "Déconnecté"}
+                      title={(is_connected && "Connecté") || "Déconnecté"}
                     />
                     <div class="flex-1">
                       <div class="text-white font-medium flex items-center gap-2 flex-wrap">
-                        <%= Map.get(@player_names, player.position, "Joueur #{player.position + 1}") %>
+                        {Map.get(@player_names, player.position, "Joueur #{player.position + 1}")}
                         <%= if is_me do %>
                           <span class="badge badge-sm badge-primary">Vous</span>
                         <% end %>
@@ -794,12 +809,12 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
                         <%= if is_taker do %>
                           <span class="badge badge-sm badge-success gap-1">
                             <span>A pris</span>
-                            <span class="text-base"><%= suit_symbol(@game.trump_suit) %></span>
+                            <span class="text-base">{suit_symbol(@game.trump_suit)}</span>
                           </span>
                         <% end %>
                       </div>
                       <div class="text-white/60 text-sm">
-                        Équipe <%= player.team + 1 %> • <%= length(player.hand) %> cartes
+                        Équipe {player.team + 1} • {length(player.hand)} cartes
                       </div>
                     </div>
                   </div>
@@ -822,29 +837,29 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           <div class="flex items-center gap-2">
             <span class="text-white/80 text-sm font-medium">Atout:</span>
             <span class="text-2xl font-bold text-white">
-              <%= suit_symbol(@game.trump_suit) %> <%= suit_name(@game.trump_suit) %>
+              {suit_symbol(@game.trump_suit)} {suit_name(@game.trump_suit)}
             </span>
           </div>
         <% end %>
-
-        <!-- Scores -->
+        
+    <!-- Scores -->
         <div class="flex gap-6 text-center">
           <div>
             <div class="text-white/80 text-xs mb-1">Équipe 1</div>
             <div class="text-2xl font-bold text-white">
-              <%= @game.scores[0] %>
+              {@game.scores[0]}
             </div>
             <div class="text-white/60 text-xs">
-              <%= Enum.count(@game.tricks_won, fn {team, _} -> team == 0 end) %> plis
+              {Enum.count(@game.tricks_won, fn {team, _} -> team == 0 end)} plis
             </div>
           </div>
           <div>
             <div class="text-white/80 text-xs mb-1">Équipe 2</div>
             <div class="text-2xl font-bold text-white">
-              <%= @game.scores[1] %>
+              {@game.scores[1]}
             </div>
             <div class="text-white/60 text-xs">
-              <%= Enum.count(@game.tricks_won, fn {team, _} -> team == 1 end) %> plis
+              {Enum.count(@game.tricks_won, fn {team, _} -> team == 1 end)} plis
             </div>
           </div>
         </div>
@@ -863,8 +878,8 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           <.last_trick_display game={@game} my_position={@my_position} player_names={@player_names} />
         </div>
       <% end %>
-
-      <!-- Final Scores (shown when game is finished) -->
+      
+    <!-- Final Scores (shown when game is finished) -->
       <%= if @game.status == :finished do %>
         <div class="text-center">
           <h3 class="text-white text-lg font-semibold mb-4">Partie terminée !</h3>
@@ -872,13 +887,13 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
             <div>
               <h4 class="text-white/80 text-sm mb-2">Équipe 1</h4>
               <div class="text-4xl font-bold text-white">
-                <%= @game.scores[0] %>
+                {@game.scores[0]}
               </div>
             </div>
             <div>
               <h4 class="text-white/80 text-sm mb-2">Équipe 2</h4>
               <div class="text-4xl font-bold text-white">
-                <%= @game.scores[1] %>
+                {@game.scores[1]}
               </div>
             </div>
           </div>
@@ -914,14 +929,21 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
 
     left =
       case position_offset do
-        0 -> "12.5%"
+        0 ->
+          "12.5%"
+
         # Bottom (me)
-        1 -> "37.5%"
+        1 ->
+          "37.5%"
+
         # Right
-        2 -> "62.5%"
+        2 ->
+          "62.5%"
+
         # Top
-        3 -> "87.5%"
-        # Left
+        3 ->
+          "87.5%"
+          # Left
       end
 
     assigns = Map.merge(assigns, %{left: left, position_offset: position_offset})
@@ -933,7 +955,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     >
       <div class="flex flex-col items-center gap-1">
         <div class="text-xs font-semibold text-white bg-black/50 px-2 py-1 rounded whitespace-nowrap">
-          <%= @player_name %>
+          {@player_name}
         </div>
         <div class={[
           "w-12 h-16 bg-white dark:bg-gray-100 rounded shadow-lg flex items-center justify-center",
@@ -943,10 +965,10 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
         ]}>
           <div class="text-center">
             <div class="text-lg font-bold">
-              <%= rank_symbol(@card.rank) %>
+              {rank_symbol(@card.rank)}
             </div>
             <div class="text-base">
-              <%= suit_symbol(@card.suit) %>
+              {suit_symbol(@card.suit)}
             </div>
           </div>
         </div>
@@ -959,8 +981,8 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     ~H"""
     <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 h-[600px] flex flex-col">
       <h3 class="text-white font-semibold mb-4">💬 Chat</h3>
-
-      <!-- Messages Container -->
+      
+    <!-- Messages Container -->
       <div
         id="chat-messages"
         class="flex-1 overflow-y-auto mb-4 space-y-2"
@@ -968,30 +990,33 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       >
         <div id="chat-messages-stream" phx-update="stream">
           <%= for {dom_id, msg} <- @streams.chat_messages do %>
-            <div id={dom_id} class={[
-              "p-2 rounded-lg text-sm",
-              msg.message_type == "system" && "bg-blue-500/20 text-blue-100 italic",
-              msg.message_type == "user" && "bg-white/10"
-            ]}>
+            <div
+              id={dom_id}
+              class={[
+                "p-2 rounded-lg text-sm",
+                msg.message_type == "system" && "bg-blue-500/20 text-blue-100 italic",
+                msg.message_type == "user" && "bg-white/10"
+              ]}
+            >
               <%= if msg.message_type == "user" do %>
                 <div class="flex items-baseline gap-2">
                   <span class="font-semibold text-white text-xs">
-                    <%= msg.user.username %>
+                    {msg.user.username}
                   </span>
                   <span class="text-white/40 text-xs">
-                    <%= format_time(msg.inserted_at) %>
+                    {format_time(msg.inserted_at)}
                   </span>
                 </div>
-                <p class="text-white/90 mt-1"><%= msg.message %></p>
+                <p class="text-white/90 mt-1">{msg.message}</p>
               <% else %>
-                <p class="text-blue-100"><%= msg.message %></p>
+                <p class="text-blue-100">{msg.message}</p>
               <% end %>
             </div>
           <% end %>
         </div>
       </div>
-
-      <!-- Chat Input -->
+      
+    <!-- Chat Input -->
       <form phx-submit="send_chat" class="flex gap-2" id="chat-form">
         <input
           type="text"
@@ -1023,10 +1048,10 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     ]}>
       <div class="text-center">
         <div class="text-2xl font-bold">
-          <%= rank_symbol(@card.rank) %>
+          {rank_symbol(@card.rank)}
         </div>
         <div class="text-xl">
-          <%= suit_symbol(@card.suit) %>
+          {suit_symbol(@card.suit)}
         </div>
       </div>
     </div>
@@ -1039,14 +1064,21 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
 
     {top, left} =
       case position_offset do
-        0 -> {"75%", "50%"}
+        0 ->
+          {"75%", "50%"}
+
         # Bottom (me)
-        1 -> {"50%", "75%"}
+        1 ->
+          {"50%", "75%"}
+
         # Right
-        2 -> {"25%", "50%"}
+        2 ->
+          {"25%", "50%"}
+
         # Top
-        3 -> {"50%", "25%"}
-        # Left
+        3 ->
+          {"50%", "25%"}
+          # Left
       end
 
     assigns = Map.merge(assigns, %{top: top, left: left, position_offset: position_offset})
@@ -1060,13 +1092,13 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
         <!-- Player name above card for top position, below for others -->
         <%= if @position_offset == 2 do %>
           <div class="text-xs font-semibold text-white bg-black/50 px-2 py-1 rounded whitespace-nowrap">
-            <%= @player_name %>
+            {@player_name}
           </div>
         <% end %>
         <.card_display card={@card} />
         <%= if @position_offset != 2 do %>
           <div class="text-xs font-semibold text-white bg-black/50 px-2 py-1 rounded whitespace-nowrap">
-            <%= @player_name %>
+            {@player_name}
           </div>
         <% end %>
       </div>

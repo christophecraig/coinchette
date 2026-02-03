@@ -434,5 +434,4 @@ defmodule Coinchette.Games.GameAnnouncementsTest do
       end
     end)
   end
-
 end

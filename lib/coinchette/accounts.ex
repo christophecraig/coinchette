@@ -222,6 +222,7 @@ defmodule Coinchette.Accounts do
     new_total_points_scored = stats.total_points_scored + game_data.points_scored
     new_total_points_conceded = stats.total_points_conceded + game_data.points_conceded
     new_best_score = max(stats.best_score, game_data.points_scored)
+
     new_belote_count =
       if game_data.had_belote_rebelote,
         do: stats.belote_rebelote_count + 1,

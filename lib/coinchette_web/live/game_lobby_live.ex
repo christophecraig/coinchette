@@ -20,10 +20,11 @@ defmodule CoinchetteWeb.GameLobbyLive do
           Phoenix.PubSub.subscribe(Coinchette.PubSub, "game:#{game_id}")
 
           # Track user presence in lobby
-          {:ok, _} = Presence.track(self(), "game:#{game_id}", socket.assigns.current_user.id, %{
-            username: socket.assigns.current_user.username,
-            joined_at: System.system_time(:second)
-          })
+          {:ok, _} =
+            Presence.track(self(), "game:#{game_id}", socket.assigns.current_user.id, %{
+              username: socket.assigns.current_user.username,
+              joined_at: System.system_time(:second)
+            })
 
           # Ensure GameServer is running
           case GameServerSupervisor.start_game(game_id) do
@@ -203,12 +204,12 @@ defmodule CoinchetteWeb.GameLobbyLive do
         <!-- Joining view for new players -->
         <div class="text-center py-12">
           <.header>
-            Join Game <%= @game.room_code %>
+            Join Game {@game.room_code}
           </.header>
 
           <div class="mt-8 bg-base-200 rounded-box p-8">
             <p class="text-lg mb-4">
-              <%= length(@game.game_players) %>/4 players in game
+              {length(@game.game_players)}/4 players in game
             </p>
             <.button phx-click="join_game" class="btn-lg">
               Join Game
@@ -228,7 +229,7 @@ defmodule CoinchetteWeb.GameLobbyLive do
             <div class="flex items-center gap-3">
               <span>Room Code:</span>
               <span class="badge badge-lg font-mono text-lg px-4">
-                <%= @game.room_code %>
+                {@game.room_code}
               </span>
               <button
                 class="btn btn-xs btn-ghost"
@@ -269,13 +270,14 @@ defmodule CoinchetteWeb.GameLobbyLive do
 
         <div class="mt-8">
           <h2 class="text-lg font-semibold mb-4">
-            Players (<%= length(@players) %>/4)
+            Players ({length(@players)}/4)
           </h2>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <%= for position <- 0..3 do %>
               <% player = Enum.find(@players, &(&1.position == position)) %>
-              <% is_connected = player && (player.is_bot || MapSet.member?(@present_users, player.user_id)) %>
+              <% is_connected =
+                player && (player.is_bot || MapSet.member?(@present_users, player.user_id)) %>
               <div class={[
                 "bg-base-200 rounded-box p-6",
                 player && "ring-2 ring-primary"
@@ -292,10 +294,10 @@ defmodule CoinchetteWeb.GameLobbyLive do
                             <%= if player.is_bot do %>
                               🤖
                             <% else %>
-                              <%= String.first(player.user.username) |> String.upcase() %>
+                              {String.first(player.user.username) |> String.upcase()}
                             <% end %>
                           <% else %>
-                            <%= position + 1 %>
+                            {position + 1}
                           <% end %>
                         </span>
                       </div>
@@ -306,7 +308,7 @@ defmodule CoinchetteWeb.GameLobbyLive do
                             is_connected && "bg-green-500",
                             !is_connected && "bg-red-500 animate-pulse"
                           ]}
-                          title={is_connected && "Connecté" || "Déconnecté"}
+                          title={(is_connected && "Connecté") || "Déconnecté"}
                         >
                         </div>
                       <% end %>
@@ -317,11 +319,11 @@ defmodule CoinchetteWeb.GameLobbyLive do
                         <%= if player.is_bot do %>
                           <div class="font-semibold">Bot</div>
                           <div class="text-sm text-base-content/60 capitalize">
-                            <%= player.bot_difficulty %> difficulty
+                            {player.bot_difficulty} difficulty
                           </div>
                         <% else %>
                           <div class="font-semibold flex items-center gap-2">
-                            <%= player.user.username %>
+                            {player.user.username}
                             <%= if player.user_id == @game.creator_id do %>
                               <span class="badge badge-sm badge-primary">Host</span>
                             <% end %>
@@ -333,12 +335,12 @@ defmodule CoinchetteWeb.GameLobbyLive do
                             <% end %>
                           </div>
                           <div class="text-sm text-base-content/60">
-                            Position <%= position + 1 %>
+                            Position {position + 1}
                           </div>
                         <% end %>
                       <% else %>
                         <div class="text-base-content/40">Waiting for player...</div>
-                        <div class="text-sm text-base-content/30">Position <%= position + 1 %></div>
+                        <div class="text-sm text-base-content/30">Position {position + 1}</div>
                       <% end %>
                     </div>
                   </div>
@@ -385,8 +387,13 @@ defmodule CoinchetteWeb.GameLobbyLive do
                 />
               </svg>
               <div class="text-sm">
-                <p>You are the host. Share the room code <strong><%= @game.room_code %></strong> with friends to invite them.</p>
-                <p class="mt-1">Empty slots will be automatically filled with bots when you start the game.</p>
+                <p>
+                  You are the host. Share the room code <strong>{@game.room_code}</strong>
+                  with friends to invite them.
+                </p>
+                <p class="mt-1">
+                  Empty slots will be automatically filled with bots when you start the game.
+                </p>
               </div>
             </div>
           <% end %>

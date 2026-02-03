@@ -7,12 +7,13 @@ defmodule Coinchette.Accounts.UserStatsTest do
   describe "user_stats" do
     setup do
       # Create a test user
-      {:ok, user} = Accounts.register_user(%{
-        email: "test@example.com",
-        username: "testuser",
-        password: "password123",
-        password_confirmation: "password123"
-      })
+      {:ok, user} =
+        Accounts.register_user(%{
+          email: "test@example.com",
+          username: "testuser",
+          password: "password123",
+          password_confirmation: "password123"
+        })
 
       %{user: user}
     end
@@ -40,11 +41,12 @@ defmodule Coinchette.Accounts.UserStatsTest do
       {:ok, _stats} = Accounts.get_or_create_stats(user.id)
 
       # Record a win with 120 points scored, 42 points conceded
-      {:ok, updated_stats} = Accounts.record_game_result(user.id, :win, %{
-        points_scored: 120,
-        points_conceded: 42,
-        had_belote_rebelote: true
-      })
+      {:ok, updated_stats} =
+        Accounts.record_game_result(user.id, :win, %{
+          points_scored: 120,
+          points_conceded: 42,
+          had_belote_rebelote: true
+        })
 
       assert updated_stats.games_played == 1
       assert updated_stats.games_won == 1
@@ -59,11 +61,12 @@ defmodule Coinchette.Accounts.UserStatsTest do
       {:ok, _stats} = Accounts.get_or_create_stats(user.id)
 
       # Record a loss
-      {:ok, updated_stats} = Accounts.record_game_result(user.id, :loss, %{
-        points_scored: 42,
-        points_conceded: 120,
-        had_belote_rebelote: false
-      })
+      {:ok, updated_stats} =
+        Accounts.record_game_result(user.id, :loss, %{
+          points_scored: 42,
+          points_conceded: 120,
+          had_belote_rebelote: false
+        })
 
       assert updated_stats.games_played == 1
       assert updated_stats.games_won == 0
@@ -78,27 +81,33 @@ defmodule Coinchette.Accounts.UserStatsTest do
       {:ok, _stats} = Accounts.get_or_create_stats(user.id)
 
       # First game with 80 points
-      {:ok, stats1} = Accounts.record_game_result(user.id, :win, %{
-        points_scored: 80,
-        points_conceded: 82,
-        had_belote_rebelote: false
-      })
+      {:ok, stats1} =
+        Accounts.record_game_result(user.id, :win, %{
+          points_scored: 80,
+          points_conceded: 82,
+          had_belote_rebelote: false
+        })
+
       assert stats1.best_score == 80
 
       # Second game with 120 points (new best)
-      {:ok, stats2} = Accounts.record_game_result(user.id, :win, %{
-        points_scored: 120,
-        points_conceded: 42,
-        had_belote_rebelote: false
-      })
+      {:ok, stats2} =
+        Accounts.record_game_result(user.id, :win, %{
+          points_scored: 120,
+          points_conceded: 42,
+          had_belote_rebelote: false
+        })
+
       assert stats2.best_score == 120
 
       # Third game with 70 points (doesn't change best)
-      {:ok, stats3} = Accounts.record_game_result(user.id, :loss, %{
-        points_scored: 70,
-        points_conceded: 92,
-        had_belote_rebelote: false
-      })
+      {:ok, stats3} =
+        Accounts.record_game_result(user.id, :loss, %{
+          points_scored: 70,
+          points_conceded: 92,
+          had_belote_rebelote: false
+        })
+
       assert stats3.best_score == 120
     end
 
@@ -106,25 +115,28 @@ defmodule Coinchette.Accounts.UserStatsTest do
       {:ok, _stats} = Accounts.get_or_create_stats(user.id)
 
       # Game 1: Win
-      {:ok, _} = Accounts.record_game_result(user.id, :win, %{
-        points_scored: 100,
-        points_conceded: 62,
-        had_belote_rebelote: true
-      })
+      {:ok, _} =
+        Accounts.record_game_result(user.id, :win, %{
+          points_scored: 100,
+          points_conceded: 62,
+          had_belote_rebelote: true
+        })
 
       # Game 2: Win
-      {:ok, _} = Accounts.record_game_result(user.id, :win, %{
-        points_scored: 90,
-        points_conceded: 72,
-        had_belote_rebelote: false
-      })
+      {:ok, _} =
+        Accounts.record_game_result(user.id, :win, %{
+          points_scored: 90,
+          points_conceded: 72,
+          had_belote_rebelote: false
+        })
 
       # Game 3: Loss
-      {:ok, final_stats} = Accounts.record_game_result(user.id, :loss, %{
-        points_scored: 60,
-        points_conceded: 102,
-        had_belote_rebelote: true
-      })
+      {:ok, final_stats} =
+        Accounts.record_game_result(user.id, :loss, %{
+          points_scored: 60,
+          points_conceded: 102,
+          had_belote_rebelote: true
+        })
 
       assert final_stats.games_played == 3
       assert final_stats.games_won == 2
@@ -137,12 +149,13 @@ defmodule Coinchette.Accounts.UserStatsTest do
 
     test "get_stats/1 returns nil for user without stats" do
       # Create a user without stats
-      {:ok, user2} = Accounts.register_user(%{
-        email: "test2@example.com",
-        username: "testuser2",
-        password: "password123",
-        password_confirmation: "password123"
-      })
+      {:ok, user2} =
+        Accounts.register_user(%{
+          email: "test2@example.com",
+          username: "testuser2",
+          password: "password123",
+          password_confirmation: "password123"
+        })
 
       assert Accounts.get_stats(user2.id) == nil
     end

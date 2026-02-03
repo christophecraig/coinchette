@@ -52,11 +52,15 @@
       </h1>
       <div class="flex items-center gap-4">
         <%= if @current_user do %>
-          <span class="text-sm">Welcome, <%= @current_user.username %>!</span>
+          <span class="text-sm">Welcome, {@current_user.username}!</span>
           <.link navigate="/lobby" class="text-sm font-semibold text-brand hover:underline">
             Go to Lobby
           </.link>
-          <.link href="/logout" method="delete" class="text-sm font-semibold text-brand hover:underline">
+          <.link
+            href="/logout"
+            method="delete"
+            class="text-sm font-semibold text-brand hover:underline"
+          >
             Logout
           </.link>
         <% else %>

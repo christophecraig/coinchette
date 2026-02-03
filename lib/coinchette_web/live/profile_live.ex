@@ -35,11 +35,11 @@ defmodule CoinchetteWeb.ProfileLive do
             ← Retour au lobby
           </.link>
           <h1 class="text-3xl sm:text-4xl font-bold text-base-content">
-            Profil de <%= @user.username %>
+            Profil de {@user.username}
           </h1>
         </div>
-
-        <!-- Stats Overview Cards -->
+        
+    <!-- Stats Overview Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <.stat_card
             title="Parties jouées"
@@ -68,8 +68,8 @@ defmodule CoinchetteWeb.ProfileLive do
             subtitle="points en une partie"
           />
         </div>
-
-        <!-- Detailed Stats -->
+        
+    <!-- Detailed Stats -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <!-- Points Statistics -->
           <div class="card bg-base-100 shadow-xl">
@@ -80,11 +80,11 @@ defmodule CoinchetteWeb.ProfileLive do
                 <div>
                   <div class="flex justify-between text-sm mb-1">
                     <span>Points marqués (total)</span>
-                    <span class="font-bold"><%= @stats.total_points_scored %></span>
+                    <span class="font-bold">{@stats.total_points_scored}</span>
                   </div>
                   <div class="flex justify-between text-sm text-base-content/60">
                     <span>Moyenne par partie</span>
-                    <span><%= UserStats.average_points_scored(@stats) %></span>
+                    <span>{UserStats.average_points_scored(@stats)}</span>
                   </div>
                 </div>
 
@@ -93,11 +93,11 @@ defmodule CoinchetteWeb.ProfileLive do
                 <div>
                   <div class="flex justify-between text-sm mb-1">
                     <span>Points encaissés (total)</span>
-                    <span class="font-bold"><%= @stats.total_points_conceded %></span>
+                    <span class="font-bold">{@stats.total_points_conceded}</span>
                   </div>
                   <div class="flex justify-between text-sm text-base-content/60">
                     <span>Moyenne par partie</span>
-                    <span><%= UserStats.average_points_conceded(@stats) %></span>
+                    <span>{UserStats.average_points_conceded(@stats)}</span>
                   </div>
                 </div>
 
@@ -112,17 +112,17 @@ defmodule CoinchetteWeb.ProfileLive do
                         "text-success",
                       @stats.total_points_scored - @stats.total_points_conceded < 0 && "text-error"
                     ]}>
-                      <%= if @stats.total_points_scored - @stats.total_points_conceded >= 0,
+                      {if @stats.total_points_scored - @stats.total_points_conceded >= 0,
                         do: "+",
-                        else: "" %><%= @stats.total_points_scored - @stats.total_points_conceded %>
+                        else: ""}{@stats.total_points_scored - @stats.total_points_conceded}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-
-          <!-- Achievements -->
+          
+    <!-- Achievements -->
           <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
               <h2 class="card-title">🎖️ Accomplissements</h2>
@@ -134,12 +134,12 @@ defmodule CoinchetteWeb.ProfileLive do
                     <div>
                       <div class="font-semibold">Belote/Rebelote</div>
                       <div class="text-sm text-base-content/60">
-                        Annoncées <%= @stats.belote_rebelote_count %> fois
+                        Annoncées {@stats.belote_rebelote_count} fois
                       </div>
                     </div>
                   </div>
                   <div class="badge badge-lg badge-primary">
-                    <%= @stats.belote_rebelote_count %>
+                    {@stats.belote_rebelote_count}
                   </div>
                 </div>
 
@@ -156,7 +156,7 @@ defmodule CoinchetteWeb.ProfileLive do
                     </div>
                   </div>
                   <div class="badge badge-lg badge-success">
-                    <%= UserStats.win_rate(@stats) %>%
+                    {UserStats.win_rate(@stats)}%
                   </div>
                 </div>
 
@@ -201,8 +201,8 @@ defmodule CoinchetteWeb.ProfileLive do
             </div>
           </div>
         </div>
-
-        <!-- Recent Games -->
+        
+    <!-- Recent Games -->
         <div class="card bg-base-100 shadow-xl">
           <div class="card-body">
             <h2 class="card-title">📜 Historique récent</h2>
@@ -247,14 +247,14 @@ defmodule CoinchetteWeb.ProfileLive do
       <div class="card-body">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-base-content/60"><%= @title %></p>
-            <p class="text-3xl font-bold"><%= @value %></p>
+            <p class="text-sm text-base-content/60">{@title}</p>
+            <p class="text-3xl font-bold">{@value}</p>
             <%= if assigns[:subtitle] do %>
-              <p class="text-xs text-base-content/60 mt-1"><%= @subtitle %></p>
+              <p class="text-xs text-base-content/60 mt-1">{@subtitle}</p>
             <% end %>
           </div>
           <div class={["text-4xl", @color, "rounded-full w-16 h-16 flex items-center justify-center"]}>
-            <%= @icon %>
+            {@icon}
           </div>
         </div>
       </div>
@@ -275,7 +275,7 @@ defmodule CoinchetteWeb.ProfileLive do
     <tr>
       <td>
         <div class="text-sm">
-          <%= format_date(@game.finished_at) %>
+          {format_date(@game.finished_at)}
         </div>
       </td>
       <td>
@@ -288,7 +288,7 @@ defmodule CoinchetteWeb.ProfileLive do
       <td>
         <div class="text-sm font-mono">
           <%= if @game.scores do %>
-            <%= Map.get(@game.scores, "0", 0) %> - <%= Map.get(@game.scores, "1", 0) %>
+            {Map.get(@game.scores, "0", 0)} - {Map.get(@game.scores, "1", 0)}
           <% else %>
             N/A
           <% end %>
@@ -296,7 +296,7 @@ defmodule CoinchetteWeb.ProfileLive do
       </td>
       <td>
         <div class="text-sm">
-          <%= length(@game.game_players) %> joueurs
+          {length(@game.game_players)} joueurs
         </div>
       </td>
       <td>

@@ -226,7 +226,9 @@ defmodule Coinchette.MultiplayerTest do
     end
 
     test "send_chat_message/4 with system message", %{game: game} do
-      assert {:ok, message} = Multiplayer.send_chat_message(game.id, nil, "Game started", "system")
+      assert {:ok, message} =
+               Multiplayer.send_chat_message(game.id, nil, "Game started", "system")
+
       assert message.message_type == "system"
       assert message.user_id == nil
     end

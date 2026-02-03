@@ -12,7 +12,8 @@ defmodule Coinchette.Multiplayer.Game do
     field :variant, :string
     field :mode, :string
     field :status, :string
-    field :state, :binary  # Binary serialized Game struct
+    # Binary serialized Game struct
+    field :state, :binary
     field :winner_team, :integer
     field :scores, :map
     field :started_at, :naive_datetime
@@ -54,7 +55,15 @@ defmodule Coinchette.Multiplayer.Game do
   def state_changeset(game, attrs) do
     changeset =
       game
-      |> cast(attrs, [:state, :status, :current_turn_player_id, :winner_team, :scores, :started_at, :finished_at])
+      |> cast(attrs, [
+        :state,
+        :status,
+        :current_turn_player_id,
+        :winner_team,
+        :scores,
+        :started_at,
+        :finished_at
+      ])
 
     # Only apply optimistic locking if version is being updated
     if Map.has_key?(attrs, :version) do
@@ -75,6 +84,7 @@ defmodule Coinchette.Multiplayer.Game do
   Decodes a binary game state back to a Game struct.
   """
   def decode_game_state(nil), do: nil
+
   def decode_game_state(binary) when is_binary(binary) do
     :erlang.binary_to_term(binary)
   end

@@ -44,6 +44,7 @@ defmodule CoinchetteWeb.LobbyLive do
 
         # Immediately start the game (will auto-fill with bots)
         alias Coinchette.GameServer
+
         case GameServer.start_game(game.id) do
           {:ok, _started_game} ->
             {:noreply, push_navigate(socket, to: ~p"/game/#{game.id}/play")}
@@ -98,7 +99,7 @@ defmodule CoinchetteWeb.LobbyLive do
     <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
       <.header>
         Game Lobby
-        <:subtitle>Welcome, <%= @current_user.username %>!</:subtitle>
+        <:subtitle>Welcome, {@current_user.username}!</:subtitle>
         <:actions>
           <.link navigate="/profile" class="btn btn-ghost btn-sm">
             <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,8 +164,8 @@ defmodule CoinchetteWeb.LobbyLive do
             </.button>
           </div>
         </div>
-
-        <!-- Right column: Active Games -->
+        
+    <!-- Right column: Active Games -->
         <div class="lg:col-span-2">
           <h2 class="text-lg font-semibold mb-4">Your Active Games</h2>
 
@@ -178,33 +179,48 @@ defmodule CoinchetteWeb.LobbyLive do
           <% else %>
             <div class="space-y-4" data-testid="active-games-list">
               <%= for game <- @active_games do %>
-                <div class="bg-base-200 rounded-box p-4 hover:bg-base-300 transition cursor-pointer" phx-click="view_game" phx-value-id={game.id} data-testid={"game-card-#{game.id}"}>
+                <div
+                  class="bg-base-200 rounded-box p-4 hover:bg-base-300 transition cursor-pointer"
+                  phx-click="view_game"
+                  phx-value-id={game.id}
+                  data-testid={"game-card-#{game.id}"}
+                >
                   <div class="flex items-center justify-between">
                     <div class="flex-1">
                       <div class="flex items-center gap-3">
                         <span class="badge badge-lg font-mono">
-                          <%= game.room_code %>
+                          {game.room_code}
                         </span>
                         <span class={[
                           "badge",
                           game.status == "waiting" && "badge-warning",
                           game.status == "playing" && "badge-success"
                         ]}>
-                          <%= game.status %>
+                          {game.status}
                         </span>
                       </div>
                       <div class="mt-2 text-sm text-base-content/60">
                         <span>
-                          <%= length(game.game_players) %>/4 players
+                          {length(game.game_players)}/4 players
                         </span>
                         <span class="mx-2">•</span>
                         <span>
-                          Created <%= format_relative_time(game.inserted_at) %>
+                          Created {format_relative_time(game.inserted_at)}
                         </span>
                       </div>
                     </div>
-                    <svg class="w-5 h-5 text-base-content/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    <svg
+                      class="w-5 h-5 text-base-content/40"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -220,13 +236,16 @@ defmodule CoinchetteWeb.LobbyLive do
                   <div class="bg-base-200/50 rounded-box p-3 text-sm">
                     <div class="flex items-center justify-between">
                       <div>
-                        <span class="font-mono"><%= game.room_code %></span>
+                        <span class="font-mono">{game.room_code}</span>
                         <span class="mx-2 text-base-content/40">•</span>
                         <span class="text-base-content/60">
-                          Finished <%= format_relative_time(game.finished_at || game.updated_at) %>
+                          Finished {format_relative_time(game.finished_at || game.updated_at)}
                         </span>
                       </div>
-                      <.link navigate={~p"/game/#{game.id}/history"} class="text-brand hover:underline text-xs">
+                      <.link
+                        navigate={~p"/game/#{game.id}/history"}
+                        class="text-brand hover:underline text-xs"
+                      >
                         View
                       </.link>
                     </div>
@@ -251,7 +270,7 @@ defmodule CoinchetteWeb.LobbyLive do
       diff < 60 -> "just now"
       diff < 3600 -> "#{div(diff, 60)} minutes ago"
       diff < 86400 -> "#{div(diff, 3600)} hours ago"
-      diff < 604800 -> "#{div(diff, 86400)} days ago"
+      diff < 604_800 -> "#{div(diff, 86400)} days ago"
       true -> "over a week ago"
     end
   end

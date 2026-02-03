@@ -304,7 +304,7 @@ defmodule Coinchette.Multiplayer do
 
     ChatMessage
     |> where([cm], cm.game_id == ^game_id)
-    |> order_by([cm], [asc: cm.inserted_at])
+    |> order_by([cm], asc: cm.inserted_at)
     |> limit(^limit)
     |> preload(:user)
     |> Repo.all()
@@ -328,7 +328,8 @@ defmodule Coinchette.Multiplayer do
     # Ensure uniqueness
     case get_game_by_room_code(code) do
       nil -> code
-      _ -> generate_room_code()  # Recursively generate if collision
+      # Recursively generate if collision
+      _ -> generate_room_code()
     end
   end
 end

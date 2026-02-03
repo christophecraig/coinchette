@@ -9,10 +9,11 @@ defmodule CoinchetteWeb.PresenceTest do
       user_id = "user-1"
 
       # Track a user
-      {:ok, _} = Presence.track(self(), topic, user_id, %{
-        username: "testuser",
-        joined_at: System.system_time(:second)
-      })
+      {:ok, _} =
+        Presence.track(self(), topic, user_id, %{
+          username: "testuser",
+          joined_at: System.system_time(:second)
+        })
 
       # Wait a bit for presence to propagate
       Process.sleep(50)
@@ -29,16 +30,18 @@ defmodule CoinchetteWeb.PresenceTest do
       user_id = "user-2"
 
       # Spawn a process to track presence
-      pid = spawn(fn ->
-        {:ok, _} = Presence.track(self(), topic, user_id, %{
-          username: "testuser2",
-          joined_at: System.system_time(:second)
-        })
+      pid =
+        spawn(fn ->
+          {:ok, _} =
+            Presence.track(self(), topic, user_id, %{
+              username: "testuser2",
+              joined_at: System.system_time(:second)
+            })
 
-        receive do
-          :stop -> :ok
-        end
-      end)
+          receive do
+            :stop -> :ok
+          end
+        end)
 
       # Wait for presence to propagate
       Process.sleep(50)
