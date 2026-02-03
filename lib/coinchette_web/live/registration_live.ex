@@ -55,7 +55,6 @@ defmodule CoinchetteWeb.RegistrationLive do
         for={@changeset}
         id="registration_form"
         phx-submit="save"
-        phx-change="validate"
       >
         <.input field={f[:email]} type="email" label="Email" required />
         <.input field={f[:username]} type="text" label="Username" required />
