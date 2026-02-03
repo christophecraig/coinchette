@@ -29,7 +29,7 @@ defmodule CoinchetteWeb.LobbyLiveTest do
 
     test "redirects to login when not authenticated" do
       conn = build_conn()
-      {:error, {:redirect, %{to: to}}} = live(conn, ~p"/login")
+      {:error, {:redirect, %{to: to}}} = live(conn, ~p"/lobby")
 
       assert to =~ "/login"
     end
@@ -45,9 +45,9 @@ defmodule CoinchetteWeb.LobbyLiveTest do
       |> render_click()
 
       # Should redirect to game lobby (flash redirect)
-      flash = assert_redirect(view)
-      assert flash =~ "/game/"
-      assert flash =~ "/lobby"
+      {path, _flash} = assert_redirect(view)
+      assert path =~ "/game/"
+      assert path =~ "/lobby"
     end
 
     test "creates game with belote variant by default", %{conn: conn, user: user} do
@@ -88,8 +88,8 @@ defmodule CoinchetteWeb.LobbyLiveTest do
       |> render_submit()
 
       # Should redirect to game lobby
-      flash = assert_redirect(view)
-      assert flash =~ "/game/"
+      {path, _flash} = assert_redirect(view)
+      assert path =~ "/game/"
     end
 
     test "shows error for invalid room code", %{conn: conn} do
@@ -101,7 +101,7 @@ defmodule CoinchetteWeb.LobbyLiveTest do
 
       html = render(view)
       # Should show some error message
-      assert html =~ "error" or html =~ "not found" or html =~ "invalid"
+      assert html =~ ~r/game not found/i or html =~ ~r/error/i
     end
   end
 
@@ -133,8 +133,8 @@ defmodule CoinchetteWeb.LobbyLiveTest do
       |> element("[data-testid='game-card-#{game.id}']")
       |> render_click()
 
-      flash = assert_redirect(view)
-      assert flash =~ game.id
+      {path, _flash} = assert_redirect(view)
+      assert path =~ game.id
     end
   end
 

@@ -94,8 +94,8 @@ defmodule CoinchetteWeb.GameLobbyLiveTest do
       |> element("button[phx-click='leave_game']")
       |> render_click()
 
-      flash = assert_redirect(view)
-      assert flash =~ "/lobby"
+      {path, _flash} = assert_redirect(view)
+      assert path =~ "/lobby"
     end
   end
 
@@ -108,8 +108,8 @@ defmodule CoinchetteWeb.GameLobbyLiveTest do
       |> element("button[data-testid='start-game-button']")
       |> render_click()
 
-      flash = assert_redirect(view)
-      assert flash =~ "/play"
+      {path, _flash} = assert_redirect(view)
+      assert path =~ "/play"
     end
 
     test "auto-fills empty positions with bots", %{user1: user1, game: game} do
@@ -137,8 +137,8 @@ defmodule CoinchetteWeb.GameLobbyLiveTest do
       |> element("button[phx-click='delete_game']")
       |> render_click()
 
-      flash = assert_redirect(view)
-      assert flash =~ "/lobby"
+      {path, _flash} = assert_redirect(view)
+      assert path =~ "/lobby"
 
       # Verify game was deleted
       assert Multiplayer.get_game_by_room_code(game.room_code) == nil

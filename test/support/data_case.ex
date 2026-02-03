@@ -36,8 +36,33 @@ defmodule Coinchette.DataCase do
   Sets up the sandbox based on the test tags.
   """
   def setup_sandbox(tags) do
+    # Ensure the Repo is started before configuring sandbox
+    ensure_repo_started()
+
     pid = Ecto.Adapters.SQL.Sandbox.start_owner!(Coinchette.Repo, shared: not tags[:async])
     on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
+  end
+
+  defp ensure_repo_started(retries \\ 50) do
+    case Process.whereis(Coinchette.Repo) do
+      nil when retries > 0 ->
+        # Wait a bit and retry if Repo is not started yet
+        Process.sleep(100)
+        ensure_repo_started(retries - 1)
+
+      nil ->
+        # Last attempt: try to start the application
+        {:ok, _} = Application.ensure_all_started(:coinchette)
+        Process.sleep(200)
+
+        case Process.whereis(Coinchette.Repo) do
+          nil -> raise "Coinchette.Repo is not started after #{50} retries"
+          _pid -> :ok
+        end
+
+      _pid ->
+        :ok
+    end
   end
 
   @doc """

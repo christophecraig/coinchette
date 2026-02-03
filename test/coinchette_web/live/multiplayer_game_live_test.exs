@@ -63,11 +63,12 @@ defmodule CoinchetteWeb.MultiplayerGameLiveTest do
       assert html =~ "Équipe 2" or html =~ "Team 2"
     end
 
-    test "displays bots with robot emoji", %{user: user, game: game} do
+    test "displays bots with difficulty emojis", %{user: user, game: game} do
       conn = log_in_user(build_conn(), user)
       {:ok, _view, html} = live(conn, ~p"/game/#{game.id}/play")
 
-      assert html =~ "🤖"
+      # Bots should have difficulty-based emojis (🐌 for easy, ⚡ for medium, 🔥 for hard)
+      assert html =~ "🐌" or html =~ "⚡" or html =~ "🔥"
     end
   end
 
@@ -141,10 +142,11 @@ defmodule CoinchetteWeb.MultiplayerGameLiveTest do
 
     test "marks user's position", %{user: user, game: game} do
       conn = log_in_user(build_conn(), user)
-      {:ok, view, _html} = live(conn, ~p"/game/#{game.id}/play")
+      {:ok, _view, html} = live(conn, ~p"/game/#{game.id}/play")
 
-      # User should be at position 0
-      assert view.assigns.my_position == 0
+      # User should see their username with a "Vous" badge
+      assert html =~ user.username
+      assert html =~ "Vous"
     end
   end
 end
