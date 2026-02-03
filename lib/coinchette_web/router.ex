@@ -10,11 +10,7 @@ defmodule CoinchetteWeb.Router do
     plug :put_root_layout, html: {CoinchetteWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-
-    if Application.compile_env(:coinchette, :test_auth_enabled, false) do
-      plug CoinchetteWeb.Plugs.TestAuth
-    end
-
+    plug CoinchetteWeb.Plugs.TestAuth
     plug :fetch_current_user
   end
 

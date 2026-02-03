@@ -11,12 +11,14 @@ defmodule CoinchetteWeb.Plugs.TestAuth do
   import Plug.Conn
   alias Coinchette.Accounts
 
+  # Capture the enabled state at compile time
+  @enabled Application.compile_env(:coinchette, :test_auth_enabled, false)
+
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    # Only enable in test environment
-    # Check both Mix.env and the test header
-    if Mix.env() == :test or Mix.env() == :dev do
+    # Only enable in test/dev environments (determined at compile time)
+    if @enabled do
       case get_req_header(conn, "x-test-auth") do
         ["true"] ->
           create_test_session(conn)
