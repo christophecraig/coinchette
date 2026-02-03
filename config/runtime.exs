@@ -54,8 +54,22 @@ if config_env() == :prod do
       """
 
   host = System.get_env("PHX_HOST") || "example.com"
+  is_staging = String.contains?(host, "staging")
 
   config :coinchette, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
+
+  # Build check_origin config - disable for staging to avoid WebSocket issues
+  check_origin_config =
+    if is_staging do
+      false
+    else
+      [
+        "https://#{host}",
+        "//#{host}",
+        "wss://#{host}",
+        "http://#{host}"
+      ]
+    end
 
   config :coinchette, CoinchetteWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
@@ -67,10 +81,7 @@ if config_env() == :prod do
       ip: {0, 0, 0, 0, 0, 0, 0, 0}
     ],
     secret_key_base: secret_key_base,
-    check_origin: [
-      "https://#{host}",
-      "//#{host}"
-    ]
+    check_origin: check_origin_config
 
   # ## SSL Support
   #
