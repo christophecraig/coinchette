@@ -70,6 +70,9 @@ config :coinchette, CoinchetteWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :coinchette, dev_routes: true
 
+# Enable test authentication plug for E2E testing
+config :coinchette, :test_auth_enabled, true
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"
 

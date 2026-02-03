@@ -39,3 +39,6 @@ config :phoenix_live_view,
 # Sort query params output of verified routes for robust url comparisons
 config :phoenix,
   sort_verified_routes_query_params: true
+
+# Enable test authentication plug for E2E testing
+config :coinchette, :test_auth_enabled, true
