@@ -37,6 +37,7 @@ defmodule CoinchetteWeb.Router do
     pipe_through [:browser, :redirect_if_auth]
 
     live "/register", RegistrationLive
+    live "/test-register", TestRegisterLive
     get "/login", SessionController, :new
     post "/login", SessionController, :create
   end
