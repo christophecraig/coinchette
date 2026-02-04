@@ -224,4 +224,112 @@ async function syncGameState() {
   console.log('[SW] Syncing game state...');
 }
 
+// Push notification event - received when server sends a push
+self.addEventListener('push', (event) => {
+  console.log('[SW] Push notification received:', event);
+
+  let notificationData = {
+    title: 'Coinchette',
+    body: 'Nouvelle notification',
+    icon: '/images/icon-192.png',
+    badge: '/images/icon-96.png',
+    tag: 'default',
+    requireInteraction: false,
+    data: {}
+  };
+
+  // Parse the push payload if available
+  if (event.data) {
+    try {
+      const payload = event.data.json();
+      notificationData = {
+        title: payload.title || notificationData.title,
+        body: payload.body || notificationData.body,
+        icon: payload.icon || notificationData.icon,
+        badge: payload.badge || notificationData.badge,
+        tag: payload.tag || notificationData.tag,
+        requireInteraction: payload.requireInteraction || false,
+        data: payload.data || {},
+        actions: payload.actions || []
+      };
+    } catch (error) {
+      console.error('[SW] Failed to parse push payload:', error);
+    }
+  }
+
+  // Show the notification
+  event.waitUntil(
+    self.registration.showNotification(notificationData.title, {
+      body: notificationData.body,
+      icon: notificationData.icon,
+      badge: notificationData.badge,
+      tag: notificationData.tag,
+      requireInteraction: notificationData.requireInteraction,
+      data: notificationData.data,
+      actions: notificationData.actions,
+      vibrate: [200, 100, 200], // Vibration pattern
+      timestamp: Date.now()
+    })
+  );
+});
+
+// Notification click event - handle when user clicks notification
+self.addEventListener('notificationclick', (event) => {
+  console.log('[SW] Notification clicked:', event.notification.tag);
+  event.notification.close();
+
+  const data = event.notification.data || {};
+  const action = event.action; // Action button clicked (if any)
+
+  // Determine the URL to open based on notification type
+  let urlToOpen = '/';
+
+  if (data.game_id) {
+    urlToOpen = `/game/${data.game_id}`;
+  } else if (data.lobby_code) {
+    urlToOpen = `/lobby/${data.lobby_code}`;
+  } else if (data.url) {
+    urlToOpen = data.url;
+  }
+
+  // Handle action button clicks
+  if (action === 'join_game' && data.game_id) {
+    urlToOpen = `/game/${data.game_id}`;
+  } else if (action === 'view_lobby' && data.lobby_code) {
+    urlToOpen = `/lobby/${data.lobby_code}`;
+  }
+
+  // Open the URL in the app or focus existing window
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        // Check if app is already open
+        for (const client of clientList) {
+          if (client.url.includes(urlToOpen) && 'focus' in client) {
+            return client.focus();
+          }
+        }
+
+        // Open new window with the URL
+        if (clients.openWindow) {
+          return clients.openWindow(urlToOpen);
+        }
+      })
+      .catch((error) => {
+        console.error('[SW] Failed to handle notification click:', error);
+      })
+  );
+});
+
+// Notification close event - track when user dismisses notifications
+self.addEventListener('notificationclose', (event) => {
+  console.log('[SW] Notification closed:', event.notification.tag);
+
+  // Future: Track notification dismissal analytics
+  const data = event.notification.data || {};
+  if (data.track_dismissal) {
+    // Could send analytics here
+  }
+});
+
 console.log('[SW] Service worker loaded');

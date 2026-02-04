@@ -23,6 +23,17 @@ end
 config :coinchette, CoinchetteWeb.Endpoint,
   http: [port: String.to_integer(System.get_env("PORT", "4000"))]
 
+# Push notification VAPID configuration
+config :coinchette,
+  vapid_subject:
+    System.get_env("VAPID_SUBJECT") || "mailto:admin@coinchette.example.com",
+  vapid_public_key:
+    System.get_env("VAPID_PUBLIC_KEY") ||
+      "BAqK9i-FDZ96l_xMf7qECJ3dVt0vvu_NWUdkzYwjHSi3-xzZdkwacetqPR4WLISiDJpoyNWXuNbfOEClV1dNP0c",
+  vapid_private_key:
+    System.get_env("VAPID_PRIVATE_KEY") ||
+      "eS6EV03qxKO0KM2V_J8SOvO_sMo_fuxsOHy9BCBvwQ0"
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

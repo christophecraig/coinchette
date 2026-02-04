@@ -82,6 +82,7 @@ defmodule Coinchette.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:bcrypt_elixir, "~> 3.0"},
+      {:web_push_encryption, "~> 0.3"},
 
       # Dev & Test tools
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},

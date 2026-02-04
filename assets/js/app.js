@@ -29,6 +29,7 @@ import { HapticHook, HapticControlHook } from "./haptics"
 import { ConfettiHook, ConfettiControlHook } from "./confetti"
 import { ToastHook } from "./toast"
 import { PWAInstallBanner, PWAUpdateBanner, PWAOfflineIndicator } from "./pwa"
+import { PushNotificationHook } from "./push_notifications"
 
 // Custom hooks
 const Hooks = {}
@@ -73,6 +74,9 @@ Hooks.Toast = ToastHook
 Hooks.PWAInstallBanner = PWAInstallBanner
 Hooks.PWAUpdateBanner = PWAUpdateBanner
 Hooks.PWAOfflineIndicator = PWAOfflineIndicator
+
+// Push notification hook
+Hooks.PushNotification = PushNotificationHook
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
