@@ -1,0 +1,30 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" rx="80" fill="#155724"/>
+
+  <!-- Card suits pattern background -->
+  <g opacity="0.1" fill="#ffffff">
+    <text x="50" y="100" font-size="60">♠</text>
+    <text x="400" y="100" font-size="60">♥</text>
+    <text x="50" y="450" font-size="60">♦</text>
+    <text x="400" y="450" font-size="60">♣</text>
+  </g>
+
+  <!-- Main card icon -->
+  <g transform="translate(156, 106)">
+    <!-- Card background -->
+    <rect width="200" height="300" rx="20" fill="#ffffff" stroke="#1e7e34" stroke-width="6"/>
+
+    <!-- Spade symbol (atout) -->
+    <g transform="translate(100, 150)">
+      <path d="M 0,-60 C -20,-60 -40,-40 -40,-20 C -40,0 -20,20 0,40 C 20,20 40,0 40,-20 C 40,-40 20,-60 0,-60 Z" fill="#000000"/>
+      <path d="M -15,40 L -10,60 L 10,60 L 15,40 Z" fill="#000000"/>
+    </g>
+
+    <!-- Letter "C" for Coinchette -->
+    <text x="100" y="250" font-size="80" font-weight="bold" text-anchor="middle" fill="#155724" font-family="Arial, sans-serif">C</text>
+  </g>
+
+  <!-- App name -->
+  <text x="256" y="460" font-size="48" font-weight="bold" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif">Coinchette</text>
+</svg>

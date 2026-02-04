@@ -4,11 +4,11 @@ Résumé complet des améliorations d'expérience utilisateur implémentées.
 
 ## 📊 Vue d'ensemble
 
-**Tâches complétées** : 4/4 (100%)
-**Commits** : 4 commits
+**Tâches complétées** : 5/5 (100%)
+**Commits** : 5 commits
 **Fichiers créés** : 8 nouveaux fichiers
-**Fichiers modifiés** : 5 fichiers
-**Lignes ajoutées** : ~1500 lignes
+**Fichiers modifiés** : 7 fichiers
+**Lignes ajoutées** : ~1550 lignes
 
 ---
 
@@ -226,6 +226,35 @@ Documentation complète dans `priv/static/sounds/README.md` :
 
 ---
 
+## ✅ Tâche 5 : Mobile Lobby Responsiveness
+
+**Commit** : `e91a11f [UX] Fix mobile responsiveness in lobby pages`
+
+### Implémentation
+
+- Fix responsive design dans les pages lobby
+- Amélioration touch targets pour mobile
+- Ajustements breakpoints pour petits écrans
+
+### Fichiers modifiés
+
+1. `lib/coinchette_web/live/lobby_live.ex`
+   - Padding responsive ajouté
+   - Boutons full-width sur mobile
+
+2. `lib/coinchette_web/live/game_lobby_live.ex`
+   - Grid responsive pour liste joueurs
+   - Actions buttons optimisés mobile
+
+### Avantages
+
+- ✅ Lobby utilisable sur tous devices
+- ✅ Touch targets suffisamment grands (44x44px min)
+- ✅ Pas de scroll horizontal
+- ✅ Cohérence avec autres pages
+
+---
+
 ## 📈 Impact Global
 
 ### Améliorations UX
@@ -317,8 +346,8 @@ Documentation complète dans `priv/static/sounds/README.md` :
 
 ## 🏆 Succès
 
-- ✅ 4 tâches UX complétées en une session
-- ✅ 1500+ lignes de code ajoutées
+- ✅ 5 tâches UX complétées (4 en Session 1, 1 en Session 2)
+- ✅ 1550+ lignes de code ajoutées
 - ✅ Documentation complète (3 guides)
 - ✅ Zero breaking changes
 - ✅ Backward compatible
@@ -326,6 +355,7 @@ Documentation complète dans `priv/static/sounds/README.md` :
 
 ---
 
-**Date** : 2026-01-31
-**Version** : 1.0
+**Date créé** : 2026-01-31
+**Dernière mise à jour** : 2026-02-04
+**Version** : 1.1
 **Status** : ✅ COMPLET

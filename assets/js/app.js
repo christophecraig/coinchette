@@ -28,6 +28,7 @@ import { SoundHook, VolumeControlHook } from "./sounds"
 import { HapticHook, HapticControlHook } from "./haptics"
 import { ConfettiHook, ConfettiControlHook } from "./confetti"
 import { ToastHook } from "./toast"
+import { PWAInstallBanner, PWAUpdateBanner, PWAOfflineIndicator } from "./pwa"
 
 // Custom hooks
 const Hooks = {}
@@ -67,6 +68,11 @@ Hooks.ConfettiControl = ConfettiControlHook
 
 // Toast hook
 Hooks.Toast = ToastHook
+
+// PWA hooks
+Hooks.PWAInstallBanner = PWAInstallBanner
+Hooks.PWAUpdateBanner = PWAUpdateBanner
+Hooks.PWAOfflineIndicator = PWAOfflineIndicator
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
