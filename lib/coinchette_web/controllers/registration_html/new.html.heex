@@ -3,17 +3,13 @@
     Register for Coinchette
     <:subtitle>
       Already have an account?
-      <.link navigate={~p"/login"} class="font-semibold text-brand hover:underline">
+      <.link navigate="/login" class="font-semibold text-brand hover:underline">
         Log in
       </.link>
     </:subtitle>
   </.header>
 
-  <.simple_form :let={f} for={@changeset} action={~p"/register"}>
-    <.error :if={@changeset.action}>
-      Oops, something went wrong! Please check the errors below.
-    </.error>
-
+  <.form :let={f} for={@changeset} action={~p"/register"}>
     <.input field={f[:email]} type="email" label="Email" required />
     <.input field={f[:username]} type="text" label="Username" required />
     <.input field={f[:password]} type="password" label="Password" required />
@@ -24,8 +20,10 @@
       required
     />
 
-    <:actions>
-      <.button class="w-full">Create an account</.button>
-    </:actions>
-  </.simple_form>
+    <div class="mt-6">
+      <.button type="submit" class="w-full">
+        Create an account
+      </.button>
+    </div>
+  </.form>
 </div>
