@@ -125,6 +125,27 @@ defmodule CoinchetteWeb.GameLobbyLive do
     end
   end
 
+  def handle_event("update_target_score", %{"target_score" => target_score_str}, socket) do
+    if socket.assigns.is_creator and socket.assigns.game.status == "waiting" do
+      target_score = String.to_integer(target_score_str)
+
+      case Multiplayer.update_game_settings(socket.assigns.game_id, %{
+             target_score: target_score
+           }) do
+        {:ok, updated_game} ->
+          {:noreply,
+           socket
+           |> assign(:game, updated_game)
+           |> put_flash(:info, "Target score updated to #{target_score}")}
+
+        {:error, _reason} ->
+          {:noreply, put_flash(socket, :error, "Failed to update target score")}
+      end
+    else
+      {:noreply, put_flash(socket, :error, "Only the host can change game settings")}
+    end
+  end
+
   def handle_event("start_game", _params, socket) do
     if socket.assigns.is_creator do
       case GameServer.start_game(socket.assigns.game_id) do
@@ -268,6 +289,48 @@ defmodule CoinchetteWeb.GameLobbyLive do
             <% end %>
           </:actions>
         </.header>
+
+        <!-- Game Settings -->
+        <div class="mt-8 bg-base-200 rounded-box p-6">
+          <h2 class="text-lg font-semibold mb-4">Game Settings</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="label">
+                <span class="label-text font-medium">Target Score</span>
+              </label>
+              <%= if @is_creator and @game.status == "waiting" do %>
+                <select
+                  class="select select-bordered w-full"
+                  phx-change="update_target_score"
+                  name="target_score"
+                >
+                  <option value="500" selected={@game.target_score == 500}>500 points</option>
+                  <option value="1000" selected={@game.target_score == 1000}>
+                    1000 points (default)
+                  </option>
+                </select>
+              <% else %>
+                <div class="text-lg font-semibold">
+                  {@game.target_score} points
+                </div>
+              <% end %>
+              <p class="text-sm text-base-content/60 mt-2">
+                First team to reach this score wins the game
+              </p>
+            </div>
+            <div>
+              <label class="label">
+                <span class="label-text font-medium">Game Variant</span>
+              </label>
+              <div class="text-lg font-semibold capitalize">
+                {@game.variant}
+              </div>
+              <p class="text-sm text-base-content/60 mt-2">
+                The game will be played with {@game.variant} rules
+              </p>
+            </div>
+          </div>
+        </div>
 
         <div class="mt-8">
           <h2 class="text-lg font-semibold mb-4">

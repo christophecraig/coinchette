@@ -21,6 +21,7 @@ defmodule Coinchette.Multiplayer do
   def create_game(creator_id, opts \\ []) do
     variant = Keyword.get(opts, :variant, "belote")
     is_private = Keyword.get(opts, :is_private, true)
+    target_score = Keyword.get(opts, :target_score, 1000)
 
     attrs = %{
       variant: variant,
@@ -29,7 +30,9 @@ defmodule Coinchette.Multiplayer do
       room_code: generate_room_code(),
       creator_id: creator_id,
       is_private: is_private,
-      max_players: 4
+      max_players: 4,
+      target_score: target_score,
+      scores: %{"0" => 0, "1" => 0}
     }
 
     %Game{}
@@ -143,6 +146,21 @@ defmodule Coinchette.Multiplayer do
     game
     |> Game.state_changeset(attrs)
     |> Repo.update()
+  end
+
+  @doc """
+  Updates game settings (e.g., target_score) while in waiting status.
+  """
+  def update_game_settings(game_id, settings) do
+    game = Repo.get!(Game, game_id)
+
+    if game.status == "waiting" do
+      game
+      |> Game.creation_changeset(Map.merge(Map.from_struct(game), settings))
+      |> Repo.update()
+    else
+      {:error, :game_already_started}
+    end
   end
 
   @doc """

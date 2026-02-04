@@ -562,41 +562,128 @@ defmodule Coinchette.GameServer do
 
   defp maybe_handle_game_finish(state) do
     if state.game.status == :finished do
-      # Get winner and scores
-      winner_team = get_winner_team(state.game)
-      scores = state.game.scores
+      # Hand (round) is finished - 8 tricks completed
+      # Get current hand scores
+      hand_scores = state.game.scores
+      hand_winner = get_winner_team(state.game)
 
-      # Update database
-      Multiplayer.update_game_status(state.game_id, "finished", %{
-        winner_team: winner_team,
-        scores: scores,
-        finished_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-      })
+      # Get DB game to access target_score and cumulative scores
+      db_game = Multiplayer.get_game!(state.game_id)
 
-      Multiplayer.add_game_event(state.game_id, "game_finished", %{
-        winner_team: winner_team,
-        scores: scores
-      })
+      # Add hand scores to cumulative scores
+      # DB stores scores with string keys, convert to integer keys
+      existing_scores =
+        if db_game.scores do
+          Map.new(db_game.scores, fn {k, v} ->
+            {(is_binary(k) && String.to_integer(k)) || k, v}
+          end)
+        else
+          %{0 => 0, 1 => 0}
+        end
 
-      # Update player statistics for human players
-      update_player_statistics(state, winner_team, scores)
+      cumulative_scores =
+        existing_scores
+        |> Map.update(0, hand_scores[0], &(&1 + hand_scores[0]))
+        |> Map.update(1, hand_scores[1], &(&1 + hand_scores[1]))
 
-      # Broadcast
-      broadcast_event(
-        state.game_id,
-        {:game_finished, %{winner_team: winner_team, scores: scores}}
-      )
+      # Check if any team reached target_score
+      team_0_total = cumulative_scores[0]
+      team_1_total = cumulative_scores[1]
+      target_score = db_game.target_score
 
-      broadcast_system_message(
-        state.game_id,
-        "🏆 Partie terminée ! L'Équipe #{winner_team + 1} remporte la victoire avec #{scores[winner_team]} points !"
-      )
+      if team_0_total >= target_score or team_1_total >= target_score do
+        # Game is completely finished!
+        final_winner = if team_0_total > team_1_total, do: 0, else: 1
 
-      # Schedule shutdown after 5 minutes
-      Process.send_after(self(), :shutdown, 300_000)
+        # Update database with final results
+        Multiplayer.update_game_status(state.game_id, "finished", %{
+          winner_team: final_winner,
+          scores: cumulative_scores,
+          finished_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+        })
+
+        Multiplayer.add_game_event(state.game_id, "game_finished", %{
+          winner_team: final_winner,
+          scores: cumulative_scores,
+          total_rounds: db_game.round_number
+        })
+
+        # Update player statistics
+        update_player_statistics(state, final_winner, cumulative_scores)
+
+        # Broadcast
+        broadcast_event(
+          state.game_id,
+          {:game_finished, %{winner_team: final_winner, scores: cumulative_scores}}
+        )
+
+        broadcast_system_message(
+          state.game_id,
+          "🏆 Partie terminée ! L'Équipe #{final_winner + 1} remporte la victoire avec #{cumulative_scores[final_winner]} points après #{db_game.round_number} manches !"
+        )
+
+        # Schedule shutdown after 5 minutes
+        Process.send_after(self(), :shutdown, 300_000)
+
+        state
+      else
+        # Target not reached - start a new round!
+        new_round_number = db_game.round_number + 1
+        new_dealer = rem(state.game.dealer_position + 1, 4)
+
+        Multiplayer.add_game_event(state.game_id, "round_finished", %{
+          round: db_game.round_number,
+          hand_winner: hand_winner,
+          hand_scores: hand_scores,
+          cumulative_scores: cumulative_scores
+        })
+
+        # Create new game state for next round
+        new_game =
+          Games.Game.new(dealer_position: new_dealer)
+          |> Games.Game.deal_initial_cards()
+
+        # Persist new game state first
+        Multiplayer.update_game_state(state.game_id, new_game)
+
+        # Then update cumulative scores and round number
+        # This must come AFTER update_game_state to not be overwritten
+        Multiplayer.update_game_status(state.game_id, "playing", %{
+          scores: cumulative_scores,
+          round_number: new_round_number
+        })
+
+        # Update state
+        new_state = %{state | game: new_game}
+
+        # Broadcast round completion and new round start
+        broadcast_system_message(
+          state.game_id,
+          "🎴 Manche #{db_game.round_number} terminée ! Équipe #{hand_winner + 1}: +#{hand_scores[hand_winner]} pts. Score: Équipe 1: #{cumulative_scores[0]} - Équipe 2: #{cumulative_scores[1]}"
+        )
+
+        broadcast_system_message(
+          state.game_id,
+          "🔄 Nouvelle manche #{new_round_number} ! Objectif: #{target_score} points"
+        )
+
+        broadcast_game_update(state.game_id, new_game)
+
+        broadcast_event(
+          state.game_id,
+          {:round_finished, %{
+            round: db_game.round_number,
+            cumulative_scores: cumulative_scores,
+            new_round: new_round_number
+          }}
+        )
+
+        # Schedule bot turn if needed
+        maybe_schedule_bot_turn(new_state)
+      end
+    else
+      state
     end
-
-    state
   end
 
   defp update_player_statistics(state, winner_team, scores) do

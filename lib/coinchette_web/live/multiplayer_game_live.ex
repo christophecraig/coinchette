@@ -24,6 +24,9 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     state = GameServer.get_state(game_id)
     game = state.game
 
+    # Load DB game to get cumulative scores, target_score, and round_number
+    db_game = Multiplayer.get_game!(game_id)
+
     # Always rebuild player data to ensure consistency
     # build_player_data always returns {%{}, MapSet.new()}
     {player_map, bot_positions} = build_player_data(game_id)
@@ -41,6 +44,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       socket
       |> assign(:page_title, "Playing Game")
       |> assign(:game, game)
+      |> assign(:db_game, db_game)
       |> assign(:game_id, game_id)
       |> assign(:my_position, my_position)
       |> assign(:player_map, player_map)
@@ -176,6 +180,9 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
   def handle_info({:game_updated, game}, socket) do
     old_game = socket.assigns.game
 
+    # Reload DB game to get updated cumulative scores and round number
+    db_game = Multiplayer.get_game!(socket.assigns.game_id)
+
     # Detect belote announcement
     announcement = detect_belote_announcement(old_game, game)
 
@@ -185,6 +192,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       |> play_game_sounds(old_game, game)
       |> play_belote_sound(announcement)
       |> assign(:game, game)
+      |> assign(:db_game, db_game)
       |> assign(:message, get_game_message(game, socket.assigns.my_position))
       |> assign(:belote_announcement, announcement)
 
@@ -535,7 +543,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
         </div>
         
     <!-- Game Info Bar (Trump and Scores) -->
-        <.game_info_bar game={@game} />
+        <.game_info_bar game={@game} db_game={@db_game} />
         
     <!-- Belote/Rebelote Notification -->
         <%= if @belote_announcement do %>
@@ -578,7 +586,12 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
         </div>
         
     <!-- Score Panel -->
-        <.score_panel game={@game} my_position={@my_position} player_names={@player_names} />
+        <.score_panel
+          game={@game}
+          db_game={@db_game}
+          my_position={@my_position}
+          player_names={@player_names}
+        />
       </div>
     </div>
     """
@@ -830,8 +843,28 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
   end
 
   defp game_info_bar(assigns) do
+    # Convert cumulative scores from string keys to integers
+    cumulative_scores =
+      if assigns.db_game.scores do
+        %{
+          0 => Map.get(assigns.db_game.scores, "0", 0),
+          1 => Map.get(assigns.db_game.scores, "1", 0)
+        }
+      else
+        %{0 => 0, 1 => 0}
+      end
+
+    assigns = assign(assigns, :cumulative_scores, cumulative_scores)
+
     ~H"""
     <div class="mb-4 bg-white/10 backdrop-blur-sm rounded-lg p-4">
+      <!-- Round Info and Target -->
+      <div class="flex items-center justify-center gap-4 mb-3 text-white/80 text-sm">
+        <span>Manche {@db_game.round_number}</span>
+        <span>•</span>
+        <span>Objectif: {@db_game.target_score} points</span>
+      </div>
+
       <div class="flex flex-wrap items-center justify-between gap-4">
         <!-- Trump Display -->
         <%= if @game.trump_suit do %>
@@ -842,13 +875,18 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
             </span>
           </div>
         <% end %>
-        
-    <!-- Scores -->
+
+    <!-- Scores: Cumulative (Total) and Current Hand -->
         <div class="flex gap-6 text-center">
           <div>
             <div class="text-white/80 text-xs mb-1">Équipe 1</div>
+            <!-- Cumulative Score (larger) -->
             <div class="text-2xl font-bold text-white">
-              {@game.scores[0]}
+              {@cumulative_scores[0]}
+            </div>
+            <!-- Current Hand Score (smaller) -->
+            <div class="text-white/60 text-xs">
+              Manche: {@game.scores[0]} pts
             </div>
             <div class="text-white/60 text-xs">
               {Enum.count(@game.tricks_won, fn {team, _} -> team == 0 end)} plis
@@ -856,8 +894,13 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           </div>
           <div>
             <div class="text-white/80 text-xs mb-1">Équipe 2</div>
+            <!-- Cumulative Score (larger) -->
             <div class="text-2xl font-bold text-white">
-              {@game.scores[1]}
+              {@cumulative_scores[1]}
+            </div>
+            <!-- Current Hand Score (smaller) -->
+            <div class="text-white/60 text-xs">
+              Manche: {@game.scores[1]} pts
             </div>
             <div class="text-white/60 text-xs">
               {Enum.count(@game.tricks_won, fn {team, _} -> team == 1 end)} plis
@@ -870,6 +913,19 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
   end
 
   defp score_panel(assigns) do
+    # Convert cumulative scores from string keys to integers for final display
+    cumulative_scores =
+      if assigns.db_game.scores do
+        %{
+          0 => Map.get(assigns.db_game.scores, "0", 0),
+          1 => Map.get(assigns.db_game.scores, "1", 0)
+        }
+      else
+        %{0 => 0, 1 => 0}
+      end
+
+    assigns = assign(assigns, :cumulative_scores, cumulative_scores)
+
     ~H"""
     <div class="mt-6 bg-white/10 backdrop-blur-sm rounded-lg p-6">
       <!-- Last Trick Display -->
@@ -879,23 +935,28 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           <.last_trick_display game={@game} my_position={@my_position} player_names={@player_names} />
         </div>
       <% end %>
-      
+
     <!-- Final Scores (shown when game is finished) -->
-      <%= if @game.status == :finished do %>
+      <%= if @db_game.status == "finished" do %>
         <div class="text-center">
-          <h3 class="text-white text-lg font-semibold mb-4">Partie terminée !</h3>
+          <h3 class="text-white text-xl font-bold mb-2">🏆 Partie terminée !</h3>
+          <p class="text-white/80 text-sm mb-4">
+            Après {@db_game.round_number} manche(s)
+          </p>
           <div class="grid grid-cols-2 gap-6">
             <div>
               <h4 class="text-white/80 text-sm mb-2">Équipe 1</h4>
               <div class="text-4xl font-bold text-white">
-                {@game.scores[0]}
+                {@cumulative_scores[0]}
               </div>
+              <div class="text-white/60 text-xs mt-1">points</div>
             </div>
             <div>
               <h4 class="text-white/80 text-sm mb-2">Équipe 2</h4>
               <div class="text-4xl font-bold text-white">
-                {@game.scores[1]}
+                {@cumulative_scores[1]}
               </div>
+              <div class="text-white/60 text-xs mt-1">points</div>
             </div>
           </div>
         </div>

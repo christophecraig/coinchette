@@ -367,6 +367,15 @@ defmodule Coinchette.Games.GameTest do
 
       assert Game.game_over?(game)
     end
+
+    test "sets status to :finished when all 8 tricks are completed" do
+      game =
+        Game.new(:hearts)
+        |> Game.deal_cards()
+        |> play_full_round()
+
+      assert game.status == :finished
+    end
   end
 
   describe "winner/1" do

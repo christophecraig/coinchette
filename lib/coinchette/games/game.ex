@@ -644,12 +644,16 @@ defmodule Coinchette.Games.Game do
 
       updated_scores = Score.calculate_scores(updated_tricks_won, game.trump_suit, score_opts)
 
+      # Set status to :finished when all 8 tricks are completed
+      updated_status = if is_last_trick, do: :finished, else: game.status
+
       %{
         game
         | tricks_won: updated_tricks_won,
           current_trick: Trick.new(),
           current_player_position: winning_position,
-          scores: updated_scores
+          scores: updated_scores,
+          status: updated_status
       }
     else
       game

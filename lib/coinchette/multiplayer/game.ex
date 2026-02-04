@@ -25,6 +25,10 @@ defmodule Coinchette.Multiplayer.Game do
     field :max_players, :integer, default: 4
     field :version, :integer, default: 0
 
+    # Multi-round support
+    field :target_score, :integer, default: 1000
+    field :round_number, :integer, default: 1
+
     belongs_to :creator, Coinchette.Accounts.User
     belongs_to :current_turn_player, Coinchette.Accounts.User
 
@@ -40,12 +44,23 @@ defmodule Coinchette.Multiplayer.Game do
   """
   def creation_changeset(game, attrs) do
     game
-    |> cast(attrs, [:variant, :mode, :status, :room_code, :creator_id, :is_private, :max_players])
+    |> cast(attrs, [
+      :variant,
+      :mode,
+      :status,
+      :room_code,
+      :creator_id,
+      :is_private,
+      :max_players,
+      :target_score,
+      :scores
+    ])
     |> validate_required([:variant, :mode, :status, :room_code, :creator_id])
     |> validate_inclusion(:variant, ["belote", "coinche"])
     |> validate_inclusion(:mode, ["solo", "multi"])
     |> validate_inclusion(:status, ["waiting", "playing", "finished"])
     |> validate_number(:max_players, greater_than: 1, less_than_or_equal_to: 4)
+    |> validate_inclusion(:target_score, [500, 1000])
     |> unique_constraint(:room_code)
   end
 
@@ -62,7 +77,8 @@ defmodule Coinchette.Multiplayer.Game do
         :winner_team,
         :scores,
         :started_at,
-        :finished_at
+        :finished_at,
+        :round_number
       ])
 
     # Only apply optimistic locking if version is being updated
