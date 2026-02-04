@@ -315,16 +315,20 @@ defmodule CoinchetteWeb.CoreComponents do
 
   def header(assigns) do
     ~H"""
-    <header class={[@actions != [] && "flex items-center justify-between gap-6", "pb-4", @class]}>
-      <div>
-        <h1 class="text-lg font-semibold leading-8">
+    <header class={[
+      @actions != [] && "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6",
+      "pb-4",
+      @class
+    ]}>
+      <div class="flex-1">
+        <h1 class="text-lg sm:text-xl font-semibold leading-8">
           {render_slot(@inner_block)}
         </h1>
-        <p :if={@subtitle != []} class="text-sm text-base-content/70">
+        <p :if={@subtitle != []} class="text-sm text-base-content/70 mt-1">
           {render_slot(@subtitle)}
         </p>
       </div>
-      <div class="flex-none">{render_slot(@actions)}</div>
+      <div class="flex flex-wrap gap-2 sm:flex-none">{render_slot(@actions)}</div>
     </header>
     """
   end

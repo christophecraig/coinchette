@@ -96,13 +96,13 @@ defmodule CoinchetteWeb.LobbyLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-6xl px-2 sm:px-4 md:px-6 lg:px-8">
       <.header>
-        Game Lobby
+        <span class="text-xl sm:text-2xl">Game Lobby</span>
         <:subtitle>Welcome, {@current_user.username}!</:subtitle>
         <:actions>
           <.link navigate="/profile" class="btn btn-ghost btn-sm">
-            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -110,11 +110,13 @@ defmodule CoinchetteWeb.LobbyLive do
                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
               />
             </svg>
-            Profil
+            <span class="hidden sm:inline">Profil</span>
           </.link>
-          <.volume_control id="lobby-volume-control" />
+          <div class="hidden sm:flex">
+            <.volume_control id="lobby-volume-control" />
+          </div>
           <Layouts.theme_toggle />
-          <.button phx-click="create_game" data-testid="create-game-button">
+          <.button phx-click="create_game" data-testid="create-game-button" class="w-full sm:w-auto">
             <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
@@ -123,7 +125,8 @@ defmodule CoinchetteWeb.LobbyLive do
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            Create New Game
+            <span class="hidden sm:inline">Create New Game</span>
+            <span class="sm:hidden">New Game</span>
           </.button>
         </:actions>
       </.header>
@@ -131,12 +134,12 @@ defmodule CoinchetteWeb.LobbyLive do
       <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
         <!-- Left column: Join Game -->
         <div class="lg:col-span-1">
-          <div class="bg-base-200 rounded-box p-6">
-            <h2 class="text-lg font-semibold mb-4">Join Game</h2>
+          <div class="bg-base-200 rounded-box p-4 sm:p-6">
+            <h2 class="text-base sm:text-lg font-semibold mb-4">Join Game</h2>
             <.form for={%{}} phx-submit="join_game" phx-change="validate_join">
               <div class="form-control">
                 <label class="label">
-                  <span class="label-text">Room Code</span>
+                  <span class="label-text text-sm sm:text-base">Room Code</span>
                 </label>
                 <input
                   type="text"
@@ -144,12 +147,12 @@ defmodule CoinchetteWeb.LobbyLive do
                   value={@join_room_code}
                   placeholder="ABC123"
                   maxlength="6"
-                  class="input input-bordered w-full uppercase font-mono text-center text-lg tracking-widest"
+                  class="input input-bordered w-full uppercase font-mono text-center text-base sm:text-lg tracking-widest"
                   autocomplete="off"
                   data-testid="room-code-input"
                 />
                 <label class="label">
-                  <span class="label-text-alt">Enter 6-character room code</span>
+                  <span class="label-text-alt text-xs sm:text-sm">Enter 6-character room code</span>
                 </label>
               </div>
               <.button type="submit" class="w-full mt-2" data-testid="join-game-button">
@@ -157,7 +160,7 @@ defmodule CoinchetteWeb.LobbyLive do
               </.button>
             </.form>
 
-            <div class="divider">OR</div>
+            <div class="divider text-sm">OR</div>
 
             <.button phx-click="create_solo_game" class="btn-outline w-full">
               Play Solo Game
@@ -167,50 +170,50 @@ defmodule CoinchetteWeb.LobbyLive do
         
     <!-- Right column: Active Games -->
         <div class="lg:col-span-2">
-          <h2 class="text-lg font-semibold mb-4">Your Active Games</h2>
+          <h2 class="text-base sm:text-lg font-semibold mb-4">Your Active Games</h2>
 
           <%= if Enum.empty?(@active_games) do %>
-            <div class="bg-base-200 rounded-box p-8 text-center">
-              <p class="text-base-content/60">No active games</p>
-              <p class="text-sm text-base-content/40 mt-2">
+            <div class="bg-base-200 rounded-box p-6 sm:p-8 text-center">
+              <p class="text-sm sm:text-base text-base-content/60">No active games</p>
+              <p class="text-xs sm:text-sm text-base-content/40 mt-2">
                 Create a new game or join one with a room code
               </p>
             </div>
           <% else %>
-            <div class="space-y-4" data-testid="active-games-list">
+            <div class="space-y-3 sm:space-y-4" data-testid="active-games-list">
               <%= for game <- @active_games do %>
                 <div
-                  class="bg-base-200 rounded-box p-4 hover:bg-base-300 transition cursor-pointer"
+                  class="bg-base-200 rounded-box p-3 sm:p-4 hover:bg-base-300 transition cursor-pointer"
                   phx-click="view_game"
                   phx-value-id={game.id}
                   data-testid={"game-card-#{game.id}"}
                 >
-                  <div class="flex items-center justify-between">
-                    <div class="flex-1">
-                      <div class="flex items-center gap-3">
-                        <span class="badge badge-lg font-mono">
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="flex-1 min-w-0">
+                      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                        <span class="badge badge-md sm:badge-lg font-mono text-sm sm:text-base">
                           {game.room_code}
                         </span>
                         <span class={[
-                          "badge",
+                          "badge badge-sm sm:badge-md text-xs sm:text-sm",
                           game.status == "waiting" && "badge-warning",
                           game.status == "playing" && "badge-success"
                         ]}>
                           {game.status}
                         </span>
                       </div>
-                      <div class="mt-2 text-sm text-base-content/60">
-                        <span>
+                      <div class="mt-2 text-xs sm:text-sm text-base-content/60 flex flex-wrap gap-1">
+                        <span class="whitespace-nowrap">
                           {length(game.game_players)}/4 players
                         </span>
-                        <span class="mx-2">•</span>
-                        <span>
+                        <span class="hidden sm:inline mx-1">•</span>
+                        <span class="whitespace-nowrap">
                           Created {format_relative_time(game.inserted_at)}
                         </span>
                       </div>
                     </div>
                     <svg
-                      class="w-5 h-5 text-base-content/40"
+                      class="w-4 h-4 sm:w-5 sm:h-5 text-base-content/40 flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -229,22 +232,22 @@ defmodule CoinchetteWeb.LobbyLive do
           <% end %>
 
           <%= if !Enum.empty?(@finished_games) do %>
-            <div class="mt-8">
-              <h2 class="text-lg font-semibold mb-4">Recent Finished Games</h2>
+            <div class="mt-6 sm:mt-8">
+              <h2 class="text-base sm:text-lg font-semibold mb-4">Recent Finished Games</h2>
               <div class="space-y-2">
                 <%= for game <- @finished_games do %>
-                  <div class="bg-base-200/50 rounded-box p-3 text-sm">
-                    <div class="flex items-center justify-between">
-                      <div>
+                  <div class="bg-base-200/50 rounded-box p-2 sm:p-3 text-xs sm:text-sm">
+                    <div class="flex items-center justify-between gap-2">
+                      <div class="flex-1 min-w-0">
                         <span class="font-mono">{game.room_code}</span>
-                        <span class="mx-2 text-base-content/40">•</span>
-                        <span class="text-base-content/60">
+                        <span class="hidden sm:inline mx-2 text-base-content/40">•</span>
+                        <span class="block sm:inline text-base-content/60 text-xs sm:text-sm truncate">
                           Finished {format_relative_time(game.finished_at || game.updated_at)}
                         </span>
                       </div>
                       <.link
                         navigate={~p"/game/#{game.id}/history"}
-                        class="text-brand hover:underline text-xs"
+                        class="text-brand hover:underline text-xs flex-shrink-0"
                       >
                         View
                       </.link>
