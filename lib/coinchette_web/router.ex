@@ -30,6 +30,7 @@ defmodule CoinchetteWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/setup-db-migrations", SetupController, :migrate
   end
 
   # Authentication routes (guest only)

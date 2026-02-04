@@ -95,12 +95,12 @@ defmodule CoinchetteWeb.LobbyLiveTest do
     test "shows error for invalid room code", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/lobby")
 
-      view
-      |> form("form[phx-submit='join_game']", %{room_code: "INVALID"})
-      |> render_submit()
+      html =
+        view
+        |> form("form[phx-submit='join_game']", %{room_code: "INVALID"})
+        |> render_submit()
 
-      html = render(view)
-      # Should show some error message
+      # Should show error message in the response
       assert html =~ ~r/game not found/i or html =~ ~r/error/i
     end
   end
