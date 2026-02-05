@@ -64,6 +64,16 @@ defmodule CoinchetteWeb.GameLobbyLive do
       position ->
         case GameServer.add_player(game_id, user_id, position) do
           :ok ->
+            # Subscribe to game events
+            Phoenix.PubSub.subscribe(Coinchette.PubSub, "game:#{game_id}")
+
+            # Track user presence in lobby
+            {:ok, _} =
+              Presence.track(self(), "game:#{game_id}", user_id, %{
+                username: socket.assigns.current_user.username,
+                joined_at: System.system_time(:second)
+              })
+
             # Reload game state
             game = Multiplayer.get_game!(game_id)
 
@@ -71,6 +81,7 @@ defmodule CoinchetteWeb.GameLobbyLive do
              socket
              |> assign(:game, game)
              |> assign(:joining, false)
+             |> assign(:is_creator, game.creator_id == user_id)
              |> assign(:present_users, get_present_users(game_id))
              |> load_players()
              |> put_flash(:info, "Joined game!")}
@@ -168,8 +179,16 @@ defmodule CoinchetteWeb.GameLobbyLive do
     {:noreply, reload_game_state(socket)}
   end
 
-  def handle_info({:player_left, _data}, socket) do
-    {:noreply, reload_game_state(socket)}
+  def handle_info({:player_left, %{user_id: user_id}}, socket) do
+    # If the current user was removed, redirect them to lobby
+    if user_id == socket.assigns.current_user.id do
+      {:noreply,
+       socket
+       |> put_flash(:info, "You have been removed from the game")
+       |> push_navigate(to: ~p"/lobby")}
+    else
+      {:noreply, reload_game_state(socket)}
+    end
   end
 
   def handle_info({:game_started, _game}, socket) do

@@ -46,8 +46,8 @@ defmodule Coinchette.Multiplayer do
         # Add creator as first player (position 0)
         add_player(game.id, creator_id, 0)
 
-        # Return the game
-        {:ok, game}
+        # Return the game with preloaded associations
+        {:ok, get_game!(game.id)}
 
       error ->
         error
