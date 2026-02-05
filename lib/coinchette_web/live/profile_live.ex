@@ -31,9 +31,15 @@ defmodule CoinchetteWeb.ProfileLive do
       <div class="max-w-6xl mx-auto">
         <!-- Header -->
         <div class="mb-6">
-          <.link navigate="/lobby" class="btn btn-ghost btn-sm mb-4">
-            ← Retour au lobby
-          </.link>
+          <div class="flex items-center justify-between mb-4">
+            <.link navigate="/lobby" class="btn btn-ghost btn-sm">
+              ← Retour au lobby
+            </.link>
+            <.link navigate="/settings/notifications" class="btn btn-ghost btn-sm gap-2">
+              <span class="text-lg">🔔</span>
+              <span class="hidden sm:inline">Notifications</span>
+            </.link>
+          </div>
           <h1 class="text-3xl sm:text-4xl font-bold text-base-content">
             Profil de {@user.username}
           </h1>
