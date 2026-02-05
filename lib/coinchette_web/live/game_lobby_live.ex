@@ -66,6 +66,8 @@ defmodule CoinchetteWeb.GameLobbyLive do
           :ok ->
             # Subscribe to game events
             Phoenix.PubSub.subscribe(Coinchette.PubSub, "game:#{game_id}")
+            require Logger
+            Logger.info("Player #{user_id} subscribed to game:#{game_id}")
 
             # Track user presence in lobby
             {:ok, _} =
@@ -192,6 +194,8 @@ defmodule CoinchetteWeb.GameLobbyLive do
   end
 
   def handle_info({:game_started, _game}, socket) do
+    require Logger
+    Logger.info("Received game_started event for user #{socket.assigns.current_user.id}, redirecting to play")
     {:noreply, push_navigate(socket, to: ~p"/game/#{socket.assigns.game_id}/play")}
   end
 
