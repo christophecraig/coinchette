@@ -169,19 +169,25 @@ defmodule CoinchetteWeb.GameLobbyLive do
 
   def handle_event("start_game", _params, socket) do
     if socket.assigns.is_creator do
-      # Vérifier équilibre 2v2
+      # Vérifier équilibre des équipes
       if not socket.assigns.is_balanced do
-        {:noreply, put_flash(socket, :error, "Les équipes doivent être équilibrées (2v2) pour démarrer")}
+        {:noreply, put_flash(socket, :error, "Chaque équipe peut contenir maximum 2 joueurs")}
       else
-        case GameServer.start_game(socket.assigns.game_id) do
-          {:ok, _game} ->
-            {:noreply, push_navigate(socket, to: ~p"/game/#{socket.assigns.game_id}/play")}
+        game_id = socket.assigns.game_id
 
+        # Ensure GameServer is running before starting the game
+        with {:ok, _} <- ensure_game_server_started(game_id),
+             {:ok, _game} <- GameServer.start_game(game_id) do
+          {:noreply, push_navigate(socket, to: ~p"/game/#{game_id}/play")}
+        else
           {:error, :not_enough_players} ->
-            {:noreply, put_flash(socket, :error, "Need at least 2 players to start")}
+            {:noreply, put_flash(socket, :error, "Besoin d'au moins 2 joueurs pour démarrer")}
+
+          {:error, :server_not_available} ->
+            {:noreply, put_flash(socket, :error, "Erreur technique, veuillez réessayer")}
 
           {:error, _reason} ->
-            {:noreply, put_flash(socket, :error, "Failed to start game")}
+            {:noreply, put_flash(socket, :error, "Échec du démarrage de la partie")}
         end
       end
     else
@@ -283,6 +289,21 @@ defmodule CoinchetteWeb.GameLobbyLive do
     |> load_players()
   end
 
+  defp ensure_game_server_started(game_id) do
+    case GameServerSupervisor.start_game(game_id) do
+      {:ok, _pid} ->
+        {:ok, :started}
+
+      {:error, {:already_started, _pid}} ->
+        {:ok, :already_started}
+
+      {:error, reason} ->
+        require Logger
+        Logger.error("Failed to start GameServer for game #{game_id}: #{inspect(reason)}")
+        {:error, :server_not_available}
+    end
+  end
+
   defp get_present_users(game_id) do
     Presence.list("game:#{game_id}")
     |> Map.keys()
@@ -303,10 +324,16 @@ defmodule CoinchetteWeb.GameLobbyLive do
     team_0 = Enum.filter(players, &(rem(&1.position, 2) == 0)) |> Enum.sort_by(& &1.position)
     team_1 = Enum.filter(players, &(rem(&1.position, 2) == 1)) |> Enum.sort_by(& &1.position)
 
+    # Nouvelle logique: autoriser 0, 1 ou 2 joueurs par équipe
+    # Les bots compléteront automatiquement
+    team_0_valid = length(team_0) <= 2
+    team_1_valid = length(team_1) <= 2
+    is_balanced = team_0_valid and team_1_valid
+
     socket
     |> assign(:team_0, team_0)
     |> assign(:team_1, team_1)
-    |> assign(:is_balanced, length(team_0) == 2 and length(team_1) == 2)
+    |> assign(:is_balanced, is_balanced)
   end
 
   defp is_user_in_game?(game, user_id) do
@@ -509,7 +536,7 @@ defmodule CoinchetteWeb.GameLobbyLive do
                 <%= if @is_balanced do %>
                   Démarrer la partie
                 <% else %>
-                  Équilibrez les équipes (2v2)
+                  Max 2 joueurs par équipe
                 <% end %>
               </.button>
             <% end %>
@@ -575,7 +602,7 @@ defmodule CoinchetteWeb.GameLobbyLive do
                 />
               </svg>
               <span class="text-sm">
-                Les équipes doivent être équilibrées (2v2) pour démarrer la partie.
+                Chaque équipe peut contenir maximum 2 joueurs. Les positions vides seront remplies par des bots.
               </span>
             </div>
           <% end %>

@@ -36,9 +36,20 @@ defmodule Coinchette.GameServer do
 
   @doc """
   Gets the current game state.
+  Returns nil if the GameServer is not available.
   """
   def get_state(game_id) do
-    GenServer.call(via_tuple(game_id), :get_state)
+    try do
+      GenServer.call(via_tuple(game_id), :get_state)
+    catch
+      :exit, {:noproc, _} ->
+        Logger.warning("GameServer not found for game_id: #{game_id}")
+        nil
+
+      :exit, reason ->
+        Logger.error("GameServer call failed for game_id #{game_id}: #{inspect(reason)}")
+        nil
+    end
   end
 
   @doc """

@@ -96,185 +96,193 @@ defmodule CoinchetteWeb.LobbyLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-6xl px-2 sm:px-4 md:px-6 lg:px-8">
-      <.header>
-        <span class="text-xl sm:text-2xl">Game Lobby</span>
-        <:subtitle>Welcome, {@current_user.username}!</:subtitle>
-        <:actions>
-          <.link navigate="/profile" class="btn btn-ghost btn-sm">
-            <svg class="w-5 h-5 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-              />
-            </svg>
-            <span class="hidden sm:inline">Profil</span>
-          </.link>
-          <div class="hidden sm:flex">
-            <.volume_control id="lobby-volume-control" />
-          </div>
-          <Layouts.theme_toggle />
-          <.button phx-click="create_game" data-testid="create-game-button" class="w-full sm:w-auto">
-            <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            <span class="hidden sm:inline">Create New Game</span>
-            <span class="sm:hidden">New Game</span>
-          </.button>
-        </:actions>
-      </.header>
-
-      <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
-        <!-- Left column: Join Game -->
-        <div class="lg:col-span-1">
-          <div class="bg-base-200 rounded-box p-4 sm:p-6">
-            <h2 class="text-base sm:text-lg font-semibold mb-4">Join Game</h2>
-            <.form for={%{}} phx-submit="join_game" phx-change="validate_join">
-              <div class="form-control">
-                <label class="label">
-                  <span class="label-text text-sm sm:text-base">Room Code</span>
-                </label>
-                <input
-                  type="text"
-                  name="room_code"
-                  value={@join_room_code}
-                  placeholder="ABC123"
-                  maxlength="6"
-                  class="input input-bordered w-full uppercase font-mono text-center text-base sm:text-lg tracking-widest"
-                  autocomplete="off"
-                  data-testid="room-code-input"
-                />
-                <label class="label">
-                  <span class="label-text-alt text-xs sm:text-sm">Enter 6-character room code</span>
-                </label>
-              </div>
-              <.button type="submit" class="w-full mt-2" data-testid="join-game-button">
-                Join Game
-              </.button>
-            </.form>
-
-            <div class="divider text-sm">OR</div>
-
-            <.button phx-click="create_solo_game" class="btn-outline w-full">
-              Play Solo Game
-            </.button>
-          </div>
+    <div>
+    <div class="mx-auto max-w-6xl px-2 sm:px-4 md:px-6 lg:px-8 pb-20 sm:pb-0">
+      <!-- Hero Section -->
+      <div class="text-center py-8 sm:py-12 mb-8">
+        <div class="flex items-center justify-center gap-3 mb-4">
+          <span class="text-5xl sm:text-6xl">🃏</span>
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-red-600 via-yellow-500 to-blue-600 bg-clip-text text-transparent">
+            Coinchette
+          </h1>
         </div>
-        
-    <!-- Right column: Active Games -->
-        <div class="lg:col-span-2">
-          <h2 class="text-base sm:text-lg font-semibold mb-4">Your Active Games</h2>
 
-          <%= if Enum.empty?(@active_games) do %>
-            <div class="bg-base-200 rounded-box p-6 sm:p-8 text-center">
-              <p class="text-sm sm:text-base text-base-content/60">No active games</p>
-              <p class="text-xs sm:text-sm text-base-content/40 mt-2">
-                Create a new game or join one with a room code
-              </p>
-            </div>
-          <% else %>
-            <div class="space-y-3 sm:space-y-4" data-testid="active-games-list">
-              <%= for game <- @active_games do %>
-                <div
-                  class="bg-base-200 rounded-box p-3 sm:p-4 hover:bg-base-300 transition cursor-pointer"
-                  phx-click="view_game"
-                  phx-value-id={game.id}
-                  data-testid={"game-card-#{game.id}"}
-                >
-                  <div class="flex items-center justify-between gap-2">
-                    <div class="flex-1 min-w-0">
-                      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-                        <span class="badge badge-md sm:badge-lg font-mono text-sm sm:text-base">
-                          {game.room_code}
-                        </span>
-                        <span class={[
-                          "badge badge-sm sm:badge-md text-xs sm:text-sm",
-                          game.status == "waiting" && "badge-warning",
-                          game.status == "playing" && "badge-success"
-                        ]}>
-                          {game.status}
-                        </span>
-                      </div>
-                      <div class="mt-2 text-xs sm:text-sm text-base-content/60 flex flex-wrap gap-1">
-                        <span class="whitespace-nowrap">
-                          {length(game.game_players)}/4 players
-                        </span>
-                        <span class="hidden sm:inline mx-1">•</span>
-                        <span class="whitespace-nowrap">
-                          Created {format_relative_time(game.inserted_at)}
-                        </span>
-                      </div>
-                    </div>
-                    <svg
-                      class="w-4 h-4 sm:w-5 sm:h-5 text-base-content/40 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              <% end %>
-            </div>
-          <% end %>
+        <p class="text-lg sm:text-xl text-base-content/80 mb-2">
+          La belote et la coinche en ligne
+        </p>
 
-          <%= if !Enum.empty?(@finished_games) do %>
-            <div class="mt-6 sm:mt-8">
-              <h2 class="text-base sm:text-lg font-semibold mb-4">Recent Finished Games</h2>
-              <div class="space-y-2">
-                <%= for game <- @finished_games do %>
-                  <div class="bg-base-200/50 rounded-box p-2 sm:p-3 text-xs sm:text-sm">
-                    <div class="flex items-center justify-between gap-2">
-                      <div class="flex-1 min-w-0">
-                        <span class="font-mono">{game.room_code}</span>
-                        <span class="hidden sm:inline mx-2 text-base-content/40">•</span>
-                        <span class="block sm:inline text-base-content/60 text-xs sm:text-sm truncate">
-                          Finished {format_relative_time(game.finished_at || game.updated_at)}
-                        </span>
-                      </div>
-                      <.link
-                        navigate={~p"/game/#{game.id}/history"}
-                        class="text-brand hover:underline text-xs flex-shrink-0"
-                      >
-                        View
-                      </.link>
-                    </div>
-                  </div>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
+        <p class="text-sm sm:text-base text-base-content/60 max-w-2xl mx-auto">
+          Jouez seul contre des bots intelligents ou créez une partie avec vos amis.
+          Règles officielles FFB.
+        </p>
+
+        <!-- User greeting -->
+        <div class="mt-6 flex items-center justify-center gap-2 text-base-content/70">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+            />
+          </svg>
+          <span class="font-medium">{@current_user.username}</span>
+          <div class="hidden sm:flex items-center gap-2 ml-4">
+            <.volume_control id="lobby-volume-control" />
+            <Layouts.theme_toggle />
+          </div>
         </div>
       </div>
+
+      <!-- Actions rapides -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 max-w-2xl mx-auto">
+        <!-- Partie Solo -->
+        <button
+          phx-click="create_solo_game"
+          class="card bg-gradient-to-br from-primary to-primary-focus hover:shadow-xl transition-all p-6 sm:p-8"
+        >
+          <div class="text-white text-center">
+            <div class="text-4xl mb-3">🤖</div>
+            <h3 class="text-lg sm:text-xl font-bold mb-2">Partie Solo</h3>
+            <p class="text-sm opacity-90">
+              Jouer contre 3 bots
+            </p>
+          </div>
+        </button>
+        <!-- Créer une partie -->
+        <button
+          phx-click="create_game"
+          data-testid="create-game-button"
+          class="card bg-gradient-to-br from-secondary to-secondary-focus hover:shadow-xl transition-all p-6 sm:p-8"
+        >
+          <div class="text-white text-center">
+            <div class="text-4xl mb-3">👥</div>
+            <h3 class="text-lg sm:text-xl font-bold mb-2">Créer une Partie</h3>
+            <p class="text-sm opacity-90">
+              Inviter des amis
+            </p>
+          </div>
+        </button>
+      </div>
+
+      <!-- Rejoindre avec code (plus discret) -->
+      <div class="max-w-md mx-auto mb-8">
+        <div class="card bg-base-200 p-4 sm:p-6">
+          <h3 class="text-base sm:text-lg font-semibold mb-3 text-center">
+            Rejoindre une partie
+          </h3>
+          <.form for={%{}} phx-submit="join_game" phx-change="validate_join">
+            <div class="flex gap-2">
+              <input
+                type="text"
+                name="room_code"
+                value={@join_room_code}
+                placeholder="Code (ABC123)"
+                maxlength="6"
+                class="input input-bordered flex-1 uppercase font-mono text-center tracking-widest"
+                autocomplete="off"
+                data-testid="room-code-input"
+              />
+              <.button type="submit" class="btn-primary" data-testid="join-game-button">
+                Rejoindre
+              </.button>
+            </div>
+          </.form>
+        </div>
+      </div>
+
+      <!-- Parties actives -->
+      <%= if !Enum.empty?(@active_games) do %>
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold mb-4 flex items-center gap-2">
+            <span>🎮</span>
+            <span>Vos parties en cours</span>
+          </h2>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4" data-testid="active-games-list">
+            <%= for game <- @active_games do %>
+              <div
+                class="card bg-base-200 hover:bg-base-300 transition-all cursor-pointer p-4 sm:p-6"
+                phx-click="view_game"
+                phx-value-id={game.id}
+                data-testid={"game-card-#{game.id}"}
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-2">
+                      <span class="badge badge-lg font-mono">{game.room_code}</span>
+                      <span class={[
+                        "badge",
+                        game.status == "waiting" && "badge-warning",
+                        game.status == "playing" && "badge-success"
+                      ]}>
+                        {status_text(game.status)}
+                      </span>
+                    </div>
+                    <div class="text-sm text-base-content/60">
+                      {length(game.game_players)}/4 joueurs •
+                      {format_relative_time(game.inserted_at)}
+                    </div>
+                  </div>
+                  <svg class="w-6 h-6 text-base-content/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Parties terminées -->
+      <%= if !Enum.empty?(@finished_games) do %>
+        <div>
+          <h2 class="text-lg sm:text-xl font-semibold mb-4 text-base-content/70">
+            Dernières parties terminées
+          </h2>
+          <div class="space-y-2">
+            <%= for game <- @finished_games do %>
+              <div class="card bg-base-200/50 p-3 sm:p-4 flex flex-row items-center justify-between">
+                <div>
+                  <span class="font-mono font-semibold">{game.room_code}</span>
+                  <span class="text-sm text-base-content/60 ml-3">
+                    {format_relative_time(game.finished_at || game.updated_at)}
+                  </span>
+                </div>
+                <.link navigate={~p"/game/#{game.id}/history"} class="btn btn-ghost btn-sm">
+                  Voir
+                </.link>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Bottom Navigation (visible sur mobile uniquement) -->
+    <div class="block sm:hidden">
+      <CoinchetteWeb.BottomNav.bottom_nav current_path="/lobby" />
+    </div>
     </div>
     """
   end
 
-  defp format_relative_time(nil), do: "recently"
+  defp format_relative_time(nil), do: "récemment"
 
   defp format_relative_time(datetime) do
     now = NaiveDateTime.utc_now()
     diff = NaiveDateTime.diff(now, datetime, :second)
 
     cond do
-      diff < 60 -> "just now"
-      diff < 3600 -> "#{div(diff, 60)} minutes ago"
-      diff < 86400 -> "#{div(diff, 3600)} hours ago"
-      diff < 604_800 -> "#{div(diff, 86400)} days ago"
-      true -> "over a week ago"
+      diff < 60 -> "à l'instant"
+      diff < 3600 -> "il y a #{div(diff, 60)} min"
+      diff < 86400 -> "il y a #{div(diff, 3600)}h"
+      diff < 604_800 -> "il y a #{div(diff, 86400)}j"
+      true -> "il y a plus d'une semaine"
     end
   end
+
+  defp status_text("waiting"), do: "En attente"
+  defp status_text("playing"), do: "En cours"
+  defp status_text(_), do: "Terminée"
 end

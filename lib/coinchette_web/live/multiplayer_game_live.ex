@@ -20,43 +20,67 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
         })
     end
 
-    # Get game state from GameServer
-    state = GameServer.get_state(game_id)
-    game = state.game
+    # Ensure GameServer is running, start it if needed
+    case Coinchette.GameServerSupervisor.start_game(game_id) do
+      {:ok, _pid} ->
+        :ok
 
-    # Load DB game to get cumulative scores, target_score, and round_number
-    db_game = Multiplayer.get_game!(game_id)
+      {:error, {:already_started, _pid}} ->
+        :ok
 
-    # Always rebuild player data to ensure consistency
-    # build_player_data always returns {%{}, MapSet.new()}
-    {player_map, bot_positions} = build_player_data(game_id)
+      {:error, reason} ->
+        require Logger
+        Logger.error("Failed to start GameServer for game #{game_id}: #{inspect(reason)}")
+    end
 
-    # Find user's position
-    my_position = find_user_position(player_map, socket.assigns.current_user.id)
+    # Get game state from GameServer (with fallback)
+    case GameServer.get_state(game_id) do
+      nil ->
+        # GameServer not available, redirect to lobby
+        socket =
+          socket
+          |> put_flash(:error, "Cette partie n'est plus disponible")
+          |> push_navigate(to: ~p"/lobby")
 
-    # Load chat messages and set up stream
-    chat_messages = Multiplayer.list_chat_messages(game_id)
+        {:ok, socket}
 
-    # Get list of present users
-    present_users = get_present_users(game_id)
+      state ->
+        game = state.game
 
-    socket =
-      socket
-      |> assign(:page_title, "Playing Game")
-      |> assign(:game, game)
-      |> assign(:db_game, db_game)
-      |> assign(:game_id, game_id)
-      |> assign(:my_position, my_position)
-      |> assign(:player_map, player_map)
-      |> assign(:bot_positions, bot_positions)
-      |> assign(:selected_card, nil)
-      |> assign(:message, get_game_message(game, my_position))
-      |> assign(:belote_announcement, nil)
-      |> assign(:present_users, present_users)
-      |> stream(:chat_messages, chat_messages)
-      |> load_player_names(game_id)
+        # Load DB game to get cumulative scores, target_score, and round_number
+        db_game = Multiplayer.get_game!(game_id)
 
-    {:ok, socket}
+        # Always rebuild player data to ensure consistency
+        # build_player_data always returns {%{}, MapSet.new()}
+        {player_map, bot_positions} = build_player_data(game_id)
+
+        # Find user's position
+        my_position = find_user_position(player_map, socket.assigns.current_user.id)
+
+        # Load chat messages and set up stream
+        chat_messages = Multiplayer.list_chat_messages(game_id)
+
+        # Get list of present users
+        present_users = get_present_users(game_id)
+
+        socket =
+          socket
+          |> assign(:page_title, "Playing Game")
+          |> assign(:game, game)
+          |> assign(:db_game, db_game)
+          |> assign(:game_id, game_id)
+          |> assign(:my_position, my_position)
+          |> assign(:player_map, player_map)
+          |> assign(:bot_positions, bot_positions)
+          |> assign(:selected_card, nil)
+          |> assign(:message, get_game_message(game, my_position))
+          |> assign(:belote_announcement, nil)
+          |> assign(:present_users, present_users)
+          |> stream(:chat_messages, chat_messages)
+          |> load_player_names(game_id)
+
+        {:ok, socket}
+    end
   end
 
   ## Event Handlers - User Actions
@@ -525,19 +549,30 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
 
   def render(assigns) do
     ~H"""
-    <div class="min-h-screen bg-gradient-to-br from-green-800 to-green-600 p-4 sm:p-8">
+    <div>
+    <div class="min-h-screen bg-gradient-to-br from-green-800 to-green-600 p-4 sm:p-8 pb-20 sm:pb-8">
       <div class="max-w-6xl mx-auto">
         <!-- Header -->
-        <div class="flex items-center justify-between mb-6">
-          <div class="text-white">
-            <h1 class="text-2xl sm:text-4xl font-bold">🃏 Coinchette</h1>
-            <p class="text-green-100 text-sm sm:text-lg mt-1">{@message}</p>
+        <div class="flex items-center justify-between mb-4 sm:mb-6">
+          <div class="text-white flex-1 min-w-0">
+            <!-- Masquer logo et titre sur mobile -->
+            <h1 class="hidden sm:block text-2xl sm:text-4xl font-bold">🃏 Coinchette</h1>
+            <!-- Message tronqué sur mobile -->
+            <p class="text-green-100 text-xs sm:text-sm lg:text-lg mt-1 truncate">{@message}</p>
           </div>
-          <div class="flex items-center gap-2">
-            <.volume_control id="game-volume-control" class="text-white" />
-            <Layouts.theme_toggle />
-            <button phx-click="leave_game" class="btn btn-ghost btn-sm text-white">
-              Quitter
+          <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+            <div class="scale-75 sm:scale-100">
+              <.volume_control id="game-volume-control" class="text-white" />
+            </div>
+            <div class="scale-75 sm:scale-100">
+              <Layouts.theme_toggle />
+            </div>
+            <button phx-click="leave_game" class="btn btn-ghost btn-xs sm:btn-sm text-white px-2 sm:px-4">
+              <!-- Icône seule sur mobile -->
+              <svg class="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span class="hidden sm:inline">Quitter</span>
             </button>
           </div>
         </div>
@@ -593,6 +628,12 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           player_names={@player_names}
         />
       </div>
+    </div>
+
+    <!-- Bottom Navigation (visible sur mobile uniquement) -->
+    <div class="block sm:hidden">
+      <CoinchetteWeb.BottomNav.bottom_nav current_path="/game" />
+    </div>
     </div>
     """
   end

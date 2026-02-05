@@ -704,4 +704,16 @@
             scroll-behavior: auto !important;
         }
     }
+
+    /* Safe area insets for iOS notch and bottom bar */
+    .safe-area-inset-bottom {
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    /* Adjust content padding when bottom nav is visible on mobile */
+    @media (max-width: 640px) {
+        body {
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+    }
 }
