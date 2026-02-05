@@ -19,12 +19,17 @@ defmodule CoinchetteWeb.GameLobbyLive do
           # Subscribe to game events
           Phoenix.PubSub.subscribe(Coinchette.PubSub, "game:#{game_id}")
 
-          # Track user presence in lobby
-          {:ok, _} =
-            Presence.track(self(), "game:#{game_id}", socket.assigns.current_user.id, %{
-              username: socket.assigns.current_user.username,
-              joined_at: System.system_time(:second)
-            })
+          # Track user presence in lobby (ignore if already tracked)
+          case Presence.track(self(), "game:#{game_id}", socket.assigns.current_user.id, %{
+                 username: socket.assigns.current_user.username,
+                 joined_at: System.system_time(:second)
+               }) do
+            {:ok, _} -> :ok
+            {:error, {:already_tracked, _, _, _}} -> :ok
+            {:error, reason} ->
+              require Logger
+              Logger.warning("Failed to track presence: #{inspect(reason)}")
+          end
 
           # Ensure GameServer is running
           case GameServerSupervisor.start_game(game_id) do
@@ -64,17 +69,20 @@ defmodule CoinchetteWeb.GameLobbyLive do
       position ->
         case GameServer.add_player(game_id, user_id, position) do
           :ok ->
-            # Subscribe to game events
+            # Subscribe to game events (ignore if already subscribed)
             Phoenix.PubSub.subscribe(Coinchette.PubSub, "game:#{game_id}")
             require Logger
             Logger.info("Player #{user_id} subscribed to game:#{game_id}")
 
-            # Track user presence in lobby
-            {:ok, _} =
-              Presence.track(self(), "game:#{game_id}", user_id, %{
-                username: socket.assigns.current_user.username,
-                joined_at: System.system_time(:second)
-              })
+            # Track user presence in lobby (ignore if already tracked)
+            case Presence.track(self(), "game:#{game_id}", user_id, %{
+                   username: socket.assigns.current_user.username,
+                   joined_at: System.system_time(:second)
+                 }) do
+              {:ok, _} -> :ok
+              {:error, {:already_tracked, _, _, _}} -> :ok
+              {:error, reason} -> Logger.warning("Failed to track presence: #{inspect(reason)}")
+            end
 
             # Reload game state
             game = Multiplayer.get_game!(game_id)
