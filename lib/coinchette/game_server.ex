@@ -90,6 +90,13 @@ defmodule Coinchette.GameServer do
     GenServer.call(via_tuple(game_id), {:delete_game, user_id})
   end
 
+  @doc """
+  Changes a player's position (only in waiting status).
+  """
+  def change_player_position(game_id, current_position, new_position) do
+    GenServer.call(via_tuple(game_id), {:change_player_position, current_position, new_position})
+  end
+
   ## Server Callbacks
 
   @impl true
@@ -261,6 +268,28 @@ defmodule Coinchette.GameServer do
 
       {:error, _reason} = error ->
         {:reply, error, state}
+    end
+  end
+
+  @impl true
+  def handle_call({:change_player_position, current_position, new_position}, _from, state) do
+    if state.game.status != :waiting do
+      {:reply, {:error, :game_already_started}, state}
+    else
+      case Multiplayer.change_player_position(state.game_id, current_position, new_position) do
+        {:ok, _updated_player} ->
+          # Reload game data
+          {new_player_map, new_bot_positions} = build_player_data(state.game_id)
+          new_state = %{state | player_map: new_player_map, bot_positions: new_bot_positions}
+
+          # Broadcast update
+          broadcast_event(state.game_id, {:player_moved, %{current_position: current_position, new_position: new_position}})
+
+          {:reply, :ok, new_state}
+
+        error ->
+          {:reply, error, state}
+      end
     end
   end
 

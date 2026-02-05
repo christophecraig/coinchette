@@ -350,4 +350,56 @@ defmodule Coinchette.Multiplayer do
       _ -> generate_room_code()
     end
   end
+
+  @doc """
+  Changes a player's position in the game.
+  Only works when game status is "waiting".
+  Validates that target position is not already taken.
+  """
+  def change_player_position(game_id, current_position, new_position) do
+    game = get_game!(game_id)
+
+    if game.status != "waiting" do
+      {:error, :game_already_started}
+    else
+      player = get_player_by_position(game_id, current_position)
+
+      if player == nil do
+        {:error, :player_not_found}
+      else
+        # Check if target position is already taken
+        case get_player_by_position(game_id, new_position) do
+          nil ->
+            # Position is free, update
+            player
+            |> GamePlayer.changeset(%{position: new_position})
+            |> Repo.update()
+            |> case do
+              {:ok, updated_player} ->
+                add_game_event(game_id, "player_moved", %{
+                  user_id: player.user_id,
+                  is_bot: player.is_bot,
+                  old_position: current_position,
+                  new_position: new_position
+                })
+
+                {:ok, updated_player}
+
+              error ->
+                error
+            end
+
+          _existing_player ->
+            {:error, :position_taken}
+        end
+      end
+    end
+  end
+
+  defp get_player_by_position(game_id, position) do
+    Repo.one(
+      from p in GamePlayer,
+        where: p.game_id == ^game_id and p.position == ^position
+    )
+  end
 end

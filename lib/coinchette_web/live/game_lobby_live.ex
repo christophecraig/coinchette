@@ -169,18 +169,63 @@ defmodule CoinchetteWeb.GameLobbyLive do
 
   def handle_event("start_game", _params, socket) do
     if socket.assigns.is_creator do
-      case GameServer.start_game(socket.assigns.game_id) do
-        {:ok, _game} ->
-          {:noreply, push_navigate(socket, to: ~p"/game/#{socket.assigns.game_id}/play")}
+      # Vérifier équilibre 2v2
+      if not socket.assigns.is_balanced do
+        {:noreply, put_flash(socket, :error, "Les équipes doivent être équilibrées (2v2) pour démarrer")}
+      else
+        case GameServer.start_game(socket.assigns.game_id) do
+          {:ok, _game} ->
+            {:noreply, push_navigate(socket, to: ~p"/game/#{socket.assigns.game_id}/play")}
 
-        {:error, :not_enough_players} ->
-          {:noreply, put_flash(socket, :error, "Need at least 2 players to start")}
+          {:error, :not_enough_players} ->
+            {:noreply, put_flash(socket, :error, "Need at least 2 players to start")}
 
-        {:error, _reason} ->
-          {:noreply, put_flash(socket, :error, "Failed to start game")}
+          {:error, _reason} ->
+            {:noreply, put_flash(socket, :error, "Failed to start game")}
+        end
       end
     else
       {:noreply, put_flash(socket, :error, "Only the host can start the game")}
+    end
+  end
+
+  def handle_event("move_player_to_team", %{"position" => position_str, "target-team" => target_team_str}, socket) do
+    # Vérifier que c'est l'hôte
+    if not socket.assigns.is_creator do
+      {:noreply, put_flash(socket, :error, "Seul l'hôte peut réorganiser les équipes")}
+    else
+      current_position = String.to_integer(position_str)
+      target_team = String.to_integer(target_team_str)
+      current_team = rem(current_position, 2)
+
+      if current_team == target_team do
+        # Déjà dans la bonne équipe
+        {:noreply, socket}
+      else
+        # Trouver une position disponible dans l'équipe cible
+        target_positions = if target_team == 0, do: [0, 2], else: [1, 3]
+        occupied_positions = Enum.map(socket.assigns.players, & &1.position)
+
+        case Enum.find(target_positions, &(&1 not in occupied_positions)) do
+          nil ->
+            {:noreply, put_flash(socket, :error, "Aucune place disponible dans cette équipe")}
+
+          new_position ->
+            case GameServer.change_player_position(socket.assigns.game_id, current_position, new_position) do
+              :ok ->
+                {:noreply, socket}
+
+              {:error, :game_already_started} ->
+                {:noreply, put_flash(socket, :error, "La partie a déjà commencé")}
+
+              {:error, :position_taken} ->
+                {:noreply, put_flash(socket, :error, "Cette position est déjà prise")}
+
+              {:error, _} ->
+                {:noreply, put_flash(socket, :error, "Erreur lors du déplacement")}
+            end
+        end
+      end
     end
   end
 
@@ -199,6 +244,10 @@ defmodule CoinchetteWeb.GameLobbyLive do
     else
       {:noreply, reload_game_state(socket)}
     end
+  end
+
+  def handle_info({:player_moved, _data}, socket) do
+    {:noreply, reload_game_state(socket)}
   end
 
   def handle_info({:game_started, _game}, socket) do
@@ -242,7 +291,22 @@ defmodule CoinchetteWeb.GameLobbyLive do
 
   defp load_players(socket) do
     players = Multiplayer.list_game_players(socket.assigns.game_id)
-    assign(socket, :players, players)
+
+    socket
+    |> assign(:players, players)
+    |> assign_teams()
+  end
+
+  defp assign_teams(socket) do
+    players = socket.assigns.players
+
+    team_0 = Enum.filter(players, &(rem(&1.position, 2) == 0)) |> Enum.sort_by(& &1.position)
+    team_1 = Enum.filter(players, &(rem(&1.position, 2) == 1)) |> Enum.sort_by(& &1.position)
+
+    socket
+    |> assign(:team_0, team_0)
+    |> assign(:team_1, team_1)
+    |> assign(:is_balanced, length(team_0) == 2 and length(team_1) == 2)
   end
 
   defp is_user_in_game?(game, user_id) do
@@ -253,6 +317,124 @@ defmodule CoinchetteWeb.GameLobbyLive do
     occupied_positions = Enum.map(game.game_players, & &1.position) |> MapSet.new()
 
     Enum.find(0..3, fn pos -> !MapSet.member?(occupied_positions, pos) end)
+  end
+
+  defp render_player_card(player, current_user, creator_id, is_creator, present_users, team_number) do
+    assigns = %{
+      player: player,
+      current_user: current_user,
+      creator_id: creator_id,
+      is_creator: is_creator,
+      is_connected: player.is_bot || MapSet.member?(present_users, player.user_id),
+      is_current_user: player.user_id == current_user.id,
+      other_team: if(team_number == 1, do: 2, else: 1)
+    }
+
+    ~H"""
+    <div class="p-4 bg-base-100 rounded-lg flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3 flex-1 min-w-0">
+        <!-- Avatar -->
+        <div class="avatar placeholder relative">
+          <div class="bg-primary text-primary-content rounded-full w-10 h-10 sm:w-12 sm:h-12">
+            <span class="text-lg sm:text-xl">
+              <%= if @player.is_bot do %>
+                🤖
+              <% else %>
+                {String.upcase(String.first(@player.user.username))}
+              <% end %>
+            </span>
+          </div>
+          <%= if !@player.is_bot do %>
+            <div
+              class={[
+                "absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-base-100",
+                @is_connected && "bg-success",
+                !@is_connected && "bg-error"
+              ]}
+              title={if @is_connected, do: "Connecté", else: "Déconnecté"}
+            >
+            </div>
+          <% end %>
+        </div>
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <div class="font-semibold flex flex-wrap items-center gap-1 sm:gap-2 text-sm sm:text-base">
+            <span class="truncate">
+              <%= if @player.is_bot do %>
+                Bot
+              <% else %>
+                {@player.user.username}
+              <% end %>
+            </span>
+            <%= if @is_current_user do %>
+              <span class="badge badge-xs sm:badge-sm badge-primary">Vous</span>
+            <% end %>
+            <%= if @player.user_id == @creator_id do %>
+              <span class="badge badge-xs sm:badge-sm badge-accent">Hôte</span>
+            <% end %>
+          </div>
+
+          <%= if @player.is_bot do %>
+            <div class="text-xs sm:text-sm text-base-content/70">
+              <%= case @player.bot_difficulty do %>
+                <% "easy" -> %>
+                  🐌 Facile
+                <% "medium" -> %>
+                  ⚡ Moyen
+                <% "hard" -> %>
+                  🔥 Difficile
+                <% _ -> %>
+                  Bot
+              <% end %>
+            </div>
+          <% else %>
+            <div class="flex items-center gap-1 text-xs sm:text-sm">
+              <span class={"inline-block w-2 h-2 rounded-full #{if @is_connected, do: "bg-success", else: "bg-error"}"}>
+              </span>
+              {if @is_connected, do: "Connecté", else: "Déconnecté"}
+            </div>
+          <% end %>
+        </div>
+      </div>
+      <!-- Boutons d'action -->
+      <div class="flex gap-2 flex-shrink-0">
+        <%= if @is_creator do %>
+          <button
+            phx-click="move_player_to_team"
+            phx-value-position={@player.position}
+            phx-value-target-team={@other_team - 1}
+            class="btn btn-xs sm:btn-sm btn-outline gap-1"
+            title={"Déplacer vers Équipe #{@other_team}"}
+          >
+            <%= if @other_team == 1 do %>
+              <span class="hidden sm:inline">← Équipe 1</span>
+              <span class="sm:hidden">←</span>
+            <% else %>
+              <span class="hidden sm:inline">Équipe 2 →</span>
+              <span class="sm:hidden">→</span>
+            <% end %>
+          </button>
+        <% end %>
+        <%= if @is_creator and @player.user_id != @creator_id do %>
+          <button
+            phx-click="remove_player"
+            phx-value-user-id={@player.user_id || ""}
+            class="btn btn-xs sm:btn-sm btn-ghost btn-circle"
+            title="Retirer le joueur"
+          >
+            <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        <% end %>
+      </div>
+    </div>
+    """
   end
 
   def render(assigns) do
@@ -321,9 +503,14 @@ defmodule CoinchetteWeb.GameLobbyLive do
                 phx-click="start_game"
                 variant="primary"
                 data-testid="start-game-button"
-                class="w-full sm:w-auto"
+                class={"w-full sm:w-auto #{if not @is_balanced, do: "btn-disabled"}"}
+                disabled={not @is_balanced}
               >
-                Start Game
+                <%= if @is_balanced do %>
+                  Démarrer la partie
+                <% else %>
+                  Équilibrez les équipes (2v2)
+                <% end %>
               </.button>
             <% end %>
           </:actions>
@@ -371,107 +558,78 @@ defmodule CoinchetteWeb.GameLobbyLive do
           </div>
         </div>
 
+        <!-- Section équipes -->
         <div class="mt-6 sm:mt-8">
           <h2 class="text-base sm:text-lg font-semibold mb-4">
-            Players ({length(@players)}/4)
+            Composition des équipes ({length(@players)}/4)
           </h2>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-            <%= for position <- 0..3 do %>
-              <% player = Enum.find(@players, &(&1.position == position)) %>
-              <% is_connected =
-                player && (player.is_bot || MapSet.member?(@present_users, player.user_id)) %>
-              <div class={[
-                "bg-base-200 rounded-box p-3 sm:p-4 md:p-6",
-                player && "ring-2 ring-primary"
-              ]}>
-                <div class="flex items-center justify-between gap-2">
-                  <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                    <div class={[
-                      "avatar placeholder relative flex-shrink-0",
-                      !player && "opacity-30"
-                    ]}>
-                      <div class="bg-neutral text-neutral-content rounded-full w-10 sm:w-12">
-                        <span class="text-lg sm:text-xl">
-                          <%= if player do %>
-                            <%= if player.is_bot do %>
-                              🤖
-                            <% else %>
-                              {String.first(player.user.username) |> String.upcase()}
-                            <% end %>
-                          <% else %>
-                            {position + 1}
-                          <% end %>
-                        </span>
-                      </div>
-                      <%= if player && !player.is_bot do %>
-                        <div
-                          class={[
-                            "absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-base-200",
-                            is_connected && "bg-green-500",
-                            !is_connected && "bg-red-500 animate-pulse"
-                          ]}
-                          title={(is_connected && "Connecté") || "Déconnecté"}
-                        >
-                        </div>
-                      <% end %>
-                    </div>
+          <%= if not @is_balanced do %>
+            <div class="alert alert-warning mb-4">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+              <span class="text-sm">
+                Les équipes doivent être équilibrées (2v2) pour démarrer la partie.
+              </span>
+            </div>
+          <% end %>
 
-                    <div class="flex-1 min-w-0">
-                      <%= if player do %>
-                        <%= if player.is_bot do %>
-                          <div class="font-semibold text-sm sm:text-base truncate">Bot</div>
-                          <div class="text-xs sm:text-sm text-base-content/60 capitalize">
-                            {player.bot_difficulty} difficulty
-                          </div>
-                        <% else %>
-                          <div class="font-semibold text-sm sm:text-base flex flex-wrap items-center gap-1 sm:gap-2">
-                            <span class="truncate">{player.user.username}</span>
-                            <%= if player.user_id == @game.creator_id do %>
-                              <span class="badge badge-xs sm:badge-sm badge-primary flex-shrink-0">Host</span>
-                            <% end %>
-                            <%= if player.user_id == @current_user.id do %>
-                              <span class="badge badge-xs sm:badge-sm flex-shrink-0">You</span>
-                            <% end %>
-                            <%= if !is_connected do %>
-                              <span class="badge badge-xs sm:badge-sm badge-error flex-shrink-0">Déconnecté</span>
-                            <% end %>
-                          </div>
-                          <div class="text-xs sm:text-sm text-base-content/60">
-                            Position {position + 1}
-                          </div>
-                        <% end %>
-                      <% else %>
-                        <div class="text-sm sm:text-base text-base-content/40">Waiting for player...</div>
-                        <div class="text-xs sm:text-sm text-base-content/30">Position {position + 1}</div>
-                      <% end %>
-                    </div>
-                  </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Équipe 1 (Team 0) -->
+            <div class="card bg-base-200">
+              <div class="card-body p-4">
+                <h3 class="card-title text-blue-400 text-base sm:text-lg">Équipe 1</h3>
 
-                  <div class="flex gap-2">
-                    <%= if player do %>
-                      <%= if @is_creator and player.user_id != @game.creator_id do %>
-                        <button
-                          phx-click="remove_player"
-                          phx-value-user-id={player.user_id}
-                          class="btn btn-sm btn-ghost btn-circle"
-                          title="Remove player"
-                        >
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
-                        </button>
-                      <% end %>
-                    <% end %>
-                  </div>
-                </div>
+                <%= for position <- [0, 2] do %>
+                  <% player = Enum.find(@players, &(&1.position == position)) %>
+                  <%= if player do %>
+                    <%= render_player_card(
+                      player,
+                      @current_user,
+                      @game.creator_id,
+                      @is_creator,
+                      @present_users,
+                      1
+                    ) %>
+                  <% else %>
+                    <div class="p-4 border-2 border-dashed border-base-300 rounded-lg text-center text-base-content/50">
+                      Position {position + 1} - Vide
+                    </div>
+                  <% end %>
+                <% end %>
               </div>
-            <% end %>
+            </div>
+
+            <!-- Équipe 2 (Team 1) -->
+            <div class="card bg-base-200">
+              <div class="card-body p-4">
+                <h3 class="card-title text-orange-400 text-base sm:text-lg">Équipe 2</h3>
+
+                <%= for position <- [1, 3] do %>
+                  <% player = Enum.find(@players, &(&1.position == position)) %>
+                  <%= if player do %>
+                    <%= render_player_card(
+                      player,
+                      @current_user,
+                      @game.creator_id,
+                      @is_creator,
+                      @present_users,
+                      2
+                    ) %>
+                  <% else %>
+                    <div class="p-4 border-2 border-dashed border-base-300 rounded-lg text-center text-base-content/50">
+                      Position {position + 1} - Vide
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
           </div>
 
           <%= if @is_creator do %>
@@ -491,11 +649,14 @@ defmodule CoinchetteWeb.GameLobbyLive do
               </svg>
               <div class="text-xs sm:text-sm">
                 <p>
-                  You are the host. Share the room code <strong>{@game.room_code}</strong>
-                  with friends to invite them.
+                  Vous êtes l'hôte. Partagez le code <strong>{@game.room_code}</strong>
+                  avec vos amis pour les inviter.
                 </p>
                 <p class="mt-1">
-                  Empty slots will be automatically filled with bots when you start the game.
+                  Les positions vides seront automatiquement remplies par des bots au démarrage.
+                </p>
+                <p class="mt-1">
+                  Utilisez les boutons pour déplacer les joueurs entre les équipes.
                 </p>
               </div>
             </div>
