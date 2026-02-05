@@ -207,6 +207,11 @@ defmodule CoinchetteWeb.GameLobbyLive do
     {:noreply, push_navigate(socket, to: ~p"/game/#{socket.assigns.game_id}/play")}
   end
 
+  def handle_info({:game_updated, _game}, socket) do
+    # Ignore game updates in the lobby - we only care about game_started
+    {:noreply, socket}
+  end
+
   def handle_info({:game_deleted, _data}, socket) do
     {:noreply,
      socket
