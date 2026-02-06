@@ -24,8 +24,12 @@ defmodule CoinchetteWeb.GameLobbyLive do
                  username: socket.assigns.current_user.username,
                  joined_at: System.system_time(:second)
                }) do
-            {:ok, _} -> :ok
-            {:error, {:already_tracked, _, _, _}} -> :ok
+            {:ok, _} ->
+              :ok
+
+            {:error, {:already_tracked, _, _, _}} ->
+              :ok
+
             {:error, reason} ->
               require Logger
               Logger.warning("Failed to track presence: #{inspect(reason)}")
@@ -154,6 +158,13 @@ defmodule CoinchetteWeb.GameLobbyLive do
              target_score: target_score
            }) do
         {:ok, updated_game} ->
+          # Broadcast so other clients in lobby see the update
+          Phoenix.PubSub.broadcast(
+            Coinchette.PubSub,
+            "game:#{socket.assigns.game_id}",
+            {:settings_updated, %{target_score: target_score}}
+          )
+
           {:noreply,
            socket
            |> assign(:game, updated_game)
@@ -195,7 +206,11 @@ defmodule CoinchetteWeb.GameLobbyLive do
     end
   end
 
-  def handle_event("move_player_to_team", %{"position" => position_str, "target-team" => target_team_str}, socket) do
+  def handle_event(
+        "move_player_to_team",
+        %{"position" => position_str, "target-team" => target_team_str},
+        socket
+      ) do
     # Vérifier que c'est l'hôte
     if not socket.assigns.is_creator do
       {:noreply, put_flash(socket, :error, "Seul l'hôte peut réorganiser les équipes")}
@@ -217,7 +232,11 @@ defmodule CoinchetteWeb.GameLobbyLive do
             {:noreply, put_flash(socket, :error, "Aucune place disponible dans cette équipe")}
 
           new_position ->
-            case GameServer.change_player_position(socket.assigns.game_id, current_position, new_position) do
+            case GameServer.change_player_position(
+                   socket.assigns.game_id,
+                   current_position,
+                   new_position
+                 ) do
               :ok ->
                 {:noreply, socket}
 
@@ -256,9 +275,17 @@ defmodule CoinchetteWeb.GameLobbyLive do
     {:noreply, reload_game_state(socket)}
   end
 
+  def handle_info({:settings_updated, _data}, socket) do
+    {:noreply, reload_game_state(socket)}
+  end
+
   def handle_info({:game_started, _game}, socket) do
     require Logger
-    Logger.info("Received game_started event for user #{socket.assigns.current_user.id}, redirecting to play")
+
+    Logger.info(
+      "Received game_started event for user #{socket.assigns.current_user.id}, redirecting to play"
+    )
+
     {:noreply, push_navigate(socket, to: ~p"/game/#{socket.assigns.game_id}/play")}
   end
 
@@ -346,7 +373,14 @@ defmodule CoinchetteWeb.GameLobbyLive do
     Enum.find(0..3, fn pos -> !MapSet.member?(occupied_positions, pos) end)
   end
 
-  defp render_player_card(player, current_user, creator_id, is_creator, present_users, team_number) do
+  defp render_player_card(
+         player,
+         current_user,
+         creator_id,
+         is_creator,
+         present_users,
+         team_number
+       ) do
     assigns = %{
       player: player,
       current_user: current_user,
@@ -542,8 +576,8 @@ defmodule CoinchetteWeb.GameLobbyLive do
             <% end %>
           </:actions>
         </.header>
-
-        <!-- Game Settings -->
+        
+    <!-- Game Settings -->
         <div class="mt-6 sm:mt-8 bg-base-200 rounded-box p-4 sm:p-6">
           <h2 class="text-base sm:text-lg font-semibold mb-4">Game Settings</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
@@ -552,16 +586,17 @@ defmodule CoinchetteWeb.GameLobbyLive do
                 <span class="label-text font-medium">Target Score</span>
               </label>
               <%= if @is_creator and @game.status == "waiting" do %>
-                <select
-                  class="select select-bordered w-full"
-                  phx-change="update_target_score"
-                  name="target_score"
-                >
-                  <option value="500" selected={@game.target_score == 500}>500 points</option>
-                  <option value="1000" selected={@game.target_score == 1000}>
-                    1000 points (default)
-                  </option>
-                </select>
+                <form phx-change="update_target_score">
+                  <select
+                    class="select select-bordered w-full"
+                    name="target_score"
+                  >
+                    <option value="500" selected={@game.target_score == 500}>500 points</option>
+                    <option value="1000" selected={@game.target_score == 1000}>
+                      1000 points (default)
+                    </option>
+                  </select>
+                </form>
               <% else %>
                 <div class="text-lg font-semibold">
                   {@game.target_score} points
@@ -584,8 +619,8 @@ defmodule CoinchetteWeb.GameLobbyLive do
             </div>
           </div>
         </div>
-
-        <!-- Section équipes -->
+        
+    <!-- Section équipes -->
         <div class="mt-6 sm:mt-8">
           <h2 class="text-base sm:text-lg font-semibold mb-4">
             Composition des équipes ({length(@players)}/4)
@@ -616,14 +651,14 @@ defmodule CoinchetteWeb.GameLobbyLive do
                 <%= for position <- [0, 2] do %>
                   <% player = Enum.find(@players, &(&1.position == position)) %>
                   <%= if player do %>
-                    <%= render_player_card(
+                    {render_player_card(
                       player,
                       @current_user,
                       @game.creator_id,
                       @is_creator,
                       @present_users,
                       1
-                    ) %>
+                    )}
                   <% else %>
                     <div class="p-4 border-2 border-dashed border-base-300 rounded-lg text-center text-base-content/50">
                       Position {position + 1} - Vide
@@ -632,8 +667,8 @@ defmodule CoinchetteWeb.GameLobbyLive do
                 <% end %>
               </div>
             </div>
-
-            <!-- Équipe 2 (Team 1) -->
+            
+    <!-- Équipe 2 (Team 1) -->
             <div class="card bg-base-200">
               <div class="card-body p-4">
                 <h3 class="card-title text-orange-400 text-base sm:text-lg">Équipe 2</h3>
@@ -641,14 +676,14 @@ defmodule CoinchetteWeb.GameLobbyLive do
                 <%= for position <- [1, 3] do %>
                   <% player = Enum.find(@players, &(&1.position == position)) %>
                   <%= if player do %>
-                    <%= render_player_card(
+                    {render_player_card(
                       player,
                       @current_user,
                       @game.creator_id,
                       @is_creator,
                       @present_users,
                       2
-                    ) %>
+                    )}
                   <% else %>
                     <div class="p-4 border-2 border-dashed border-base-300 rounded-lg text-center text-base-content/50">
                       Position {position + 1} - Vide
