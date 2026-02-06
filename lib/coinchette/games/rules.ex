@@ -88,7 +88,7 @@ defmodule Coinchette.Games.Rules do
 
   # Gestion quand des atouts ont été joués
   defp handle_trumps_in_trick(
-         _hand,
+         hand,
          trumps_in_hand,
          trumps_in_trick,
          _trick,
@@ -97,8 +97,8 @@ defmodule Coinchette.Games.Rules do
        ) do
     # Vérifier si le partenaire a le plus fort atout
     if partner_has_highest_trump?(trumps_in_trick, position) do
-      # Partenaire a le plus fort atout, peut jouer n'importe quel atout
-      trumps_in_hand
+      # Partenaire a le plus fort atout, peut pisser (jouer n'importe quelle carte)
+      hand
     else
       # Adversaire a le plus fort atout, doit surcouper si possible
       highest_trump = find_highest_trump(trumps_in_trick, trump_suit)

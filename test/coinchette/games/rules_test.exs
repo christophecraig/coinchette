@@ -208,10 +208,44 @@ defmodule Coinchette.Games.RulesTest do
       player = Player.new(3, hand)
       valid = Rules.valid_cards(player, trick, :hearts, 3)
 
-      # Partner winning, can play any trump (no obligation to overtrump)
-      assert length(valid) == 2
+      # Partner winning with trump, can play ANY card (no obligation to overtrump or even play trump)
+      assert length(valid) == 3
       assert Card.new(:jack, :hearts) in valid
       assert Card.new(:seven, :hearts) in valid
+      assert Card.new(:ace, :diamonds) in valid
+    end
+
+    test "can discard when partner has winning trump (pisser)" do
+      hand = [
+        # Trump (20 pts)
+        Card.new(:jack, :hearts),
+        # Trump (0 pts)
+        Card.new(:seven, :hearts),
+        Card.new(:ace, :diamonds),
+        Card.new(:king, :clubs)
+      ]
+
+      trick =
+        Trick.new()
+        # Opponent led spades
+        |> Trick.add_card(Card.new(:ten, :spades), 0)
+        # Partner cut with trump (14 pts) - winning
+        |> Trick.add_card(Card.new(:nine, :hearts), 1)
+        # Opponent cannot follow
+        |> Trick.add_card(Card.new(:queen, :diamonds), 2)
+
+      # Team 1 (partner is position 1) - last to play
+      # Don't have spades, but partner is winning with trump
+      player = Player.new(3, hand)
+      valid = Rules.valid_cards(player, trick, :hearts, 3)
+
+      # Partner has winning trump, should be able to discard (pisser)
+      # Can play ANY card: trumps OR non-trumps
+      assert length(valid) == 4
+      assert Card.new(:jack, :hearts) in valid
+      assert Card.new(:seven, :hearts) in valid
+      assert Card.new(:ace, :diamonds) in valid
+      assert Card.new(:king, :clubs) in valid
     end
   end
 

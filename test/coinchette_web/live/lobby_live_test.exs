@@ -23,8 +23,8 @@ defmodule CoinchetteWeb.LobbyLiveTest do
     test "displays the lobby page when logged in", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/lobby")
 
-      assert html =~ "Game Lobby"
-      assert html =~ "Create New Game"
+      assert html =~ "Coinchette"
+      assert html =~ "Créer une Partie" or html =~ "Create New Game"
     end
 
     test "redirects to login when not authenticated" do
@@ -95,13 +95,12 @@ defmodule CoinchetteWeb.LobbyLiveTest do
     test "shows error for invalid room code", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/lobby")
 
-      html =
-        view
-        |> form("form[phx-submit='join_game']", %{room_code: "INVALID"})
-        |> render_submit()
+      view
+      |> form("form[phx-submit='join_game']", %{room_code: "INVALID"})
+      |> render_submit()
 
-      # Should show error message in the response
-      assert html =~ ~r/game not found/i or html =~ ~r/error/i
+      # Should show flash error message
+      assert render(view) =~ "Game not found" or render(view) =~ "Partie introuvable"
     end
   end
 
@@ -114,13 +113,17 @@ defmodule CoinchetteWeb.LobbyLiveTest do
       {:ok, _view, html} = live(conn, ~p"/lobby")
 
       assert html =~ game1.room_code
-      assert html =~ "waiting" or html =~ "playing"
+      assert html =~ "En attente" or html =~ "waiting" or html =~ "En cours" or html =~ "playing"
     end
 
     test "shows empty state when no games", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/lobby")
 
-      assert html =~ "No active games" or html =~ "Aucune partie"
+      # When no active games, the "Vos parties en cours" section should not be displayed
+      refute html =~ "Vos parties en cours"
+      # But the main actions should be visible
+      assert html =~ "Partie Solo" or html =~ "Play Solo"
+      assert html =~ "Créer une Partie" or html =~ "Create New Game"
     end
 
     test "allows clicking on game to navigate", %{conn: conn, user: user} do

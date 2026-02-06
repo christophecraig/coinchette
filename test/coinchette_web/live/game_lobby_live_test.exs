@@ -159,8 +159,8 @@ defmodule CoinchetteWeb.GameLobbyLiveTest do
       conn = log_in_user(build_conn(), user1)
       {:ok, _view, html} = live(conn, ~p"/game/#{game.id}/lobby")
 
-      # Should show 4 positions
-      assert html =~ "Players"
+      # Should show team composition (French UI)
+      assert html =~ "Composition des équipes" or html =~ "Players"
       assert html =~ "/4"
     end
 
