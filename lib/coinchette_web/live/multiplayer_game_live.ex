@@ -477,14 +477,20 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
   end
 
   defp detect_completed_trick(old_game, new_game) do
-    old_trick_cards = if old_game.current_trick, do: old_game.current_trick.cards, else: []
     new_tricks_count = length(new_game.tricks_won)
     old_tricks_count = length(old_game.tricks_won)
 
-    if length(old_trick_cards) == 4 && new_tricks_count > old_tricks_count do
+    if new_tricks_count > old_tricks_count do
       # A trick was just completed - get it from tricks_won
       {winner_team, completed_trick} = List.last(new_game.tricks_won)
-      winner_pos = Trick.winner(completed_trick, old_game.trump_suit || new_game.trump_suit)
+      trump = new_game.trump_suit || old_game.trump_suit
+
+      winner_pos =
+        if trump do
+          Trick.winner(completed_trick, trump)
+        else
+          nil
+        end
 
       %{
         trick: completed_trick,
