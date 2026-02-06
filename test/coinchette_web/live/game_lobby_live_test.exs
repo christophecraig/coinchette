@@ -63,23 +63,11 @@ defmodule CoinchetteWeb.GameLobbyLiveTest do
   end
 
   describe "GameLobbyLive mount as non-player" do
-    test "shows join button for non-players", %{user2: user2, game: game} do
+    test "auto-joins non-player and shows lobby", %{user2: user2, game: game} do
       conn = log_in_user(build_conn(), user2)
       {:ok, view, _html} = live(conn, ~p"/game/#{game.id}/lobby")
 
-      assert has_element?(view, "button[phx-click='join_game']")
-    end
-  end
-
-  describe "Join game" do
-    test "allows non-player to join", %{user2: user2, game: game} do
-      conn = log_in_user(build_conn(), user2)
-      {:ok, view, _html} = live(conn, ~p"/game/#{game.id}/lobby")
-
-      view
-      |> element("button[phx-click='join_game']")
-      |> render_click()
-
+      # After auto-join, user should see the lobby with their username
       html = render(view)
       assert html =~ user2.username
     end

@@ -50,7 +50,17 @@ defmodule CoinchetteWeb.GameLobbyLive do
         |> assign(:present_users, get_present_users(game_id))
         |> load_players()
       else
-        # User is not in the game, try to join
+        # User is not in the game - auto-join when connected
+        if connected?(socket) do
+          # Ensure GameServer is running
+          case GameServerSupervisor.start_game(game_id) do
+            {:ok, _pid} -> :ok
+            {:error, {:already_started, _pid}} -> :ok
+          end
+
+          send(self(), :auto_join)
+        end
+
         socket
         |> assign(:game, game)
         |> assign(:game_id, game_id)
@@ -251,6 +261,56 @@ defmodule CoinchetteWeb.GameLobbyLive do
             end
         end
       end
+    end
+  end
+
+  # Auto-join handler
+  def handle_info(:auto_join, socket) do
+    game_id = socket.assigns.game_id
+    user_id = socket.assigns.current_user.id
+    game = Multiplayer.get_game!(game_id)
+
+    case find_available_position(game) do
+      nil ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "La partie est pleine")
+         |> push_navigate(to: ~p"/lobby")}
+
+      position ->
+        case GameServer.add_player(game_id, user_id, position) do
+          :ok ->
+            # Subscribe to game events
+            Phoenix.PubSub.subscribe(Coinchette.PubSub, "game:#{game_id}")
+
+            # Track user presence
+            case Presence.track(self(), "game:#{game_id}", user_id, %{
+                   username: socket.assigns.current_user.username,
+                   joined_at: System.system_time(:second)
+                 }) do
+              {:ok, _} -> :ok
+              {:error, {:already_tracked, _, _, _}} -> :ok
+              {:error, _reason} -> :ok
+            end
+
+            # Reload game state and switch to lobby view
+            game = Multiplayer.get_game!(game_id)
+
+            {:noreply,
+             socket
+             |> assign(:game, game)
+             |> assign(:joining, false)
+             |> assign(:is_creator, game.creator_id == user_id)
+             |> assign(:present_users, get_present_users(game_id))
+             |> load_players()
+             |> put_flash(:info, "Vous avez rejoint la partie !")}
+
+          {:error, _reason} ->
+            {:noreply,
+             socket
+             |> put_flash(:error, "Impossible de rejoindre la partie")
+             |> push_navigate(to: ~p"/lobby")}
+        end
     end
   end
 
@@ -502,22 +562,20 @@ defmodule CoinchetteWeb.GameLobbyLive do
     ~H"""
     <div class="mx-auto max-w-4xl px-2 sm:px-4 md:px-6 lg:px-8">
       <%= if assigns[:joining] do %>
-        <!-- Joining view for new players -->
+        <!-- Auto-joining in progress -->
         <div class="text-center py-8 sm:py-12 px-2">
           <.header>
-            Join Game {@game.room_code}
+            Rejoindre {@game.room_code}
           </.header>
 
           <div class="mt-6 sm:mt-8 bg-base-200 rounded-box p-6 sm:p-8">
             <p class="text-base sm:text-lg mb-4">
-              {length(@game.game_players)}/4 players in game
+              Connexion en cours...
             </p>
-            <.button phx-click="join_game" class="btn-md sm:btn-lg w-full sm:w-auto">
-              Join Game
-            </.button>
+            <span class="loading loading-spinner loading-lg"></span>
             <div class="mt-4">
               <.link navigate="/lobby" class="text-xs sm:text-sm text-base-content/60 hover:underline">
-                Back to Lobby
+                Retour au lobby
               </.link>
             </div>
           </div>
