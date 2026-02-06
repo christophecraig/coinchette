@@ -294,7 +294,10 @@ defmodule Coinchette.GameServer do
           new_state = %{state | player_map: new_player_map, bot_positions: new_bot_positions}
 
           # Broadcast update
-          broadcast_event(state.game_id, {:player_moved, %{current_position: current_position, new_position: new_position}})
+          broadcast_event(
+            state.game_id,
+            {:player_moved, %{current_position: current_position, new_position: new_position}}
+          )
 
           {:reply, :ok, new_state}
 
@@ -376,18 +379,18 @@ defmodule Coinchette.GameServer do
         position: current_player_position(state.game)
       })
 
-      # Check if game is finished
+      # Check if game is finished (may create new round with updated state.game)
       new_state = %{state | game: new_game}
       new_state = maybe_handle_game_finish(new_state)
 
-      # Broadcast
-      broadcast_game_update(state.game_id, new_game)
+      # Broadcast using state's game (which may be a new round after finish)
+      broadcast_game_update(state.game_id, new_state.game)
       broadcast_event(state.game_id, {:card_played, %{user_id: user_id, card: card}})
 
       # Schedule bot turn if needed
       new_state = maybe_schedule_bot_turn(new_state)
 
-      {:reply, {:ok, new_game}, new_state}
+      {:reply, {:ok, new_state.game}, new_state}
     else
       {:error, _reason} = error ->
         {:reply, error, state}
@@ -465,12 +468,12 @@ defmodule Coinchette.GameServer do
             is_bot: true
           })
 
-          # Check if game is finished
+          # Check if game is finished (may create new round with updated state.game)
           new_state = %{state | game: new_game, bot_timer: nil}
           new_state = maybe_handle_game_finish(new_state)
 
-          # Broadcast
-          broadcast_game_update(state.game_id, new_game)
+          # Broadcast using state's game (which may be a new round after finish)
+          broadcast_game_update(state.game_id, new_state.game)
 
           # Schedule next bot turn if needed
           new_state = maybe_schedule_bot_turn(new_state)
@@ -707,15 +710,17 @@ defmodule Coinchette.GameServer do
           "🔄 Nouvelle manche #{new_round_number} ! Objectif: #{target_score} points"
         )
 
-        broadcast_game_update(state.game_id, new_game)
+        # Note: game_update broadcast is handled by the caller (play_card/bot_turn)
+        # to avoid double broadcast
 
         broadcast_event(
           state.game_id,
-          {:round_finished, %{
-            round: db_game.round_number,
-            cumulative_scores: cumulative_scores,
-            new_round: new_round_number
-          }}
+          {:round_finished,
+           %{
+             round: db_game.round_number,
+             cumulative_scores: cumulative_scores,
+             new_round: new_round_number
+           }}
         )
 
         # Schedule bot turn if needed
