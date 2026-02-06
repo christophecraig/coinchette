@@ -1105,7 +1105,9 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
 
   defp last_trick_card(assigns) do
     # Position card in a row based on player position relative to viewer
-    position_offset = rem(assigns.position - assigns.my_position + 4, 4)
+    # Default to position 0 if my_position is nil (spectator/rejoining)
+    my_pos = assigns.my_position || 0
+    position_offset = rem(assigns.position - my_pos + 4, 4)
 
     left =
       case position_offset do
@@ -1250,7 +1252,9 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
 
   defp trick_card(assigns) do
     # Position card in circle based on player position relative to viewer
-    position_offset = rem(assigns.position - assigns.my_position + 4, 4)
+    # Default to position 0 if my_position is nil (spectator/rejoining)
+    my_pos = assigns.my_position || 0
+    position_offset = rem(assigns.position - my_pos + 4, 4)
 
     {top, left} =
       case position_offset do
