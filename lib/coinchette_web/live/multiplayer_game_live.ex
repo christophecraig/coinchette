@@ -842,6 +842,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
                   my_position={@my_position}
                   player_name={get_player_name(@player_names, pos)}
                   is_winner={pos == @showing_last_trick.winner_position}
+                  trump_suit={@game.trump_suit}
                 />
               <% end %>
             </div>
@@ -857,6 +858,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
                     my_position={@my_position}
                     player_name={get_player_name(@player_names, pos)}
                     is_winner={false}
+                    trump_suit={@game.trump_suit}
                   />
                 <% end %>
               </div>
@@ -882,7 +884,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
                         !playable && "opacity-50 cursor-not-allowed"
                       ]}
                     >
-                      <.card_display card={card} />
+                      <.card_display card={card} trump_suit={@game.trump_suit} />
                     </button>
                   <% end %>
                 </div>
@@ -1211,13 +1213,23 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
   end
 
   defp card_display(assigns) do
+    assigns = Map.put_new(assigns, :trump_suit, nil)
+    is_trump = assigns.trump_suit != nil && assigns.card.suit == assigns.trump_suit
+    assigns = Map.put(assigns, :is_trump, is_trump)
+
     ~H"""
     <div class={[
       "w-16 h-24 bg-white dark:bg-gray-100 rounded-lg shadow-lg flex items-center justify-center",
-      "border-2 transition-colors",
-      @card.suit in [:hearts, :diamonds] && "text-red-600 dark:text-red-500 border-red-200",
-      @card.suit in [:spades, :clubs] && "text-gray-900 dark:text-gray-800 border-gray-200"
+      "border-2 transition-colors relative",
+      @is_trump && "border-yellow-400 ring-2 ring-yellow-300/50",
+      !@is_trump && @card.suit in [:hearts, :diamonds] && "border-red-200",
+      !@is_trump && @card.suit in [:spades, :clubs] && "border-gray-200",
+      @card.suit in [:hearts, :diamonds] && "text-red-600 dark:text-red-500",
+      @card.suit in [:spades, :clubs] && "text-gray-900 dark:text-gray-800"
     ]}>
+      <%= if @is_trump do %>
+        <div class="absolute -top-1 -right-1 text-xs">⭐</div>
+      <% end %>
       <div class="text-center">
         <div class="text-2xl font-bold">
           {rank_symbol(@card.rank)}
@@ -1278,7 +1290,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           </div>
         <% end %>
         <div class={@is_winner && "ring-2 ring-yellow-400 rounded-lg shadow-lg shadow-yellow-400/30"}>
-          <.card_display card={@card} />
+          <.card_display card={@card} trump_suit={@trump_suit} />
         </div>
         <%= if @position_offset != 2 do %>
           <div class={[
