@@ -2,7 +2,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
   use CoinchetteWeb, :live_view
 
   alias Coinchette.{Multiplayer, GameServer}
-  alias Coinchette.Games.{Game, Card}
+  alias Coinchette.Games.{Game, Card, Trick}
   alias CoinchetteWeb.Presence
 
   on_mount {CoinchetteWeb.Auth, :ensure_authenticated}
@@ -75,6 +75,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           |> assign(:selected_card, nil)
           |> assign(:message, get_game_message(game, my_position))
           |> assign(:belote_announcement, nil)
+          |> assign(:showing_last_trick, nil)
           |> assign(:present_users, present_users)
           |> stream(:chat_messages, chat_messages)
           |> load_player_names(game_id)
@@ -210,6 +211,9 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     # Detect belote announcement
     announcement = detect_belote_announcement(old_game, game)
 
+    # Detect trick completion: old game had cards in trick, new game has more tricks_won
+    showing_last_trick = detect_completed_trick(old_game, game)
+
     # Detect game events and play sounds
     socket =
       socket
@@ -219,6 +223,15 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       |> assign(:db_game, db_game)
       |> assign(:message, get_game_message(game, socket.assigns.my_position))
       |> assign(:belote_announcement, announcement)
+
+    # If a trick was just completed, show it for 3 seconds
+    socket =
+      if showing_last_trick do
+        Process.send_after(self(), :clear_last_trick_display, 3000)
+        assign(socket, :showing_last_trick, showing_last_trick)
+      else
+        socket
+      end
 
     {:noreply, socket}
   end
@@ -270,6 +283,10 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     # Update the list of present users when someone joins/leaves
     present_users = get_present_users(socket.assigns.game_id)
     {:noreply, assign(socket, :present_users, present_users)}
+  end
+
+  def handle_info(:clear_last_trick_display, socket) do
+    {:noreply, assign(socket, :showing_last_trick, nil)}
   end
 
   def handle_info(_msg, socket) do
@@ -459,6 +476,26 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     end
   end
 
+  defp detect_completed_trick(old_game, new_game) do
+    old_trick_cards = if old_game.current_trick, do: old_game.current_trick.cards, else: []
+    new_tricks_count = length(new_game.tricks_won)
+    old_tricks_count = length(old_game.tricks_won)
+
+    if length(old_trick_cards) == 4 && new_tricks_count > old_tricks_count do
+      # A trick was just completed - get it from tricks_won
+      {winner_team, completed_trick} = List.last(new_game.tricks_won)
+      winner_pos = Trick.winner(completed_trick, old_game.trump_suit || new_game.trump_suit)
+
+      %{
+        trick: completed_trick,
+        winner_team: winner_team,
+        winner_position: winner_pos
+      }
+    else
+      nil
+    end
+  end
+
   defp detect_belote_announcement(old_game, new_game) do
     cond do
       # Belote annoncée (premier Roi ou Dame d'atout joué)
@@ -470,7 +507,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       # Rebelote (deuxième carte de la paire jouée)
       new_game.belote_rebelote != nil && old_game.belote_rebelote != nil &&
         old_game.belote_rebelote == {elem(new_game.belote_rebelote, 0), false} &&
-        elem(new_game.belote_rebelote, 1) == true ->
+          elem(new_game.belote_rebelote, 1) == true ->
         {team, _} = new_game.belote_rebelote
         {:rebelote, team}
 
@@ -550,90 +587,99 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
   def render(assigns) do
     ~H"""
     <div>
-    <div class="min-h-screen bg-gradient-to-br from-green-800 to-green-600 p-4 sm:p-8 pb-20 sm:pb-8">
-      <div class="max-w-6xl mx-auto">
-        <!-- Header -->
-        <div class="flex items-center justify-between mb-4 sm:mb-6">
-          <div class="text-white flex-1 min-w-0">
-            <!-- Masquer logo et titre sur mobile -->
-            <h1 class="hidden sm:block text-2xl sm:text-4xl font-bold">🃏 Coinchette</h1>
-            <!-- Message tronqué sur mobile -->
-            <p class="text-green-100 text-xs sm:text-sm lg:text-lg mt-1 truncate">{@message}</p>
-          </div>
-          <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-            <div class="scale-75 sm:scale-100">
-              <.volume_control id="game-volume-control" class="text-white" />
+      <div class="min-h-screen bg-gradient-to-br from-green-800 to-green-600 p-4 sm:p-8 pb-20 sm:pb-8">
+        <div class="max-w-6xl mx-auto">
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-4 sm:mb-6">
+            <div class="text-white flex-1 min-w-0">
+              <!-- Masquer logo et titre sur mobile -->
+              <h1 class="hidden sm:block text-2xl sm:text-4xl font-bold">🃏 Coinchette</h1>
+              <!-- Message tronqué sur mobile -->
+              <p class="text-green-100 text-xs sm:text-sm lg:text-lg mt-1 truncate">{@message}</p>
             </div>
-            <div class="scale-75 sm:scale-100">
-              <Layouts.theme_toggle />
+            <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+              <div class="scale-75 sm:scale-100">
+                <.volume_control id="game-volume-control" class="text-white" />
+              </div>
+              <div class="scale-75 sm:scale-100">
+                <Layouts.theme_toggle />
+              </div>
+              <button
+                phx-click="leave_game"
+                class="btn btn-ghost btn-xs sm:btn-sm text-white px-2 sm:px-4"
+              >
+                <!-- Icône seule sur mobile -->
+                <svg class="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+                <span class="hidden sm:inline">Quitter</span>
+              </button>
             </div>
-            <button phx-click="leave_game" class="btn btn-ghost btn-xs sm:btn-sm text-white px-2 sm:px-4">
-              <!-- Icône seule sur mobile -->
-              <svg class="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              <span class="hidden sm:inline">Quitter</span>
-            </button>
-          </div>
-        </div>
-        
-    <!-- Game Info Bar (Trump and Scores) -->
-        <.game_info_bar game={@game} db_game={@db_game} />
-        
-    <!-- Belote/Rebelote Notification -->
-        <%= if @belote_announcement do %>
-          <.belote_notification announcement={@belote_announcement} player_names={@player_names} />
-        <% end %>
-        
-    <!-- Announcements Notification -->
-        <%= if @game.announcements_result && @game.announcements_result.total_points > 0 && length(@game.tricks_won) <= 1 do %>
-          <.announcements_notification result={@game.announcements_result} />
-        <% end %>
-        
-    <!-- Game Board with Chat (always visible) -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div class="lg:col-span-3">
-            <%= if @game.status == :bidding do %>
-              <!-- Bidding Interface -->
-              <.bidding_interface
-                game={@game}
-                is_my_turn={is_my_turn?(@game, @my_position)}
-                player_names={@player_names}
-              />
-            <% end %>
-            
-    <!-- Game Board (always show hand) -->
-            <.game_board
-              game={@game}
-              my_position={@my_position}
-              player_names={@player_names}
-              bot_positions={@bot_positions}
-              player_map={@player_map}
-              present_users={@present_users}
-              is_my_turn={is_my_turn?(@game, @my_position)}
-            />
           </div>
           
+    <!-- Game Info Bar (Trump and Scores) -->
+          <.game_info_bar game={@game} db_game={@db_game} />
+          
+    <!-- Belote/Rebelote Notification -->
+          <%= if @belote_announcement do %>
+            <.belote_notification announcement={@belote_announcement} player_names={@player_names} />
+          <% end %>
+          
+    <!-- Announcements Notification -->
+          <%= if @game.announcements_result && @game.announcements_result.total_points > 0 && length(@game.tricks_won) <= 1 do %>
+            <.announcements_notification result={@game.announcements_result} />
+          <% end %>
+          
+    <!-- Game Board with Chat (always visible) -->
+          <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div class="lg:col-span-3">
+              <%= if @game.status == :bidding do %>
+                <!-- Bidding Interface -->
+                <.bidding_interface
+                  game={@game}
+                  is_my_turn={is_my_turn?(@game, @my_position)}
+                  player_names={@player_names}
+                />
+              <% end %>
+              
+    <!-- Game Board (always show hand) -->
+              <.game_board
+                game={@game}
+                my_position={@my_position}
+                player_names={@player_names}
+                bot_positions={@bot_positions}
+                player_map={@player_map}
+                present_users={@present_users}
+                is_my_turn={is_my_turn?(@game, @my_position)}
+                showing_last_trick={@showing_last_trick}
+              />
+            </div>
+            
     <!-- Chat Sidebar -->
-          <div class="lg:col-span-1">
-            <.chat_panel streams={@streams} />
+            <div class="lg:col-span-1">
+              <.chat_panel streams={@streams} />
+            </div>
           </div>
-        </div>
-        
+          
     <!-- Score Panel -->
-        <.score_panel
-          game={@game}
-          db_game={@db_game}
-          my_position={@my_position}
-          player_names={@player_names}
-        />
+          <.score_panel
+            game={@game}
+            db_game={@db_game}
+            my_position={@my_position}
+            player_names={@player_names}
+          />
+        </div>
       </div>
-    </div>
-
+      
     <!-- Bottom Navigation (visible sur mobile uniquement) -->
-    <div class="block sm:hidden">
-      <CoinchetteWeb.BottomNav.bottom_nav current_path="/game" />
-    </div>
+      <div class="block sm:hidden">
+        <CoinchetteWeb.BottomNav.bottom_nav current_path="/game" />
+      </div>
     </div>
     """
   end
@@ -779,19 +825,42 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       <div class="lg:col-span-2">
         <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6">
           <!-- Trick Area -->
-          <%= if @game.current_trick && length(@game.current_trick.cards) > 0 do %>
+          <%= if @showing_last_trick do %>
+            <!-- Show completed trick with winner highlight -->
             <div class="relative aspect-square max-w-md mx-auto mb-6">
-              <div class="absolute inset-0 bg-green-700/50 rounded-full border-4 border-white/20">
+              <div class="absolute inset-0 bg-green-700/50 rounded-full border-4 border-yellow-400/50">
               </div>
-              <%= for {card, pos} <- @game.current_trick.cards do %>
+              <div class="absolute top-2 left-1/2 -translate-x-1/2 z-10">
+                <span class="badge badge-warning badge-sm animate-pulse">
+                  Pli remporté !
+                </span>
+              </div>
+              <%= for {card, pos} <- @showing_last_trick.trick.cards do %>
                 <.trick_card
                   card={card}
                   position={pos}
                   my_position={@my_position}
                   player_name={get_player_name(@player_names, pos)}
+                  is_winner={pos == @showing_last_trick.winner_position}
                 />
               <% end %>
             </div>
+          <% else %>
+            <%= if @game.current_trick && length(@game.current_trick.cards) > 0 do %>
+              <div class="relative aspect-square max-w-md mx-auto mb-6">
+                <div class="absolute inset-0 bg-green-700/50 rounded-full border-4 border-white/20">
+                </div>
+                <%= for {card, pos} <- @game.current_trick.cards do %>
+                  <.trick_card
+                    card={card}
+                    position={pos}
+                    my_position={@my_position}
+                    player_name={get_player_name(@player_names, pos)}
+                    is_winner={false}
+                  />
+                <% end %>
+              </div>
+            <% end %>
           <% end %>
           
     <!-- Player Hand -->
@@ -916,7 +985,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
             </span>
           </div>
         <% end %>
-
+        
     <!-- Scores: Cumulative (Total) and Current Hand -->
         <div class="flex gap-6 text-center">
           <div>
@@ -976,7 +1045,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           <.last_trick_display game={@game} my_position={@my_position} player_names={@player_names} />
         </div>
       <% end %>
-
+      
     <!-- Final Scores (shown when game is finished) -->
       <%= if @db_game.status == "finished" do %>
         <div class="text-center">
@@ -1191,17 +1260,36 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       class="absolute transform -translate-x-1/2 -translate-y-1/2"
       style={"top: #{@top}; left: #{@left};"}
     >
-      <div class="flex flex-col items-center gap-1">
+      <div class={[
+        "flex flex-col items-center gap-1",
+        @is_winner && "scale-110"
+      ]}>
         <!-- Player name above card for top position, below for others -->
         <%= if @position_offset == 2 do %>
-          <div class="text-xs font-semibold text-white bg-black/50 px-2 py-1 rounded whitespace-nowrap">
+          <div class={[
+            "text-xs font-semibold px-2 py-1 rounded whitespace-nowrap",
+            @is_winner && "text-yellow-200 bg-yellow-600/70",
+            !@is_winner && "text-white bg-black/50"
+          ]}>
             {@player_name}
+            <%= if @is_winner do %>
+              👑
+            <% end %>
           </div>
         <% end %>
-        <.card_display card={@card} />
+        <div class={@is_winner && "ring-2 ring-yellow-400 rounded-lg shadow-lg shadow-yellow-400/30"}>
+          <.card_display card={@card} />
+        </div>
         <%= if @position_offset != 2 do %>
-          <div class="text-xs font-semibold text-white bg-black/50 px-2 py-1 rounded whitespace-nowrap">
+          <div class={[
+            "text-xs font-semibold px-2 py-1 rounded whitespace-nowrap",
+            @is_winner && "text-yellow-200 bg-yellow-600/70",
+            !@is_winner && "text-white bg-black/50"
+          ]}>
             {@player_name}
+            <%= if @is_winner do %>
+              👑
+            <% end %>
           </div>
         <% end %>
       </div>
