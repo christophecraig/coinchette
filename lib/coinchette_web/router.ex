@@ -50,6 +50,7 @@ defmodule CoinchetteWeb.Router do
 
     delete "/logout", SessionController, :delete
     live "/lobby", LobbyLive
+    live "/friends", FriendsLive
     live "/profile", ProfileLive
     live "/settings/notifications", SettingsLive.Notifications
     live "/game/:id/lobby", GameLobbyLive

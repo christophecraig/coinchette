@@ -14,6 +14,7 @@ defmodule Coinchette.GameServer do
 
   alias Coinchette.{Multiplayer, Games, Accounts}
   alias Coinchette.Bots.{Basic, Bidding}
+  alias Coinchette.Notifications.GameNotifications
 
   @type player_map :: %{Games.Player.position() => user_id :: binary() | nil}
 
@@ -359,6 +360,9 @@ defmodule Coinchette.GameServer do
       # Schedule bot turn if needed
       new_state = maybe_schedule_bot_turn(new_state)
 
+      # Notify next human player if they're not in the game
+      maybe_notify_next_player(new_state)
+
       {:reply, {:ok, new_game}, new_state}
     else
       {:error, _reason} = error ->
@@ -389,6 +393,9 @@ defmodule Coinchette.GameServer do
 
       # Schedule bot turn if needed
       new_state = maybe_schedule_bot_turn(new_state)
+
+      # Notify next human player if they're not in the game
+      maybe_notify_next_player(new_state)
 
       {:reply, {:ok, new_state.game}, new_state}
     else
@@ -477,6 +484,9 @@ defmodule Coinchette.GameServer do
 
           # Schedule next bot turn if needed
           new_state = maybe_schedule_bot_turn(new_state)
+
+          # Notify next human player if they're not in the game
+          maybe_notify_next_player(new_state)
 
           {:noreply, new_state}
 
@@ -804,6 +814,27 @@ defmodule Coinchette.GameServer do
       "game:#{game_id}",
       {:system_message, message}
     )
+  end
+
+  defp maybe_notify_next_player(state) do
+    current_pos = current_player_position(state.game)
+    is_bot = MapSet.member?(state.bot_positions, current_pos)
+
+    if !is_bot && state.game.status in [:bidding, :playing] do
+      user_id = Map.get(state.player_map, current_pos)
+
+      if user_id do
+        # Check if user is present in the game
+        present_users =
+          CoinchetteWeb.Presence.list("game:#{state.game_id}")
+          |> Map.keys()
+          |> MapSet.new()
+
+        unless MapSet.member?(present_users, user_id) do
+          GameNotifications.notify_your_turn(user_id, "Coinchette", state.game_id)
+        end
+      end
+    end
   end
 
   defp card_to_string(%Games.Card{rank: rank, suit: suit}) do

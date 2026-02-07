@@ -284,7 +284,9 @@ self.addEventListener('notificationclick', (event) => {
   // Determine the URL to open based on notification type
   let urlToOpen = '/';
 
-  if (data.game_id) {
+  if (data.type === 'friend_request' || data.type === 'friend_accepted') {
+    urlToOpen = '/friends';
+  } else if (data.game_id) {
     urlToOpen = `/game/${data.game_id}`;
   } else if (data.lobby_code) {
     urlToOpen = `/lobby/${data.lobby_code}`;

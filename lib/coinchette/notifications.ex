@@ -148,6 +148,7 @@ defmodule Coinchette.Notifications do
         :your_turn -> from(s in query, where: s.notify_your_turn == true)
         :game_result -> from(s in query, where: s.notify_game_result == true)
         :chat_message -> from(s in query, where: s.notify_chat_message == true)
+        :friend_request -> from(s in query, where: s.notify_friend_request == true)
         _ -> query
       end
 

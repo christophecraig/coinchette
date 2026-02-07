@@ -1,7 +1,7 @@
 # 📋 Tasks Coinchette
 
-**Dernière mise à jour** : 2026-02-04
-**Sprints complétés** : M1 (Infrastructure) ✅ | M2 (Solo) ✅ | M3 (Multijoueur) ✅ | Post-M3 Enhancements ✅ | PWA Setup ✅
+**Dernière mise à jour** : 2026-02-07
+**Sprints complétés** : M1 (Infrastructure) ✅ | M2 (Solo) ✅ | M3 (Multijoueur) ✅ | Post-M3 Enhancements ✅ | PWA Setup ✅ | Friendship System ✅
 **Prochain sprint** : M4 (Matchmaking & Statistiques) ou E2E Tests or Sound Implementation
 
 ---
@@ -1452,6 +1452,132 @@ Action utilisateur requise : Acquisition fichiers audio (30-60 min)
 **Note importante** :
 Le système est **entièrement fonctionnel**. Juste besoin du contenu audio.
 Toute l'infrastructure, UI, et logique sont déjà en production.
+
+---
+
+## 📅 Friendship System (Février 2026)
+
+### Objectif
+Système d'amitié complet avec notifications push et invitations en jeu
+
+### 📊 Statistiques
+
+```
+Complétées : 7/7 (100%) ✅
+En cours    : 0/7 (0%)
+À faire     : 0/7 (0%)
+```
+
+**Statut** : ✅ FRIENDSHIP SYSTEM COMPLET
+
+---
+
+#### 🔴 T5.1 : Backend Context + Schema + Migrations [✅ Terminé]
+**Statut** : ✅ Complété le 2026-02-07
+
+**Détails** :
+- [x] Migration `create_friendships` (bidirectional model, binary_id PK)
+- [x] Migration `add_notify_friend_request_to_push_subscriptions`
+- [x] Schema `Coinchette.Friends.Friendship` with changeset validation
+- [x] Context `Coinchette.Friends` with all CRUD functions
+- [x] 20 tests (100% pass)
+
+**Fichiers créés** :
+- `lib/coinchette/friends/friendship.ex`
+- `lib/coinchette/friends.ex`
+- `test/coinchette/friends_test.exs` (20 tests)
+- `priv/repo/migrations/20260207085847_create_friendships.exs`
+- `priv/repo/migrations/20260207085848_add_notify_friend_request_to_push_subscriptions.exs`
+
+**Fichiers modifiés** :
+- `lib/coinchette/notifications/push_subscription.ex` (added notify_friend_request field, fixed binary_id type)
+- `lib/coinchette/notifications.ex` (added :friend_request notification type)
+
+---
+
+#### 🟠 T5.2 : Online Status Tracking [✅ Terminé]
+**Statut** : ✅ Complété le 2026-02-07
+
+**Détails** :
+- [x] Presence tracking on `users:online` topic in LobbyLive, GameLobbyLive, MultiplayerGameLive
+- [x] `Friends.online_friend_ids/1` function using Presence data
+
+**Fichiers modifiés** :
+- `lib/coinchette_web/live/lobby_live.ex`
+- `lib/coinchette_web/live/game_lobby_live.ex`
+- `lib/coinchette_web/live/multiplayer_game_live.ex`
+
+---
+
+#### 🔴 T5.3 : Friends LiveView UI [✅ Terminé]
+**Statut** : ✅ Complété le 2026-02-07
+
+**Détails** :
+- [x] FriendsLive with 3 tabs (Mes amis, Demandes, Rechercher)
+- [x] Online status indicators (green/gray dots)
+- [x] Real-time updates via PubSub
+- [x] Route `/friends` added
+- [x] "Amis" link in lobby (desktop) and bottom nav (mobile)
+
+**Fichiers créés** :
+- `lib/coinchette_web/live/friends_live.ex`
+
+**Fichiers modifiés** :
+- `lib/coinchette_web/router.ex` (added `/friends` route)
+- `lib/coinchette_web/components/bottom_nav.ex` (added friends icon + nav item)
+- `lib/coinchette_web/live/lobby_live.ex` (added Amis link for desktop)
+
+---
+
+#### 🟠 T5.4 : Friend Notifications [✅ Terminé]
+**Statut** : ✅ Complété le 2026-02-07
+
+**Détails** :
+- [x] `FriendNotifications` module (notify_friend_request, notify_friend_accepted)
+- [x] Integration in Friends context (send_friend_request, accept_friend_request)
+- [x] Service worker updated for friend_request/friend_accepted click routing
+
+**Fichiers créés** :
+- `lib/coinchette/notifications/friend_notifications.ex`
+
+**Fichiers modifiés** :
+- `lib/coinchette/friends.ex` (integrated notifications)
+- `priv/static/sw.js` (friend notification click handler)
+
+---
+
+#### 🟠 T5.5 : Game Invite from Lobby [✅ Terminé]
+**Statut** : ✅ Complété le 2026-02-07
+
+**Détails** :
+- [x] "Inviter des amis" button in game lobby
+- [x] Modal showing online friends with invite button
+- [x] Uses existing GameNotifications.notify_game_invite
+
+**Fichiers modifiés** :
+- `lib/coinchette_web/live/game_lobby_live.ex`
+
+---
+
+#### 🟡 T5.6 : Your Turn Notifications [✅ Terminé]
+**Statut** : ✅ Complété le 2026-02-07
+
+**Détails** :
+- [x] `maybe_notify_next_player/1` in GameServer
+- [x] Checks Presence to avoid notifying players already in the game
+- [x] Called after card plays, bids, and bot turns
+
+**Fichiers modifiés** :
+- `lib/coinchette/game_server.ex`
+
+---
+
+#### 🟢 T5.7 : Roadmap Update [✅ Terminé]
+**Statut** : ✅ Complété le 2026-02-07
+
+**Détails** :
+- [x] Added M3.5 milestone to ROADMAP.md
+- [x] Added T5.x tasks to TASKS.md
 
 ---
 

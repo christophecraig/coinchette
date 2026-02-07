@@ -19,8 +19,9 @@ defmodule Coinchette.Notifications.PushSubscription do
     field :notify_your_turn, :boolean, default: true
     field :notify_game_result, :boolean, default: true
     field :notify_chat_message, :boolean, default: false
+    field :notify_friend_request, :boolean, default: true
 
-    belongs_to :user, Coinchette.Accounts.User
+    belongs_to :user, Coinchette.Accounts.User, type: :binary_id
 
     timestamps()
   end
@@ -40,7 +41,8 @@ defmodule Coinchette.Notifications.PushSubscription do
       :notify_game_invite,
       :notify_your_turn,
       :notify_game_result,
-      :notify_chat_message
+      :notify_chat_message,
+      :notify_friend_request
     ])
     |> validate_required([:user_id, :endpoint, :auth, :p256dh])
     |> unique_constraint(:endpoint)
@@ -57,6 +59,7 @@ defmodule Coinchette.Notifications.PushSubscription do
       :notify_your_turn,
       :notify_game_result,
       :notify_chat_message,
+      :notify_friend_request,
       :active
     ])
   end

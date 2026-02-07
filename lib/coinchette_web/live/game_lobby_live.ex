@@ -1,7 +1,8 @@
 defmodule CoinchetteWeb.GameLobbyLive do
   use CoinchetteWeb, :live_view
 
-  alias Coinchette.{Multiplayer, GameServer, GameServerSupervisor}
+  alias Coinchette.{Multiplayer, GameServer, GameServerSupervisor, Friends}
+  alias Coinchette.Notifications.GameNotifications
   alias CoinchetteWeb.Presence
 
   on_mount {CoinchetteWeb.Auth, :ensure_authenticated}
@@ -35,6 +36,11 @@ defmodule CoinchetteWeb.GameLobbyLive do
               Logger.warning("Failed to track presence: #{inspect(reason)}")
           end
 
+          # Track user as online for friends system
+          Presence.track(self(), "users:online", socket.assigns.current_user.id, %{
+            username: socket.assigns.current_user.username
+          })
+
           # Ensure GameServer is running
           case GameServerSupervisor.start_game(game_id) do
             {:ok, _pid} -> :ok
@@ -48,6 +54,8 @@ defmodule CoinchetteWeb.GameLobbyLive do
         |> assign(:game_id, game_id)
         |> assign(:is_creator, is_creator)
         |> assign(:present_users, get_present_users(game_id))
+        |> assign(:show_invite_modal, false)
+        |> assign(:online_friends, [])
         |> load_players()
       else
         # User is not in the game - auto-join when connected
@@ -262,6 +270,38 @@ defmodule CoinchetteWeb.GameLobbyLive do
         end
       end
     end
+  end
+
+  def handle_event("show_invite_modal", _params, socket) do
+    user_id = socket.assigns.current_user.id
+    online_ids = Friends.online_friend_ids(user_id)
+    friends = Friends.list_friends(user_id)
+
+    online_friends =
+      friends
+      |> Enum.filter(fn f -> MapSet.member?(online_ids, f.friend_id) end)
+
+    {:noreply,
+     socket
+     |> assign(:show_invite_modal, true)
+     |> assign(:online_friends, online_friends)}
+  end
+
+  def handle_event("close_invite_modal", _params, socket) do
+    {:noreply, assign(socket, :show_invite_modal, false)}
+  end
+
+  def handle_event("invite_friend", %{"friend-id" => friend_id, "username" => username}, socket) do
+    GameNotifications.notify_game_invite(
+      friend_id,
+      socket.assigns.current_user.username,
+      socket.assigns.game_id
+    )
+
+    {:noreply,
+     socket
+     |> put_flash(:info, "Invitation envoyée à #{username}")
+     |> assign(:show_invite_modal, false)}
   end
 
   # Auto-join handler
@@ -752,6 +792,16 @@ defmodule CoinchetteWeb.GameLobbyLive do
             </div>
           </div>
 
+          <!-- Invite friends button -->
+          <div class="mt-4 sm:mt-6 flex justify-center">
+            <button phx-click="show_invite_modal" class="btn btn-primary btn-sm sm:btn-md gap-2">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+              </svg>
+              Inviter des amis
+            </button>
+          </div>
+
           <%= if @is_creator do %>
             <div class="alert alert-info mt-4 sm:mt-6">
               <svg
@@ -781,6 +831,50 @@ defmodule CoinchetteWeb.GameLobbyLive do
               </div>
             </div>
           <% end %>
+        </div>
+      <% end %>
+
+      <!-- Invite friends modal -->
+      <%= if @show_invite_modal do %>
+        <div class="modal modal-open" phx-window-keydown="close_invite_modal" phx-key="Escape">
+          <div class="modal-box">
+            <h3 class="font-bold text-lg mb-4">Inviter des amis</h3>
+
+            <%= if Enum.empty?(@online_friends) do %>
+              <p class="text-base-content/60 text-center py-6">
+                Aucun ami en ligne pour le moment
+              </p>
+              <p class="text-sm text-base-content/40 text-center">
+                <.link navigate={~p"/friends"} class="link link-primary">
+                  Ajouter des amis
+                </.link>
+              </p>
+            <% else %>
+              <div class="space-y-2">
+                <%= for friend <- @online_friends do %>
+                  <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg">
+                    <div class="flex items-center gap-2">
+                      <div class="w-2.5 h-2.5 rounded-full bg-success"></div>
+                      <span class="font-medium">{friend.username}</span>
+                    </div>
+                    <button
+                      phx-click="invite_friend"
+                      phx-value-friend-id={friend.friend_id}
+                      phx-value-username={friend.username}
+                      class="btn btn-primary btn-sm"
+                    >
+                      Inviter
+                    </button>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+
+            <div class="modal-action">
+              <button phx-click="close_invite_modal" class="btn">Fermer</button>
+            </div>
+          </div>
+          <div class="modal-backdrop" phx-click="close_invite_modal"></div>
         </div>
       <% end %>
     </div>

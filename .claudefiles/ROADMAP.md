@@ -97,6 +97,20 @@ Expérience multi-joueurs complète et monétisation
 
 ### Milestones
 
+#### M3.5 : Système d'amitié (Février 2026) [COMPLET]
+**Livrables** :
+- [x] Schéma friendships (bidirectionnel)
+- [x] Contexte Friends (envoi/acceptation/refus/suppression)
+- [x] Recherche d'utilisateurs par username
+- [x] Interface FriendsLive (3 onglets: amis, demandes, recherche)
+- [x] Statut en ligne via Presence (users:online)
+- [x] Notifications push (demande d'ami, acceptation)
+- [x] Invitation d'amis depuis le lobby de partie
+- [x] Notification "C'est votre tour" (quand joueur absent)
+- [x] Navigation "Amis" dans bottom nav mobile
+
+---
+
 #### M4 : Multijoueur en ligne (Semaines 13-18)
 **Livrables** :
 - [ ] Matchmaking 4 joueurs
@@ -269,4 +283,4 @@ Croissance et engagement long terme
 - **Tech debt** : 20% du temps alloué au refactoring
 - **Documentation** : Maintenue en continu (pas de phase dédiée)
 
-**Dernière mise à jour** : 2026-01-30
+**Dernière mise à jour** : 2026-02-07

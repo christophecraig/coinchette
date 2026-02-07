@@ -18,6 +18,11 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           username: socket.assigns.current_user.username,
           joined_at: System.system_time(:second)
         })
+
+      # Track user as online for friends system
+      Presence.track(self(), "users:online", socket.assigns.current_user.id, %{
+        username: socket.assigns.current_user.username
+      })
     end
 
     # Ensure GameServer is running, start it if needed
