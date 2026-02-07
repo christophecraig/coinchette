@@ -6,9 +6,11 @@ defmodule CoinchetteWeb.SettingsLive.Notifications do
 
   alias Coinchette.Notifications
 
+  on_mount {CoinchetteWeb.Auth, :ensure_authenticated}
+
   @impl true
   def mount(_params, _session, socket) do
-    if socket.assigns.current_user do
+    if socket.assigns[:current_user] do
       subscriptions = Notifications.list_user_subscriptions(socket.assigns.current_user.id)
 
       {:ok,

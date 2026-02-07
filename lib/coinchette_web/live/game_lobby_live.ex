@@ -70,10 +70,19 @@ defmodule CoinchetteWeb.GameLobbyLive do
         end
 
         socket
+        |> assign(:page_title, "Game Lobby - #{game.room_code}")
         |> assign(:game, game)
         |> assign(:game_id, game_id)
         |> assign(:is_creator, false)
         |> assign(:joining, true)
+        |> assign(:show_invite_modal, false)
+        |> assign(:online_friends, [])
+        |> assign(:present_users, %{})
+        |> assign(:players, [])
+        |> assign(:my_position, nil)
+        |> assign(:team_0, [])
+        |> assign(:team_1, [])
+        |> assign(:is_balanced, true)
       end
 
     {:ok, socket}
