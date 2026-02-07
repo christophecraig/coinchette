@@ -10,8 +10,8 @@ erl_crash.dump
 /config/*.secret.exs
 .elixir_ls/
 
-# Phoenix
-/priv/static/
+# Phoenix (only exclude compiled assets, keep sw.js, manifest.json, images, sounds, etc.)
+/priv/static/assets/
 
 # Node
 /assets/node_modules/
