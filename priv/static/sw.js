@@ -287,7 +287,7 @@ self.addEventListener('notificationclick', (event) => {
   if (data.type === 'friend_request' || data.type === 'friend_accepted') {
     urlToOpen = '/friends';
   } else if (data.game_id) {
-    urlToOpen = `/game/${data.game_id}`;
+    urlToOpen = `/game/${data.game_id}/lobby`;
   } else if (data.lobby_code) {
     urlToOpen = `/lobby/${data.lobby_code}`;
   } else if (data.url) {
@@ -296,7 +296,7 @@ self.addEventListener('notificationclick', (event) => {
 
   // Handle action button clicks
   if (action === 'join_game' && data.game_id) {
-    urlToOpen = `/game/${data.game_id}`;
+    urlToOpen = `/game/${data.game_id}/lobby`;
   } else if (action === 'view_lobby' && data.lobby_code) {
     urlToOpen = `/lobby/${data.lobby_code}`;
   }

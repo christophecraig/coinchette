@@ -298,6 +298,16 @@ defmodule CoinchetteWeb.GameLobbyLive do
       socket.assigns.game_id
     )
 
+    Phoenix.PubSub.broadcast(
+      Coinchette.PubSub,
+      "user:#{friend_id}:game_invites",
+      {:game_invite_received,
+       %{
+         from_username: socket.assigns.current_user.username,
+         game_id: socket.assigns.game_id
+       }}
+    )
+
     {:noreply,
      socket
      |> put_flash(:info, "Invitation envoyée à #{username}")

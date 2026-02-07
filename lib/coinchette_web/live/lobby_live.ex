@@ -10,6 +10,12 @@ defmodule CoinchetteWeb.LobbyLive do
       # Subscribe to lobby updates (optional, for future real-time lobby list)
       Phoenix.PubSub.subscribe(Coinchette.PubSub, "lobby")
 
+      # Subscribe to game invites for this user
+      Phoenix.PubSub.subscribe(
+        Coinchette.PubSub,
+        "user:#{socket.assigns.current_user.id}:game_invites"
+      )
+
       # Track user as online for friends system
       CoinchetteWeb.Presence.track(self(), "users:online", socket.assigns.current_user.id, %{
         username: socket.assigns.current_user.username
@@ -104,9 +110,20 @@ defmodule CoinchetteWeb.LobbyLive do
     |> assign(:finished_games, Enum.take(finished_games, 5))
   end
 
+  def handle_info({:game_invite_received, %{from_username: username, game_id: game_id}}, socket) do
+    {:noreply,
+     push_event(socket, "toast", %{
+       type: "info",
+       message: "#{username} vous invite à rejoindre sa partie !",
+       duration: 8000,
+       action_label: "Rejoindre",
+       action_url: "/game/#{game_id}/lobby"
+     })}
+  end
+
   def render(assigns) do
     ~H"""
-    <div>
+    <div id="lobby-toast" phx-hook="Toast">
       <div class="mx-auto max-w-6xl px-2 sm:px-4 md:px-6 lg:px-8 pb-20 sm:pb-0">
         <!-- Hero Section -->
         <div class="text-center py-8 sm:py-12 mb-8">

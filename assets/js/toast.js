@@ -221,6 +221,14 @@ export const ToastHook = {
   mounted() {
     // Listen for server-side toast triggers
     this.handleEvent('toast', (data) => {
+      // Convert server-side action_label/action_url to a client-side action object
+      if (data.action_label && data.action_url) {
+        const url = data.action_url;
+        data.action = {
+          label: data.action_label,
+          onClick: () => { window.location.href = url; }
+        };
+      }
       toastManager.show(data);
     });
 
