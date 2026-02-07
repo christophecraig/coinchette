@@ -80,20 +80,25 @@ defmodule Coinchette.Multiplayer do
     status = Keyword.get(opts, :status)
     limit = Keyword.get(opts, :limit)
 
-    query =
+    ids_query =
       from g in Game,
         left_join: gp in GamePlayer,
         on: gp.game_id == g.id,
         where: g.creator_id == ^user_id or gp.user_id == ^user_id,
-        order_by: [desc: g.updated_at],
-        preload: [:creator, :game_players]
+        select: g.id
+
+    ids_query =
+      if status do
+        where(ids_query, [g], g.status == ^status)
+      else
+        ids_query
+      end
 
     query =
-      if status do
-        where(query, [g], g.status == ^status)
-      else
-        query
-      end
+      from g in Game,
+        where: g.id in subquery(ids_query),
+        order_by: [desc: g.inserted_at],
+        preload: [:creator, :game_players]
 
     query =
       if limit do
@@ -102,9 +107,7 @@ defmodule Coinchette.Multiplayer do
         query
       end
 
-    query
-    |> distinct([g], g.id)
-    |> Repo.all()
+    Repo.all(query)
   end
 
   @doc """
