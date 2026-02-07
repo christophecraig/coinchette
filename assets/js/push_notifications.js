@@ -230,6 +230,19 @@ export const PushNotificationHook = {
   mounted() {
     this.pushManager = PushNotifications;
 
+    // Show debug info directly in DOM
+    const debugEl = document.getElementById('push-debug-info');
+    if (debugEl) {
+      const info = {
+        SW: 'serviceWorker' in navigator,
+        Push: 'PushManager' in window,
+        Notif: 'Notification' in window,
+        standalone: !!(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone),
+        UA: navigator.userAgent.substring(0, 120)
+      };
+      debugEl.textContent = JSON.stringify(info);
+    }
+
     // Get VAPID public key from data attribute
     this.vapidPublicKey = this.el.dataset.vapidPublicKey;
 

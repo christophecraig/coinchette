@@ -196,30 +196,16 @@ defmodule CoinchetteWeb.SettingsLive.Notifications do
         </div>
       <% end %>
 
-      <!-- Debug: show push API support directly via JS, no server roundtrip -->
-      <div id="push-debug-info" class="mt-4 rounded-md bg-gray-100 p-3 text-xs font-mono text-gray-600"></div>
-      <script>
-        (() => {
-          const el = document.getElementById('push-debug-info');
-          if (el) {
-            const info = {
-              serviceWorker: 'serviceWorker' in navigator,
-              PushManager: 'PushManager' in window,
-              Notification: 'Notification' in window,
-              standalone: !!(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone),
-              userAgent: navigator.userAgent.substring(0, 100)
-            };
-            el.textContent = JSON.stringify(info, null, 2);
-          }
-        })();
-      </script>
-
       <div
         id="push-notification-manager"
         class="mt-8"
         phx-hook="PushNotification"
         data-vapid-public-key={Application.get_env(:coinchette, :vapid_public_key)}
       >
+        <!-- Hook will populate this with push API diagnostics -->
+        <div id="push-debug-info" class="mb-4 rounded-md bg-gray-100 p-3 text-xs font-mono text-gray-600">
+          Chargement des diagnostics...
+        </div>
         <%= if not @push_supported do %>
           <div class="rounded-md bg-yellow-50 p-4">
             <%= if @push_unsupported_reason == "not_standalone" do %>
