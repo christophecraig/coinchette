@@ -10,8 +10,14 @@ const PushNotifications = {
    */
   async init() {
     if (!this.isSupported()) {
-      console.log('[Push] Push notifications not supported');
-      return { supported: false };
+      const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      console.log('[Push] Push notifications not supported. Standalone PWA:', standalone);
+      return {
+        supported: false,
+        reason: !standalone
+          ? 'not_standalone'
+          : 'missing_api'
+      };
     }
 
     const permission = Notification.permission;
@@ -31,9 +37,12 @@ const PushNotifications = {
    * Check if push notifications are supported
    */
   isSupported() {
-    return ('serviceWorker' in navigator) &&
-           ('PushManager' in window) &&
-           ('Notification' in window);
+    const sw = 'serviceWorker' in navigator;
+    const push = 'PushManager' in window;
+    const notif = 'Notification' in window;
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    console.log(`[Push] Support check — SW: ${sw}, PushManager: ${push}, Notification: ${notif}, Standalone: ${standalone}`);
+    return sw && push && notif;
   },
 
   /**
