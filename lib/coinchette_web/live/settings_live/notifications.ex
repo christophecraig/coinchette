@@ -90,6 +90,33 @@ defmodule CoinchetteWeb.SettingsLive.Notifications do
   end
 
   @impl true
+  def handle_event("test_notification", _params, socket) do
+    user_id = socket.assigns.current_user.id
+
+    payload = %{
+      title: "Test Coinchette",
+      body: "Les notifications push fonctionnent !",
+      icon: "/images/icon-192.png",
+      badge: "/images/icon-96.png",
+      tag: "test-#{System.system_time(:second)}",
+      requireInteraction: false,
+      data: %{type: "test"}
+    }
+
+    case Notifications.send_notification(user_id, :game_invite, payload) do
+      {:ok, count} when count > 0 ->
+        {:noreply, assign(socket, success: "Notification envoyée !", error: nil)}
+
+      _ ->
+        {:noreply,
+         assign(socket,
+           error: "Aucun appareil n'a reçu la notification. Vérifiez votre abonnement.",
+           success: nil
+         )}
+    end
+  end
+
+  @impl true
   def handle_event("update_preferences", params, socket) do
     subscription_id = params["subscription_id"]
 
@@ -206,7 +233,7 @@ defmodule CoinchetteWeb.SettingsLive.Notifications do
                 <%= if @push_subscribed do %>
                   <button
                     type="button"
-                    phx-click={JS.push("test_notification")}
+                    phx-click="test_notification"
                     class="ml-3 rounded-md bg-gray-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-500"
                   >
                     Test Notification
