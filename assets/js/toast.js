@@ -57,7 +57,7 @@ class ToastManager {
     this.toasts.set(id, toast);
 
     // Animate in
-    setTimeout(() => toast.classList.add('opacity-100', 'translate-x-0'), 10);
+    setTimeout(() => toast.classList.add('opacity-100'), 10);
 
     // Auto-dismiss
     if (duration > 0) {
@@ -73,7 +73,7 @@ class ToastManager {
   createToast(id, type, message, icon, dismissible, action) {
     const toast = document.createElement('div');
     toast.id = `toast-${id}`;
-    toast.className = `alert ${this.getAlertClass(type)} shadow-lg w-80 sm:w-96 max-w-80 sm:max-w-96 text-wrap opacity-0 translate-x-full transition-all duration-300`;
+    toast.className = `alert ${this.getAlertClass(type)} shadow-lg w-80 sm:w-96 max-w-80 sm:max-w-96 text-wrap opacity-0 transition-opacity duration-300`;
 
     // Icon
     const iconEl = document.createElement('span');
@@ -120,8 +120,8 @@ class ToastManager {
     if (!toast) return;
 
     // Animate out
-    toast.classList.remove('opacity-100', 'translate-x-0');
-    toast.classList.add('opacity-0', 'translate-x-full');
+    toast.classList.remove('opacity-100');
+    toast.classList.add('opacity-0');
 
     // Remove after animation
     setTimeout(() => {
