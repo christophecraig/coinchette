@@ -18,8 +18,6 @@ defmodule CoinchetteWeb.SettingsLive.Notifications do
        |> assign(:page_title, "Notification Settings")
        |> assign(:subscriptions, subscriptions)
        |> assign(:push_supported, false)
-       |> assign(:push_unsupported_reason, nil)
-       |> assign(:push_debug, nil)
        |> assign(:push_permission, "default")
        |> assign(:push_subscribed, false)
        |> assign(:error, nil)
@@ -37,8 +35,6 @@ defmodule CoinchetteWeb.SettingsLive.Notifications do
     {:noreply,
      socket
      |> assign(:push_supported, state["supported"] || false)
-     |> assign(:push_unsupported_reason, state["reason"])
-     |> assign(:push_debug, state["details"])
      |> assign(:push_permission, state["permission"] || "default")
      |> assign(:push_subscribed, state["subscribed"] || false)}
   end
@@ -202,24 +198,11 @@ defmodule CoinchetteWeb.SettingsLive.Notifications do
         phx-hook="PushNotification"
         data-vapid-public-key={Application.get_env(:coinchette, :vapid_public_key)}
       >
-        <!-- Hook will populate this with push API diagnostics -->
-        <div id="push-debug-info" class="mb-4 rounded-md bg-gray-100 p-3 text-xs font-mono text-gray-600">
-          Chargement des diagnostics...
-        </div>
         <%= if not @push_supported do %>
           <div class="rounded-md bg-yellow-50 p-4">
-            <%= if @push_unsupported_reason == "not_standalone" do %>
-              <p class="text-sm text-yellow-800 font-medium">
-                Les notifications push nécessitent l'installation de l'application.
-              </p>
-              <p class="text-sm text-yellow-700 mt-2">
-                Sur iOS : ouvrez le site dans Safari, appuyez sur le bouton de partage, puis "Sur l'écran d'accueil". Supprimez d'abord l'ancien raccourci si nécessaire.
-              </p>
-            <% else %>
-              <p class="text-sm text-yellow-800">
-                Les notifications push ne sont pas supportées sur ce navigateur ou appareil.
-              </p>
-            <% end %>
+            <p class="text-sm text-yellow-800">
+              Les notifications push ne sont pas supportées sur ce navigateur ou appareil.
+            </p>
           </div>
         <% else %>
           <div class="space-y-6">

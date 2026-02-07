@@ -10,19 +10,8 @@ const PushNotifications = {
    */
   async init() {
     if (!this.isSupported()) {
-      const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-      const details = {
-        serviceWorker: 'serviceWorker' in navigator,
-        pushManager: 'PushManager' in window,
-        notification: 'Notification' in window,
-        standalone: !!standalone
-      };
-      console.log('[Push] Not supported:', JSON.stringify(details));
-      return {
-        supported: false,
-        reason: !standalone ? 'not_standalone' : 'missing_api',
-        details: JSON.stringify(details)
-      };
+      console.log('[Push] Push notifications not supported');
+      return { supported: false };
     }
 
     const permission = Notification.permission;
@@ -42,12 +31,9 @@ const PushNotifications = {
    * Check if push notifications are supported
    */
   isSupported() {
-    const sw = 'serviceWorker' in navigator;
-    const push = 'PushManager' in window;
-    const notif = 'Notification' in window;
-    const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-    console.log(`[Push] Support check — SW: ${sw}, PushManager: ${push}, Notification: ${notif}, Standalone: ${standalone}`);
-    return sw && push && notif;
+    return ('serviceWorker' in navigator) &&
+           ('PushManager' in window) &&
+           ('Notification' in window);
   },
 
   /**
@@ -229,19 +215,6 @@ const PushNotifications = {
 export const PushNotificationHook = {
   mounted() {
     this.pushManager = PushNotifications;
-
-    // Show debug info directly in DOM
-    const debugEl = document.getElementById('push-debug-info');
-    if (debugEl) {
-      const info = {
-        SW: 'serviceWorker' in navigator,
-        Push: 'PushManager' in window,
-        Notif: 'Notification' in window,
-        standalone: !!(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone),
-        UA: navigator.userAgent.substring(0, 120)
-      };
-      debugEl.textContent = JSON.stringify(info);
-    }
 
     // Get VAPID public key from data attribute
     this.vapidPublicKey = this.el.dataset.vapidPublicKey;
