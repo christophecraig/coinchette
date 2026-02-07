@@ -196,6 +196,24 @@ defmodule CoinchetteWeb.SettingsLive.Notifications do
         </div>
       <% end %>
 
+      <!-- Debug: show push API support directly via JS, no server roundtrip -->
+      <div id="push-debug-info" class="mt-4 rounded-md bg-gray-100 p-3 text-xs font-mono text-gray-600"></div>
+      <script>
+        (() => {
+          const el = document.getElementById('push-debug-info');
+          if (el) {
+            const info = {
+              serviceWorker: 'serviceWorker' in navigator,
+              PushManager: 'PushManager' in window,
+              Notification: 'Notification' in window,
+              standalone: !!(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone),
+              userAgent: navigator.userAgent.substring(0, 100)
+            };
+            el.textContent = JSON.stringify(info, null, 2);
+          }
+        })();
+      </script>
+
       <div
         id="push-notification-manager"
         class="mt-8"
@@ -215,9 +233,6 @@ defmodule CoinchetteWeb.SettingsLive.Notifications do
               <p class="text-sm text-yellow-800">
                 Les notifications push ne sont pas supportées sur ce navigateur ou appareil.
               </p>
-              <%= if @push_debug do %>
-                <p class="text-xs text-yellow-600 mt-2 font-mono">{@push_debug}</p>
-              <% end %>
             <% end %>
           </div>
         <% else %>
