@@ -1,16 +1,14 @@
 // Coinchette Service Worker
 // Version: 1.0.0
 
-const CACHE_VERSION = 'coinchette-v1';
+const CACHE_VERSION = 'coinchette-v2';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 
 // Static assets to cache on install
+// Note: JS/CSS are fingerprinted by Phoenix and cached by the browser automatically
 const STATIC_ASSETS = [
-  '/',
-  '/assets/css/app.css',
-  '/assets/js/app.js',
   '/favicon.ico',
   '/manifest.json'
 ];
