@@ -11,12 +11,17 @@ const PushNotifications = {
   async init() {
     if (!this.isSupported()) {
       const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-      console.log('[Push] Push notifications not supported. Standalone PWA:', standalone);
+      const details = {
+        serviceWorker: 'serviceWorker' in navigator,
+        pushManager: 'PushManager' in window,
+        notification: 'Notification' in window,
+        standalone: !!standalone
+      };
+      console.log('[Push] Not supported:', JSON.stringify(details));
       return {
         supported: false,
-        reason: !standalone
-          ? 'not_standalone'
-          : 'missing_api'
+        reason: !standalone ? 'not_standalone' : 'missing_api',
+        details: JSON.stringify(details)
       };
     }
 

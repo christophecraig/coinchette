@@ -19,6 +19,7 @@ defmodule CoinchetteWeb.SettingsLive.Notifications do
        |> assign(:subscriptions, subscriptions)
        |> assign(:push_supported, false)
        |> assign(:push_unsupported_reason, nil)
+       |> assign(:push_debug, nil)
        |> assign(:push_permission, "default")
        |> assign(:push_subscribed, false)
        |> assign(:error, nil)
@@ -37,6 +38,7 @@ defmodule CoinchetteWeb.SettingsLive.Notifications do
      socket
      |> assign(:push_supported, state["supported"] || false)
      |> assign(:push_unsupported_reason, state["reason"])
+     |> assign(:push_debug, state["details"])
      |> assign(:push_permission, state["permission"] || "default")
      |> assign(:push_subscribed, state["subscribed"] || false)}
   end
@@ -213,6 +215,9 @@ defmodule CoinchetteWeb.SettingsLive.Notifications do
               <p class="text-sm text-yellow-800">
                 Les notifications push ne sont pas supportées sur ce navigateur ou appareil.
               </p>
+              <%= if @push_debug do %>
+                <p class="text-xs text-yellow-600 mt-2 font-mono">{@push_debug}</p>
+              <% end %>
             <% end %>
           </div>
         <% else %>
