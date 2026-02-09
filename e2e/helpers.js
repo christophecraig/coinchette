@@ -5,143 +5,100 @@
  */
 
 /**
- * Register and login a test user using test auth header
+ * Login as the test user via x-test-auth header.
+ * The TestAuth plug creates/finds the e2e_test@example.com user automatically.
  * @param {import('@playwright/test').Page} page
- * @param {string} [username] - Optional username, will generate if not provided
- * @returns {Promise<{username: string, email: string}>}
+ * @returns {Promise<void>}
  */
-async function loginAsTestUser(page, username) {
-  const testUsername = username || 'e2e_tester';
-  const testEmail = 'e2e_test@example.com';
-
-  // Set test auth header to automatically authenticate
-  await page.setExtraHTTPHeaders({
-    'x-test-auth': 'true'
-  });
-
-  // Navigate to home to create session
+async function loginAsTestUser(page) {
+  await page.setExtraHTTPHeaders({ 'x-test-auth': 'true' });
   await page.goto('/');
-  await page.waitForLoadState('networkidle');
-
-  return { username: testUsername, email: testEmail };
+  await waitForLiveView(page);
 }
 
 /**
- * Create authenticated session using test header
+ * Wait for LiveView to be connected (phx-connected attribute appears on body).
+ * Falls back to networkidle if no LiveView on page.
  * @param {import('@playwright/test').Page} page
- * @returns {Promise<boolean>}
+ * @param {number} [timeout=10000]
  */
-async function createAuthSession(page) {
-  // Set test auth header
-  await page.setExtraHTTPHeaders({
-    'x-test-auth': 'true'
-  });
-
-  await page.goto('/');
-  await page.waitForLoadState('networkidle');
-
-  return true;
-}
-
-/**
- * Wait for element to be visible or skip if not found
- * @param {import('@playwright/test').Page} page
- * @param {string} selector
- * @param {number} [timeout=5000]
- * @returns {Promise<boolean>}
- */
-async function waitForElementOrSkip(page, selector, timeout = 5000) {
+async function waitForLiveView(page, timeout = 10000) {
   try {
-    await page.waitForSelector(selector, { timeout });
+    await page.waitForSelector('[data-phx-main]', { timeout: 3000 });
+    // Wait for LiveView to finish connecting (phx-loading class is removed)
+    await page.waitForFunction(
+      () => {
+        const el = document.querySelector('[data-phx-main]');
+        return el && !el.classList.contains('phx-loading');
+      },
+      { timeout }
+    );
+  } catch {
+    // Not a LiveView page or already loaded
+    await page.waitForLoadState('networkidle');
+  }
+}
+
+/**
+ * Create a solo game: go to lobby, click solo button, wait for redirect to /game/:id/play
+ * @param {import('@playwright/test').Page} page
+ * @returns {Promise<void>}
+ */
+async function createSoloGame(page) {
+  await page.goto('/lobby');
+  await waitForLiveView(page);
+  await page.locator('[data-testid="create-solo-game-button"]').click();
+  await page.waitForURL(/\/game\/.*\/play/, { timeout: 15000 });
+  await waitForLiveView(page);
+}
+
+/**
+ * Create a multiplayer game: go to lobby, click create, wait for game lobby
+ * @param {import('@playwright/test').Page} page
+ * @returns {Promise<void>}
+ */
+async function createMultiplayerGame(page) {
+  await page.goto('/lobby');
+  await waitForLiveView(page);
+  await page.locator('[data-testid="create-game-button"]').click();
+  await page.waitForURL(/\/game\/.*\/lobby/, { timeout: 10000 });
+  await waitForLiveView(page);
+}
+
+/**
+ * Start a multiplayer game from the game lobby (bots fill empty slots automatically)
+ * @param {import('@playwright/test').Page} page
+ * @returns {Promise<void>}
+ */
+async function startMultiplayerGame(page) {
+  await page.locator('[data-testid="start-game-button"]').click();
+  await page.waitForURL(/\/game\/.*\/play/, { timeout: 10000 });
+  await waitForLiveView(page);
+}
+
+/**
+ * Handle bidding phase - click take or pass if available
+ * @param {import('@playwright/test').Page} page
+ * @param {'take' | 'pass'} [action='take']
+ * @returns {Promise<boolean>} true if action was taken
+ */
+async function handleBidding(page, action = 'take') {
+  const testid = action === 'take' ? 'bid-take-button' : 'bid-pass-button';
+  const button = page.locator(`[data-testid="${testid}"]`);
+  try {
+    await button.waitFor({ timeout: 3000 });
+    await button.click();
     return true;
   } catch {
     return false;
   }
 }
 
-/**
- * Create a multiplayer game with bots
- * @param {import('@playwright/test').Page} page
- * @param {number} [botCount=3] - Number of bots to add
- * @returns {Promise<{roomCode: string | null}>}
- */
-async function createGameWithBots(page, botCount = 3) {
-  // Navigate to lobby
-  await page.goto('/lobby');
-  await page.waitForLoadState('networkidle');
-
-  // Create game
-  const createButton = page.locator('button:has-text("Créer"), button:has-text("Create")').first();
-  if (await createButton.count() > 0) {
-    await createButton.click();
-    await page.waitForTimeout(1000);
-
-    // Try to get room code
-    let roomCode = null;
-    const roomCodeText = await page.textContent('body');
-    const match = roomCodeText?.match(/[A-Z0-9]{4,}/);
-    if (match) {
-      roomCode = match[0];
-    }
-
-    // Add bots
-    const addBotButton = page.locator('button:has-text("Ajouter"), button:has-text("Add Bot")');
-    for (let i = 0; i < botCount; i++) {
-      if (await addBotButton.count() > 0) {
-        await addBotButton.first().click();
-        await page.waitForTimeout(300);
-      }
-    }
-
-    return { roomCode };
-  }
-
-  return { roomCode: null };
-}
-
-/**
- * Start a multiplayer game
- * @param {import('@playwright/test').Page} page
- * @returns {Promise<boolean>}
- */
-async function startMultiplayerGame(page) {
-  const startButton = page.locator('button:has-text("Démarrer"), button:has-text("Start")');
-  if (await startButton.count() > 0) {
-    await startButton.click();
-    await page.waitForTimeout(2000);
-    return true;
-  }
-  return false;
-}
-
-/**
- * Handle bidding phase if present
- * @param {import('@playwright/test').Page} page
- * @param {'take' | 'pass'} [action='take'] - Action to take
- * @returns {Promise<boolean>}
- */
-async function handleBidding(page, action = 'take') {
-  const takeButton = page.locator('button:has-text("Prendre"), button:has-text("Take")');
-  const passButton = page.locator('button:has-text("Passer"), button:has-text("Pass")');
-
-  if (action === 'take' && await takeButton.count() > 0) {
-    await takeButton.click();
-    await page.waitForTimeout(2000);
-    return true;
-  } else if (action === 'pass' && await passButton.count() > 0) {
-    await passButton.click();
-    await page.waitForTimeout(1000);
-    return true;
-  }
-
-  return false;
-}
-
 module.exports = {
   loginAsTestUser,
-  createAuthSession,
-  waitForElementOrSkip,
-  createGameWithBots,
+  waitForLiveView,
+  createSoloGame,
+  createMultiplayerGame,
   startMultiplayerGame,
-  handleBidding
+  handleBidding,
 };

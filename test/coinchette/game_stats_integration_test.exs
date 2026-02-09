@@ -2,7 +2,6 @@ defmodule Coinchette.GameStatsIntegrationTest do
   use Coinchette.DataCase
 
   alias Coinchette.{Accounts, Multiplayer, GameServer, GameServerSupervisor}
-  alias Coinchette.Games.Game
 
   describe "game statistics integration" do
     setup do
@@ -52,15 +51,15 @@ defmodule Coinchette.GameStatsIntegrationTest do
       # For testing, we'll manually set a finished game state with specific scores
 
       # Create a finished game state with team 0 winning (user1)
-      finished_game = %{started_game | status: :finished, scores: %{0 => 120, 1 => 42}}
+      _finished_game = %{started_game | status: :finished, scores: %{0 => 120, 1 => 42}}
 
       # Get the server state and simulate game finish
-      state = GameServer.get_state(game.id)
+      _state = GameServer.get_state(game.id)
 
       # Manually trigger the stats update (simulating what happens in maybe_handle_game_finish)
       # Team 0 (user1 + bot at position 2)
-      winner_team = 0
-      scores = %{0 => 120, 1 => 42}
+      _winner_team = 0
+      _scores = %{0 => 120, 1 => 42}
 
       # Update stats for user1 (position 0, team 0) - WINNER
       {:ok, stats1} =

@@ -31,7 +31,7 @@ defmodule Coinchette.Multiplayer.MultiRoundDiagnosticTest do
     IO.puts("  - Players: #{length(state_before.game.players)}")
 
     # Start game
-    {:ok, started_game} = GameServer.start_game(game.id)
+    {:ok, _started_game} = GameServer.start_game(game.id)
     Process.sleep(500)
     IO.puts("✓ Game started")
 

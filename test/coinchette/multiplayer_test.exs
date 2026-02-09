@@ -94,7 +94,7 @@ defmodule Coinchette.MultiplayerTest do
       %{user: user, game: game}
     end
 
-    test "add_player/3 adds a human player", %{user: user, game: game} do
+    test "add_player/3 adds a human player", %{user: _user, game: game} do
       # Position 0 is already taken by creator, add to position 1
       {:ok, user2} =
         Accounts.register_user(%{
@@ -110,7 +110,7 @@ defmodule Coinchette.MultiplayerTest do
       assert player.is_bot == false
     end
 
-    test "add_player/3 prevents duplicate positions", %{user: user, game: game} do
+    test "add_player/3 prevents duplicate positions", %{user: _user, game: game} do
       # Position 0 is already taken by creator (user)
       {:ok, user2} =
         Accounts.register_user(%{
@@ -142,7 +142,7 @@ defmodule Coinchette.MultiplayerTest do
       assert length(players) == 0
     end
 
-    test "list_game_players/1 returns players in position order", %{user: user, game: game} do
+    test "list_game_players/1 returns players in position order", %{user: _user, game: game} do
       # Position 0 is already taken by creator (user) from create_game
       {:ok, _bot1} = Multiplayer.add_bot(game.id, 1, "easy")
       {:ok, _bot2} = Multiplayer.add_bot(game.id, 3, "medium")

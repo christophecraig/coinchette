@@ -798,10 +798,10 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
         <div class="flex flex-wrap justify-center gap-4 mt-6">
           <%= if @is_my_turn do %>
             <%= if @game.bidding.round == 1 do %>
-              <button phx-click="bid_take" class="btn btn-success btn-lg">
+              <button phx-click="bid_take" class="btn btn-success btn-lg" data-testid="bid-take-button">
                 Prendre
               </button>
-              <button phx-click="bid_pass" class="btn btn-error btn-lg">
+              <button phx-click="bid_pass" class="btn btn-error btn-lg" data-testid="bid-pass-button">
                 Passer
               </button>
             <% else %>
@@ -814,7 +814,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
                   {suit_symbol(suit)} {suit_name(suit)}
                 </button>
               <% end %>
-              <button phx-click="bid_pass" class="btn btn-error">
+              <button phx-click="bid_pass" class="btn btn-error" data-testid="bid-pass-button">
                 Passer
               </button>
             <% end %>
@@ -834,8 +834,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Trick Area and Hand -->
       <div class="lg:col-span-2">
-        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-          <!-- Trick Area -->
+        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6" data-testid="trick-area">
           <%= if @showing_last_trick do %>
             <!-- Show completed trick with winner highlight -->
             <div class="relative aspect-square max-w-md mx-auto mb-6">
@@ -880,7 +879,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           <%= if @my_position != nil do %>
             <% my_player = Enum.at(@game.players, @my_position) %>
             <%= if my_player do %>
-              <div class="mt-6">
+              <div class="mt-6" data-testid="player-hand">
                 <h3 class="text-white font-semibold mb-3 text-center">Votre main</h3>
                 <div class="flex flex-wrap justify-center gap-2">
                   <%= for card <- my_player.hand do %>
@@ -888,6 +887,8 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
                     <button
                       phx-click={playable && @is_my_turn && "play_card"}
                       phx-value-card={"#{card.rank}_#{card.suit}"}
+                      data-testid={"card-#{card.rank}-#{card.suit}"}
+                      data-playable={"#{playable}"}
                       disabled={!playable || !@is_my_turn}
                       class={[
                         "transition-all duration-200",
@@ -991,7 +992,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
       <div class="flex flex-wrap items-center justify-between gap-4">
         <!-- Trump Display -->
         <%= if @game.trump_suit do %>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2" data-testid="trump-indicator">
             <span class="text-white/80 text-sm font-medium">Atout:</span>
             <span class="text-2xl font-bold text-white">
               {suit_symbol(@game.trump_suit)} {suit_name(@game.trump_suit)}
@@ -1050,7 +1051,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
     assigns = assign(assigns, :cumulative_scores, cumulative_scores)
 
     ~H"""
-    <div class="mt-6 bg-white/10 backdrop-blur-sm rounded-lg p-6">
+    <div class="mt-6 bg-white/10 backdrop-blur-sm rounded-lg p-6" data-testid="score-panel">
       <!-- Last Trick Display -->
       <%= if length(@game.tricks_won) > 0 do %>
         <div class="mb-6">
@@ -1209,6 +1210,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
           type="text"
           name="message"
           id="chat-input"
+          data-testid="chat-input"
           placeholder="Envoyer un message..."
           autocomplete="off"
           phx-hook="ChatInput"

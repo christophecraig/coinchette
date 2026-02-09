@@ -101,7 +101,7 @@ defmodule CoinchetteWeb.LobbyLive do
       Enum.split_with(games, fn game -> game.status in ["waiting", "playing"] end)
 
     # Separate playing games (need rejoin) from waiting games
-    {playing_games, waiting_games} =
+    {playing_games, _waiting_games} =
       Enum.split_with(active_games, fn game -> game.status == "playing" end)
 
     socket
@@ -199,6 +199,7 @@ defmodule CoinchetteWeb.LobbyLive do
           <!-- Partie Solo -->
           <button
             phx-click="create_solo_game"
+            data-testid="create-solo-game-button"
             class="card bg-gradient-to-br from-primary to-primary-focus hover:shadow-xl transition-all p-6 sm:p-8"
           >
             <div class="text-white text-center">

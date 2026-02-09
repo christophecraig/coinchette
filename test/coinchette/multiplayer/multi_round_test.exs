@@ -2,7 +2,6 @@ defmodule Coinchette.Multiplayer.MultiRoundTest do
   use Coinchette.DataCase, async: false
 
   alias Coinchette.{Multiplayer, GameServer, GameServerSupervisor, Accounts}
-  alias Coinchette.Games.{Game, Card}
 
   describe "multi-round gameplay" do
     setup do

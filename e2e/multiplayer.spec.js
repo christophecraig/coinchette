@@ -1,166 +1,66 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
-const { loginAsTestUser } = require('./helpers');
+const { loginAsTestUser, waitForLiveView, createMultiplayerGame, startMultiplayerGame } = require('./helpers');
 
 test.describe('Multiplayer Game', () => {
   test.beforeEach(async ({ page }) => {
-    // Authenticate for each test
     await loginAsTestUser(page);
   });
 
   test('can access lobby', async ({ page }) => {
     await page.goto('/lobby');
-    await page.waitForLoadState('networkidle');
+    await waitForLiveView(page);
 
-    // Should see lobby UI
-    await expect(page.locator('body')).toBeVisible();
-
-    // Should have option to create game using data-testid
-    const createButton = page.locator('[data-testid="create-game-button"]');
-    await expect(createButton).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('[data-testid="create-game-button"]')).toBeVisible({ timeout: 10000 });
   });
 
   test('can create a new game', async ({ page }) => {
-    await page.goto('/lobby');
-    await page.waitForLoadState('networkidle');
+    await createMultiplayerGame(page);
 
-    // Click create game button using data-testid
-    const createButton = page.locator('[data-testid="create-game-button"]');
-    await createButton.click();
-
-    // Should redirect to game lobby
-    await page.waitForURL(/\/game\/.*\/lobby/, { timeout: 5000 });
-
-    // Should see start game button (means we're in lobby)
-    const startButton = page.locator('[data-testid="start-game-button"]');
-    await expect(startButton).toBeVisible({ timeout: 5000 });
+    // Should be in game lobby with start button and room code
+    await expect(page.locator('[data-testid="start-game-button"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-testid="room-code"]')).toBeVisible();
   });
 
-  test('can add bots to game', async ({ page }) => {
-    await page.goto('/lobby');
-    await page.waitForLoadState('networkidle');
+  test('shows empty slots for other positions', async ({ page }) => {
+    await createMultiplayerGame(page);
 
-    // Create game using data-testid
-    const createButton = page.locator('[data-testid="create-game-button"]');
-    await createButton.click();
-    await page.waitForURL(/\/game\/.*\/lobby/, { timeout: 5000 });
+    // Creator is in position 0, so positions 1, 2, 3 should show empty slots
+    // At least some empty slots should be visible
+    const emptySlots = page.locator('[data-testid^="empty-slot-"]');
+    await expect(emptySlots.first()).toBeVisible({ timeout: 10000 });
 
-    // Add bots using data-testid (positions 1, 2, 3)
-    for (let position of [1, 2, 3]) {
-      const addBotButton = page.locator(`[data-testid="add-bot-button-${position}"]`);
-      if (await addBotButton.count() > 0) {
-        await addBotButton.click();
-        await page.waitForTimeout(500);
-      }
-    }
-
-    // Should see start game button enabled (4 players)
-    const startButton = page.locator('[data-testid="start-game-button"]');
-    await expect(startButton).toBeEnabled({ timeout: 5000 });
+    const count = await emptySlots.count();
+    expect(count).toBeGreaterThanOrEqual(1);
   });
 
-  test('can start game with bots', async ({ page }) => {
-    await page.goto('/lobby');
-    await page.waitForLoadState('networkidle');
+  test('can start game (bots fill empty slots)', async ({ page }) => {
+    await createMultiplayerGame(page);
 
-    // Create game
-    const createButton = page.locator('[data-testid="create-game-button"]');
-    await createButton.click();
-    await page.waitForURL(/\/game\/.*\/lobby/, { timeout: 5000 });
-
-    // Add bots
-    for (let position of [1, 2, 3]) {
-      const addBotButton = page.locator(`[data-testid="add-bot-button-${position}"]`);
-      if (await addBotButton.count() > 0) {
-        await addBotButton.click();
-        await page.waitForTimeout(300);
-      }
-    }
-
-    // Start game
-    const startButton = page.locator('[data-testid="start-game-button"]');
-    await startButton.click();
-    await page.waitForURL(/\/game\/.*\/play/, { timeout: 5000 });
+    // Start game - empty slots will be filled by bots automatically
+    await startMultiplayerGame(page);
 
     // Should see game UI with player hand
-    const playerHand = page.locator('[data-testid="player-hand-south"]');
-    await expect(playerHand).toBeVisible({ timeout: 5000 });
+    const playerHand = page.locator('[data-testid="player-hand"]');
+    await expect(playerHand).toBeVisible({ timeout: 10000 });
   });
 
-  test('displays chat in multiplayer game', async ({ page }) => {
-    await page.goto('/lobby');
-    await page.waitForLoadState('networkidle');
+  test('shows chat input in game', async ({ page }) => {
+    await createMultiplayerGame(page);
+    await startMultiplayerGame(page);
 
-    // Create and start game
-    const createButton = page.locator('button:has-text("Créer"), button:has-text("Create")').first();
-    await createButton.click();
-    await page.waitForTimeout(1000);
-
-    // Add bots and start
-    const addBotButton = page.locator('button:has-text("Ajouter"), button:has-text("Add Bot")');
-    if (await addBotButton.count() > 0) {
-      for (let i = 0; i < 3; i++) {
-        if (await addBotButton.count() > 0) {
-          await addBotButton.first().click();
-          await page.waitForTimeout(300);
-        }
-      }
-    }
-
-    const startButton = page.locator('button:has-text("Démarrer"), button:has-text("Start")');
-    if (await startButton.count() > 0) {
-      await startButton.click();
-      await page.waitForTimeout(2000);
-
-      // Look for chat interface
-      const hasChatInput = await page.locator('input[placeholder*="message"], textarea[placeholder*="message"]').count() > 0;
-
-      if (hasChatInput) {
-        // Try to send a message
-        const chatInput = page.locator('input[placeholder*="message"], textarea[placeholder*="message"]').first();
-        await chatInput.fill('Test message');
-
-        const sendButton = page.locator('button:has-text("Envoyer"), button:has-text("Send")');
-        if (await sendButton.count() > 0) {
-          await sendButton.click();
-          await page.waitForTimeout(500);
-
-          // Should see message in chat
-          const hasMessage = await page.locator('text=/test message/i').count() > 0;
-          expect(hasMessage).toBeTruthy();
-        }
-      }
-    }
+    const chatInput = page.locator('[data-testid="chat-input"]');
+    await expect(chatInput).toBeVisible({ timeout: 10000 });
   });
 
-  test('shows system messages during game', async ({ page }) => {
-    await page.goto('/lobby');
-    await page.waitForLoadState('networkidle');
+  test('displays room code in game lobby', async ({ page }) => {
+    await createMultiplayerGame(page);
 
-    // Create and start game
-    const createButton = page.locator('button:has-text("Créer"), button:has-text("Create")').first();
-    await createButton.click();
-    await page.waitForTimeout(1000);
+    const roomCode = page.locator('[data-testid="room-code"]');
+    await expect(roomCode).toBeVisible();
 
-    // Add bots and start
-    const addBotButton = page.locator('button:has-text("Ajouter"), button:has-text("Add Bot")');
-    if (await addBotButton.count() > 0) {
-      for (let i = 0; i < 3; i++) {
-        if (await addBotButton.count() > 0) {
-          await addBotButton.first().click();
-          await page.waitForTimeout(300);
-        }
-      }
-    }
-
-    const startButton = page.locator('button:has-text("Démarrer"), button:has-text("Start")');
-    if (await startButton.count() > 0) {
-      await startButton.click();
-      await page.waitForTimeout(3000);
-
-      // Should see system messages about bidding, announcements, etc.
-      const body = await page.textContent('body');
-      expect(body).toBeTruthy();
-    }
+    const text = await roomCode.textContent();
+    // Room code should be non-empty
+    expect(text?.trim().length).toBeGreaterThan(0);
   });
 });

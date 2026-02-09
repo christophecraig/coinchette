@@ -646,7 +646,7 @@ defmodule CoinchetteWeb.GameLobbyLive do
           <:subtitle>
             <div class="flex flex-wrap items-center gap-2 sm:gap-3">
               <span class="text-xs sm:text-sm">Room Code:</span>
-              <span class="badge badge-md sm:badge-lg font-mono text-base sm:text-lg px-3 sm:px-4">
+              <span class="badge badge-md sm:badge-lg font-mono text-base sm:text-lg px-3 sm:px-4" data-testid="room-code">
                 {@game.room_code}
               </span>
               <button
@@ -777,14 +777,14 @@ defmodule CoinchetteWeb.GameLobbyLive do
                       1
                     )}
                   <% else %>
-                    <div class="p-4 border-2 border-dashed border-base-300 rounded-lg text-center text-base-content/50">
+                    <div class="p-4 border-2 border-dashed border-base-300 rounded-lg text-center text-base-content/50" data-testid={"empty-slot-#{position}"}>
                       Position {position + 1} - Vide
                     </div>
                   <% end %>
                 <% end %>
               </div>
             </div>
-            
+
     <!-- Équipe 2 (Team 1) -->
             <div class="card bg-base-200">
               <div class="card-body p-4">
@@ -802,7 +802,7 @@ defmodule CoinchetteWeb.GameLobbyLive do
                       2
                     )}
                   <% else %>
-                    <div class="p-4 border-2 border-dashed border-base-300 rounded-lg text-center text-base-content/50">
+                    <div class="p-4 border-2 border-dashed border-base-300 rounded-lg text-center text-base-content/50" data-testid={"empty-slot-#{position}"}>
                       Position {position + 1} - Vide
                     </div>
                   <% end %>

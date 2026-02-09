@@ -2,59 +2,38 @@
 const { test, expect } = require('@playwright/test');
 
 test.describe('Authentication', () => {
-  test.beforeEach(async ({ page }) => {
-    // Start fresh for each test
-    await page.goto('/');
+  test('can access registration page', async ({ page }) => {
+    await page.goto('/register');
+    await expect(page.locator('form')).toBeVisible();
+    await expect(page.locator('input[name="user[email]"]')).toBeVisible();
+    await expect(page.locator('input[name="user[username]"]')).toBeVisible();
+    await expect(page.locator('input[name="user[password]"]')).toBeVisible();
   });
 
-  test('user can register', async ({ page }) => {
-    // Navigate to registration page (adjust path as needed)
-    // This will depend on your actual routes
-    const timestamp = Date.now();
-    const username = `testuser_${timestamp}`;
-    const email = `test_${timestamp}@example.com`;
-
-    // Look for registration link/button
-    const hasRegisterLink = await page.locator('text=/register|sign up|créer un compte/i').count() > 0;
-
-    if (hasRegisterLink) {
-      await page.click('text=/register|sign up|créer un compte/i');
-
-      // Fill registration form
-      await page.fill('input[name="username"], input[name="user[username]"]', username);
-      await page.fill('input[name="email"], input[name="user[email]"]', email);
-      await page.fill('input[name="password"], input[name="user[password]"]', 'testpassword123');
-
-      // Submit form
-      await page.click('button[type="submit"]');
-
-      // Verify successful registration (redirect or success message)
-      await page.waitForURL(/\//, { timeout: 5000 }).catch(() => {});
-
-      // Should be logged in or see success message
-      const body = await page.textContent('body');
-      expect(body).toBeTruthy();
-    } else {
-      // Registration not implemented yet, test passes
-      test.skip();
-    }
+  test('shows validation errors on empty registration submit', async ({ page }) => {
+    await page.goto('/register');
+    await page.locator('button[type="submit"]').click();
+    // HTML5 required validation prevents empty submit, form stays on page
+    await expect(page).toHaveURL(/\/register/);
   });
 
-  test('handles invalid registration gracefully', async ({ page }) => {
-    const hasRegisterLink = await page.locator('text=/register|sign up|créer un compte/i').count() > 0;
+  test('can access login page', async ({ page }) => {
+    await page.goto('/login');
+    await expect(page.locator('form')).toBeVisible();
+  });
 
-    if (hasRegisterLink) {
-      await page.click('text=/register|sign up|créer un compte/i');
+  test('redirects authenticated users away from login', async ({ page }) => {
+    await page.setExtraHTTPHeaders({ 'x-test-auth': 'true' });
+    await page.goto('/login');
+    // Should redirect to home since already authenticated
+    await expect(page).not.toHaveURL(/\/login/);
+  });
 
-      // Try to submit with empty fields
-      await page.click('button[type="submit"]');
-
-      // Should show error messages
-      await page.waitForTimeout(1000);
-      const body = await page.textContent('body');
-      expect(body).toBeTruthy();
-    } else {
-      test.skip();
-    }
+  test('test auth header creates session and grants access to lobby', async ({ page }) => {
+    await page.setExtraHTTPHeaders({ 'x-test-auth': 'true' });
+    await page.goto('/lobby');
+    // Should not be redirected to login
+    await expect(page).toHaveURL(/\/lobby/);
+    await expect(page.locator('[data-testid="create-game-button"]')).toBeVisible({ timeout: 10000 });
   });
 });

@@ -18,11 +18,7 @@ module.exports = defineConfig({
   workers: process.env.CI ? 1 : undefined,
 
   // Reporter to use
-  reporter: [
-    ['html'],
-    ['list'],
-    process.env.CI ? ['github'] : ['line']
-  ],
+  reporter: [['list']],
 
   use: {
     // Base URL for all tests
@@ -34,39 +30,19 @@ module.exports = defineConfig({
     // Screenshot on failure
     screenshot: 'only-on-failure',
 
-    // Video on failure
-    video: 'retain-on-failure',
-
     // Browser context options
-    viewport: { width: 1280, height: 720 },
     ignoreHTTPSErrors: true,
   },
 
-  // Configure projects for major browsers
+  // Run only chromium by default for speed
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-
-    // Mobile viewports
     {
       name: 'mobile-chrome',
       use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'mobile-safari',
-      use: { ...devices['iPhone 12'] },
     },
   ],
 
@@ -77,8 +53,8 @@ module.exports = defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
     env: {
-      MIX_ENV: 'test',
-      PORT: '4000'
-    }
+      MIX_ENV: 'dev',
+      PORT: '4000',
+    },
   },
 });

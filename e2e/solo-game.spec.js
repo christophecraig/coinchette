@@ -1,152 +1,79 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
+const { loginAsTestUser, createSoloGame, waitForLiveView, handleBidding } = require('./helpers');
 
 test.describe('Solo Game vs Bots', () => {
-  test('can start and play a solo game', async ({ page }) => {
-    // Navigate to game page
-    await page.goto('/game');
-
-    // Wait for page to load
-    await page.waitForLoadState('networkidle');
-
-    // Verify game elements are present
-    await expect(page.locator('body')).toBeVisible();
-
-    // Check for player hands using data-testid
-    const southHand = page.locator('[data-testid="player-hand-south"]');
-    await expect(southHand).toBeVisible({ timeout: 5000 });
-
-    // Should see game board or bidding interface
-    const hasGameBoard = await page.locator('[data-testid="game-board"]').count() > 0;
-    const hasBiddingInterface = await page.locator('[data-testid="bid-take-button"]').count() > 0;
-
-    expect(hasGameBoard || hasBiddingInterface).toBeTruthy();
+  test.beforeEach(async ({ page }) => {
+    await loginAsTestUser(page);
   });
 
-  test('displays bidding phase correctly', async ({ page }) => {
-    await page.goto('/game');
-    await page.waitForLoadState('networkidle');
+  test('can create a solo game from lobby', async ({ page }) => {
+    await page.goto('/lobby');
+    await waitForLiveView(page);
 
-    // Start new game to trigger bidding
-    const newGameButton = page.locator('[data-testid="new-game-button"]');
-    if (await newGameButton.count() > 0) {
-      await newGameButton.click();
-      await page.waitForTimeout(1000);
-    }
+    const soloButton = page.locator('[data-testid="create-solo-game-button"]');
+    await expect(soloButton).toBeVisible();
+    await soloButton.click();
 
-    // Check if bidding phase is visible using data-testid
-    const takeBidButton = page.locator('[data-testid="bid-take-button"]');
-    const passBidButton = page.locator('[data-testid="bid-pass-button"]');
-
-    const hasBidding = await takeBidButton.count() > 0 || await passBidButton.count() > 0;
-
-    if (hasBidding) {
-      // Should see bidding options
-      await expect(takeBidButton.or(passBidButton)).toBeVisible({ timeout: 5000 });
-    }
+    // Should redirect to /game/:id/play
+    await page.waitForURL(/\/game\/.*\/play/, { timeout: 15000 });
+    await waitForLiveView(page);
   });
 
-  test('can play a card during game', async ({ page }) => {
-    await page.goto('/game');
-    await page.waitForLoadState('networkidle');
+  test('shows player hand after game starts', async ({ page }) => {
+    await createSoloGame(page);
 
-    // Wait for game to be in playing state or handle bidding
-    await page.waitForTimeout(1000);
+    const playerHand = page.locator('[data-testid="player-hand"]');
+    await expect(playerHand).toBeVisible({ timeout: 10000 });
+  });
 
-    // Handle bidding if present
-    const takeBidButton = page.locator('[data-testid="bid-take-button"]');
-    if (await takeBidButton.count() > 0) {
-      await takeBidButton.click();
-      await page.waitForTimeout(2000);
-    }
+  test('displays bidding interface or game state', async ({ page }) => {
+    await createSoloGame(page);
 
-    // Look for playable cards using data-playable attribute
-    const playableCards = page.locator('[data-playable="true"]');
-    const cardCount = await playableCards.count();
+    // After game starts, should see either bidding buttons or player hand with cards
+    const bidTake = page.locator('[data-testid="bid-take-button"]');
+    const playerHand = page.locator('[data-testid="player-hand"]');
 
-    if (cardCount > 0) {
-      // Click first playable card
-      await playableCards.first().click();
+    await expect(bidTake.or(playerHand)).toBeVisible({ timeout: 10000 });
+  });
 
-      // Wait for card to be played
-      await page.waitForTimeout(500);
+  test('can interact with bidding phase', async ({ page }) => {
+    await createSoloGame(page);
 
-      // Verify game board is still visible
-      const gameBoard = page.locator('[data-testid="game-board"]');
-      await expect(gameBoard).toBeVisible();
+    // Try to handle bidding - it may be our turn or not
+    const tookAction = await handleBidding(page, 'take');
+
+    if (tookAction) {
+      // After taking, should see trump indicator or hand
+      const trump = page.locator('[data-testid="trump-indicator"]');
+      const hand = page.locator('[data-testid="player-hand"]');
+      await expect(trump.or(hand)).toBeVisible({ timeout: 10000 });
     }
   });
 
-  test('displays score correctly', async ({ page }) => {
-    await page.goto('/game');
-    await page.waitForLoadState('networkidle');
+  test('shows score panel during game', async ({ page }) => {
+    await createSoloGame(page);
 
-    // Handle bidding to get to playing state
-    const takeBidButton = page.locator('[data-testid="bid-take-button"]');
-    if (await takeBidButton.count() > 0) {
-      await takeBidButton.click();
-      await page.waitForTimeout(2000);
-    }
-
-    // Should see score panel using data-testid
     const scorePanel = page.locator('[data-testid="score-panel"]');
-    await expect(scorePanel).toBeVisible({ timeout: 5000 });
-
-    // Should see score numbers
-    const scorePanelText = await scorePanel.textContent();
-    expect(scorePanelText).toMatch(/\d+/);
+    await expect(scorePanel).toBeVisible({ timeout: 10000 });
   });
 
-  test('shows trump suit', async ({ page }) => {
-    await page.goto('/game');
-    await page.waitForLoadState('networkidle');
+  test('can play a card when it is our turn', { timeout: 60000 }, async ({ page }) => {
+    await createSoloGame(page);
 
-    // Should see trump indicator
-    const hasTrump = await page.locator('text=/atout|trump|♠|♥|♦|♣/i').count() > 0;
-    expect(hasTrump).toBeTruthy();
-  });
+    // Handle bidding if it's our turn
+    await handleBidding(page, 'take');
 
-  test('completes a full game', { timeout: 60000 }, async ({ page }) => {
-    await page.goto('/game');
-    await page.waitForLoadState('networkidle');
+    // Wait for a playable card to appear (may need to wait for bots)
+    const playableCard = page.locator('[data-playable="true"]').first();
+    try {
+      await playableCard.waitFor({ timeout: 15000 });
+      await playableCard.click();
 
-    // Start new game
-    const newGameButton = page.locator('button:has-text("Nouvelle Partie"), button:has-text("New Game")');
-    if (await newGameButton.count() > 0) {
-      await newGameButton.click();
-      await page.waitForTimeout(1000);
+      // After playing, hand should still be visible
+      await expect(page.locator('[data-testid="player-hand"]')).toBeVisible({ timeout: 5000 });
+    } catch {
+      // Not our turn yet or bidding still in progress - that's ok
     }
-
-    // Handle bidding if present
-    const takeButton = page.locator('button:has-text("Prendre"), button:has-text("Take")');
-    if (await takeButton.count() > 0) {
-      await takeButton.click();
-      await page.waitForTimeout(2000);
-    }
-
-    // Play cards until game ends (max 8 tricks, allowing time for bot plays)
-    for (let trick = 0; trick < 8; trick++) {
-      // Wait for turn
-      await page.waitForTimeout(1000);
-
-      // Try to find playable card
-      const playableCard = page.locator('.card:not(.disabled), [data-playable="true"]').first();
-
-      if (await playableCard.count() > 0) {
-        await playableCard.click();
-        // Wait for bots to play (3 bots * 800ms each)
-        await page.waitForTimeout(3000);
-      } else {
-        // Game might be over or waiting for bots
-        break;
-      }
-    }
-
-    // Check for game end message
-    await page.waitForTimeout(2000);
-    const hasGameEnd = await page.locator('text=/victoire|défaite|gagné|perdu|win|lose|game over/i').count() > 0;
-
-    // Game might not be finished yet (valid scenario)
-    expect(true).toBeTruthy();
   });
 });

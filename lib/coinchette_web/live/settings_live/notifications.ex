@@ -176,7 +176,7 @@ defmodule CoinchetteWeb.SettingsLive.Notifications do
     ~H"""
     <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
       <.header>
-        <:title>Notification Settings</:title>
+        Notification Settings
         <:subtitle>Manage your push notification preferences</:subtitle>
       </.header>
 

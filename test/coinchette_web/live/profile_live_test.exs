@@ -17,7 +17,7 @@ defmodule CoinchetteWeb.ProfileLiveTest do
         })
 
       # Create some stats for the user
-      {:ok, stats} = Accounts.get_or_create_stats(user.id)
+      {:ok, _stats} = Accounts.get_or_create_stats(user.id)
 
       # Simulate some game results
       {:ok, _} =
@@ -94,7 +94,7 @@ defmodule CoinchetteWeb.ProfileLiveTest do
       assert html =~ "Historique récent"
     end
 
-    test "shows empty state when no games played", %{conn: conn} do
+    test "shows empty state when no games played", %{conn: _conn} do
       # Create a new user with no games
       {:ok, new_user} =
         Accounts.register_user(%{

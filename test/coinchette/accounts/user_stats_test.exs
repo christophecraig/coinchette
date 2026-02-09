@@ -2,7 +2,6 @@ defmodule Coinchette.Accounts.UserStatsTest do
   use Coinchette.DataCase
 
   alias Coinchette.Accounts
-  alias Coinchette.Accounts.UserStats
 
   describe "user_stats" do
     setup do

@@ -6,13 +6,13 @@ Reported issues from real-world testing (2 humans + 2 bots).
 
 | # | Issue | Severity | Status | Commit |
 |---|-------|----------|--------|--------|
-| 1 | Join screen redundancy - unnecessary confirm step | Medium | TODO | - |
-| 2 | Point selector (500/1000) has no effect | High | TODO | - |
-| 3 | Selector resets to 1000 when player joins | High | TODO | - |
-| 4 | No way to rejoin ongoing game after disconnect | Medium | TODO | - |
-| 5 | Game doesn't auto-continue after first hand | High | TODO | - |
-| 6 | Last trick card disappears + no winner indicator + no delay | Critical | TODO | - |
-| 7 | Trump cards in hand have no visual indicator | Medium | TODO | - |
+| 1 | Join screen redundancy - unnecessary confirm step | Medium | ✅ DONE | 0844507 |
+| 2 | Point selector (500/1000) has no effect | High | ✅ DONE | 1aa9949 |
+| 3 | Selector resets to 1000 when player joins | High | ✅ DONE | 1aa9949 |
+| 4 | No way to rejoin ongoing game after disconnect | Medium | ✅ DONE | ce98719 |
+| 5 | Game doesn't auto-continue after first hand | High | ✅ DONE | 3d1ce0a |
+| 6 | Last trick card disappears + no winner indicator + no delay | Critical | ✅ DONE | ea045ab |
+| 7 | Trump cards in hand have no visual indicator | Medium | ✅ DONE | 1c0b919 |
 
 ---
 
