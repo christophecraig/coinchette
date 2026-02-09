@@ -497,6 +497,10 @@ defmodule Coinchette.GameServer do
     else
       {:noreply, %{state | bot_timer: nil}}
     end
+  rescue
+    Ecto.NoResultsError ->
+      Logger.warning("Game #{state.game_id} no longer exists, stopping server")
+      {:stop, :normal, state}
   end
 
   @impl true
@@ -532,6 +536,10 @@ defmodule Coinchette.GameServer do
     new_state = maybe_schedule_bot_turn(new_state)
 
     {:noreply, new_state}
+  rescue
+    Ecto.NoResultsError ->
+      Logger.warning("Game #{state.game_id} no longer exists, stopping server")
+      {:stop, :normal, state}
   end
 
   ## Private Functions

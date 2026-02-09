@@ -31,6 +31,7 @@ defmodule Coinchette.GameStatsIntegrationTest do
 
       # Start GameServer
       {:ok, _pid} = GameServerSupervisor.start_game(game.id)
+      on_exit(fn -> GameServerSupervisor.stop_game(game.id) end)
 
       # Add second player (user2 will be at position 1, on team 1)
       :ok = GameServer.add_player(game.id, user2.id, 1)

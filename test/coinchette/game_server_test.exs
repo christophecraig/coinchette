@@ -28,6 +28,7 @@ defmodule Coinchette.GameServerTest do
   defp start_game_server(game_id) do
     {:ok, pid} = GameServerSupervisor.start_game(game_id)
     Ecto.Adapters.SQL.Sandbox.allow(Coinchette.Repo, self(), pid)
+    on_exit(fn -> GameServerSupervisor.stop_game(game_id) end)
     {:ok, pid}
   end
 

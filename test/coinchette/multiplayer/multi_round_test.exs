@@ -16,6 +16,7 @@ defmodule Coinchette.Multiplayer.MultiRoundTest do
 
       # Start GameServer
       {:ok, _pid} = GameServerSupervisor.start_game(game.id)
+      on_exit(fn -> GameServerSupervisor.stop_game(game.id) end)
 
       # Add all players
       Multiplayer.add_player(game.id, user2.id, 1)
@@ -46,12 +47,13 @@ defmodule Coinchette.Multiplayer.MultiRoundTest do
       # Reload game from DB
       db_game = Multiplayer.get_game!(game_id)
 
-      # Cumulative scores should be updated (sum = 162 for one hand)
+      # Cumulative scores should be updated (sum = 162, or 182 with Belote/Rebelote)
       # Scores might have string or integer keys depending on DB/Ecto
       team_0_score = get_score(db_game.scores, 0)
       team_1_score = get_score(db_game.scores, 1)
 
-      assert team_0_score + team_1_score == 162
+      total = team_0_score + team_1_score
+      assert total in [162, 182], "Expected total 162 or 182 (with Belote/Rebelote), got #{total}"
       assert team_0_score > 0 or team_1_score > 0
     end
 

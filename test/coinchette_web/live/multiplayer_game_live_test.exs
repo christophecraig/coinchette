@@ -27,6 +27,8 @@ defmodule CoinchetteWeb.MultiplayerGameLiveTest do
     # Start the game
     {:ok, _game} = GameServer.start_game(game.id)
 
+    on_exit(fn -> Coinchette.GameServerSupervisor.stop_game(game.id) end)
+
     %{user: user, game: game}
   end
 

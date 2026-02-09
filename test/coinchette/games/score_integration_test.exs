@@ -14,8 +14,8 @@ defmodule Coinchette.Games.ScoreIntegrationTest do
       # When: Play the first trick
       {:ok, game_after_trick1} = play_complete_trick(game)
 
-      # Then: Scores are calculated
-      assert game_after_trick1.scores[0] + game_after_trick1.scores[1] > 0
+      # Then: Scores are calculated (a trick can have 0 points if all cards are 7/8/9 non-trump)
+      assert game_after_trick1.scores[0] + game_after_trick1.scores[1] >= 0
       assert is_integer(game_after_trick1.scores[0])
       assert is_integer(game_after_trick1.scores[1])
     end
@@ -98,14 +98,14 @@ defmodule Coinchette.Games.ScoreIntegrationTest do
       {:ok, after_2} = play_complete_trick(after_1)
       {:ok, after_3} = play_complete_trick(after_2)
 
-      # Then: Scores increase progressively
+      # Then: Scores increase or stay the same (tricks with only 0-point cards are possible)
       score_1 = after_1.scores[0] + after_1.scores[1]
       score_2 = after_2.scores[0] + after_2.scores[1]
       score_3 = after_3.scores[0] + after_3.scores[1]
 
-      assert score_1 > 0
-      assert score_2 > score_1
-      assert score_3 > score_2
+      assert score_1 >= 0
+      assert score_2 >= score_1
+      assert score_3 >= score_2
     end
   end
 
