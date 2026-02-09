@@ -1185,7 +1185,7 @@ En cours    : 0/1 (0%)
 
 **Vélocité estimée** : 6h
 **Temps écoulé** : 6h
-**Statut** : ✅ PWA SETUP COMPLET (action manuelle requise pour icônes)
+**Statut** : ✅ PWA SETUP COMPLET
 
 ---
 
@@ -1284,7 +1284,7 @@ En cours    : 0/1 (0%)
 - ✅ Hooks LiveView fonctionnels
 - ✅ Composants UI créés et documentés
 - ✅ Documentation complète
-- ⏳ Icônes PNG générées (action utilisateur)
+- ✅ Icônes PNG générées
 
 **Action utilisateur requise** :
 ```bash
@@ -1797,5 +1797,53 @@ Une tâche est considérée "Terminée" (✅) si :
 
 ---
 
-**Prochaine mise à jour** : Après complétion de M4 ou E2E Tests ou Sound Implementation
-**Dernière mise à jour** : 2026-02-04 (Session 9 - PWA Setup)
+---
+
+## 📅 E2E Test Improvements (Février 2026)
+
+### Objectif
+Améliorer la couverture E2E avec tests pour friends, profile, game flow avancé
+
+### 📊 Statistiques
+
+```
+Complétées : 1/1 (100%) ✅
+```
+
+**Statut** : ✅ E2E IMPROVEMENTS COMPLET
+
+---
+
+#### 🟠 T6.1 : E2E Test Improvements [✅ Terminé]
+**Assigné** : Claude
+**Statut** : ✅ Complété le 2026-02-09
+
+**Détails** :
+- [x] Added data-testid attributes to FriendsLive, ProfileLive, BottomNav
+- [x] New test file: friends.spec.js (5 tests)
+- [x] New test file: profile.spec.js (4 tests)
+- [x] New test file: game-flow.spec.js (3 tests)
+- [x] Enhanced auth.spec.js (+2 tests)
+- [x] Added helpers: navigateToFriends, navigateToProfile, waitForPlayableCard
+- [x] Updated README.md
+
+**Tests** :
+- ✅ 70 tests pass (35 tests x 2 browser projects)
+
+**Fichiers créés** :
+- `e2e/friends.spec.js`
+- `e2e/profile.spec.js`
+- `e2e/game-flow.spec.js`
+
+**Fichiers modifiés** :
+- `lib/coinchette_web/live/friends_live.ex` (data-testid)
+- `lib/coinchette_web/live/profile_live.ex` (data-testid)
+- `lib/coinchette_web/components/bottom_nav.ex` (data-testid)
+- `e2e/helpers.js` (new helpers)
+- `e2e/auth.spec.js` (enhanced)
+- `e2e/README.md` (updated)
+
+---
+
+**Prochaine mise à jour** : Après complétion de M4 ou Sound Implementation
+**Dernière mise à jour** : 2026-02-09 (Session 11 - E2E Test Improvements)

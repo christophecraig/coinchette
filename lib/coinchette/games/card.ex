@@ -120,6 +120,32 @@ defmodule Coinchette.Games.Card do
   defp non_trump_strength(:eight), do: 5
   defp non_trump_strength(:seven), do: 4
 
+  @doc """
+  Sorts a hand of cards by suit then by rank (ascending).
+
+  Suit order: spades, hearts, diamonds, clubs.
+  Rank order: 7, 8, 9, 10, J, Q, K, A.
+  """
+  def sort_hand(cards) do
+    Enum.sort_by(cards, fn %__MODULE__{rank: rank, suit: suit} ->
+      {suit_order(suit), rank_order(rank)}
+    end)
+  end
+
+  defp suit_order(:spades), do: 0
+  defp suit_order(:hearts), do: 1
+  defp suit_order(:diamonds), do: 2
+  defp suit_order(:clubs), do: 3
+
+  defp rank_order(:seven), do: 0
+  defp rank_order(:eight), do: 1
+  defp rank_order(:nine), do: 2
+  defp rank_order(:ten), do: 3
+  defp rank_order(:jack), do: 4
+  defp rank_order(:queen), do: 5
+  defp rank_order(:king), do: 6
+  defp rank_order(:ace), do: 7
+
   defimpl String.Chars do
     @moduledoc """
     Conversion d'une carte en chaîne de caractères lisible.

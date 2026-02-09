@@ -882,7 +882,7 @@ defmodule CoinchetteWeb.MultiplayerGameLive do
               <div class="mt-6" data-testid="player-hand">
                 <h3 class="text-white font-semibold mb-3 text-center">Votre main</h3>
                 <div class="flex flex-wrap justify-center gap-2">
-                  <%= for card <- my_player.hand do %>
+                  <%= for card <- Coinchette.Games.Card.sort_hand(my_player.hand) do %>
                     <% playable = card_playable?(@game, card, @my_position) %>
                     <button
                       phx-click={playable && @is_my_turn && "play_card"}

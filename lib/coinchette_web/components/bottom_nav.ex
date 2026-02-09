@@ -23,6 +23,7 @@ defmodule CoinchetteWeb.BottomNav do
           icon="home"
           label="Accueil"
           active={@current_path == "/lobby"}
+          testid="nav-home"
         />
 
         <!-- Friends -->
@@ -31,6 +32,7 @@ defmodule CoinchetteWeb.BottomNav do
           icon="friends"
           label="Amis"
           active={@current_path == "/friends"}
+          testid="nav-friends"
         />
 
         <!-- Profile -->
@@ -39,6 +41,7 @@ defmodule CoinchetteWeb.BottomNav do
           icon="user"
           label="Profil"
           active={@current_path == "/profile"}
+          testid="nav-profile"
         />
       </div>
     </nav>
@@ -52,11 +55,13 @@ defmodule CoinchetteWeb.BottomNav do
   attr :icon, :string, required: true
   attr :label, :string, required: true
   attr :active, :boolean, default: false
+  attr :testid, :string, default: nil
 
   defp nav_item(assigns) do
     ~H"""
     <.link
       navigate={@href}
+      data-testid={@testid}
       class={[
         "flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-colors",
         @active && "text-primary bg-primary/10",

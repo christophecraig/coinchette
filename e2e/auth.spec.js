@@ -36,4 +36,20 @@ test.describe('Authentication', () => {
     await expect(page).toHaveURL(/\/lobby/);
     await expect(page.locator('[data-testid="create-game-button"]')).toBeVisible({ timeout: 10000 });
   });
+
+  test('registration form has all required fields', async ({ page }) => {
+    await page.goto('/register');
+
+    await expect(page.locator('input[name="user[email]"]')).toBeVisible();
+    await expect(page.locator('input[name="user[username]"]')).toBeVisible();
+    await expect(page.locator('input[name="user[password]"]')).toBeVisible();
+    await expect(page.locator('button[type="submit"]')).toBeVisible();
+  });
+
+  test('login form has email and password fields', async ({ page }) => {
+    await page.goto('/login');
+
+    await expect(page.locator('input[name="user[email]"]').or(page.locator('input[type="email"]'))).toBeVisible();
+    await expect(page.locator('input[name="user[password]"]').or(page.locator('input[type="password"]'))).toBeVisible();
+  });
 });

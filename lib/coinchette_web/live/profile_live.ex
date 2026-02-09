@@ -40,13 +40,13 @@ defmodule CoinchetteWeb.ProfileLive do
               <span class="hidden sm:inline">Notifications</span>
             </.link>
           </div>
-          <h1 class="text-3xl sm:text-4xl font-bold text-base-content">
+          <h1 class="text-3xl sm:text-4xl font-bold text-base-content" data-testid="profile-username">
             Profil de {@user.username}
           </h1>
         </div>
         
     <!-- Stats Overview Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8" data-testid="stats-cards">
           <.stat_card
             title="Parties jouées"
             value={@stats.games_played}
@@ -209,7 +209,7 @@ defmodule CoinchetteWeb.ProfileLive do
         </div>
         
     <!-- Recent Games -->
-        <div class="card bg-base-100 shadow-xl">
+        <div class="card bg-base-100 shadow-xl" data-testid="recent-games">
           <div class="card-body">
             <h2 class="card-title">📜 Historique récent</h2>
 

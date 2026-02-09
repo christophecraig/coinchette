@@ -94,6 +94,36 @@ async function handleBidding(page, action = 'take') {
   }
 }
 
+/**
+ * Navigate to friends page
+ * @param {import('@playwright/test').Page} page
+ */
+async function navigateToFriends(page) {
+  await page.goto('/friends');
+  await waitForLiveView(page);
+}
+
+/**
+ * Navigate to profile page
+ * @param {import('@playwright/test').Page} page
+ */
+async function navigateToProfile(page) {
+  await page.goto('/profile');
+  await waitForLiveView(page);
+}
+
+/**
+ * Wait for a playable card to appear (bots finish their turns)
+ * @param {import('@playwright/test').Page} page
+ * @param {number} [timeout=30000]
+ * @returns {Promise<import('@playwright/test').Locator>}
+ */
+async function waitForPlayableCard(page, timeout = 30000) {
+  const card = page.locator('[data-playable="true"]').first();
+  await card.waitFor({ timeout });
+  return card;
+}
+
 module.exports = {
   loginAsTestUser,
   waitForLiveView,
@@ -101,4 +131,7 @@ module.exports = {
   createMultiplayerGame,
   startMultiplayerGame,
   handleBidding,
+  navigateToFriends,
+  navigateToProfile,
+  waitForPlayableCard,
 };

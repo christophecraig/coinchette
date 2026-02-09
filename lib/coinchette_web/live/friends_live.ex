@@ -192,11 +192,12 @@ defmodule CoinchetteWeb.FriendsLive do
         </div>
 
         <!-- Tabs -->
-        <div class="tabs tabs-boxed mb-6 bg-base-200">
+        <div class="tabs tabs-boxed mb-6 bg-base-200" data-testid="friends-tabs">
           <button
             phx-click="switch_tab"
             phx-value-tab="friends"
             class={["tab flex-1", @active_tab == "friends" && "tab-active"]}
+            data-testid="tab-friends"
           >
             Mes amis
             <span :if={length(@friends) > 0} class="badge badge-sm ml-1">{length(@friends)}</span>
@@ -205,6 +206,7 @@ defmodule CoinchetteWeb.FriendsLive do
             phx-click="switch_tab"
             phx-value-tab="requests"
             class={["tab flex-1", @active_tab == "requests" && "tab-active"]}
+            data-testid="tab-requests"
           >
             Demandes
             <span :if={@pending_count > 0} class="badge badge-sm badge-primary ml-1">{@pending_count}</span>
@@ -213,6 +215,7 @@ defmodule CoinchetteWeb.FriendsLive do
             phx-click="switch_tab"
             phx-value-tab="search"
             class={["tab flex-1", @active_tab == "search" && "tab-active"]}
+            data-testid="tab-search"
           >
             Rechercher
           </button>
@@ -232,7 +235,7 @@ defmodule CoinchetteWeb.FriendsLive do
           <% else %>
             <div class="space-y-2">
               <%= for friend <- @friends do %>
-                <div class="card bg-base-200 p-4 flex flex-row items-center justify-between">
+                <div class="card bg-base-200 p-4 flex flex-row items-center justify-between" data-testid="friend-entry">
                   <div class="flex items-center gap-3">
                     <div class={[
                       "w-3 h-3 rounded-full",
@@ -279,6 +282,7 @@ defmodule CoinchetteWeb.FriendsLive do
                       phx-click="accept_request"
                       phx-value-friend-id={request.friend_id}
                       class="btn btn-success btn-sm"
+                      data-testid="accept-request-button"
                     >
                       Accepter
                     </button>
@@ -286,6 +290,7 @@ defmodule CoinchetteWeb.FriendsLive do
                       phx-click="decline_request"
                       phx-value-friend-id={request.friend_id}
                       class="btn btn-ghost btn-sm"
+                      data-testid="decline-request-button"
                     >
                       Refuser
                     </button>
@@ -331,8 +336,9 @@ defmodule CoinchetteWeb.FriendsLive do
                 class="input input-bordered flex-1"
                 autocomplete="off"
                 phx-debounce="300"
+                data-testid="search-input"
               />
-              <button type="submit" class="btn btn-primary">
+              <button type="submit" class="btn btn-primary" data-testid="search-button">
                 Rechercher
               </button>
             </div>
@@ -353,6 +359,7 @@ defmodule CoinchetteWeb.FriendsLive do
                     phx-click="add_friend"
                     phx-value-username={user.username}
                     class="btn btn-primary btn-sm"
+                    data-testid="add-friend-button"
                   >
                     Ajouter
                   </button>

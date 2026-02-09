@@ -56,9 +56,12 @@ pnpm report
 ```
 e2e/
 ├── homepage.spec.js      # Tests homepage (✅ 3/3)
-├── auth.spec.js          # Tests authentification
-├── solo-game.spec.js     # Tests jeu solo (⚠️ 3/6)
-├── multiplayer.spec.js   # Tests multijoueur (❌ 0/6)
+├── auth.spec.js          # Tests authentification (✅ 7/7)
+├── solo-game.spec.js     # Tests jeu solo (✅ 6/6)
+├── multiplayer.spec.js   # Tests multijoueur (✅ 6/6)
+├── friends.spec.js       # Tests page amis (✅ 5/5)
+├── profile.spec.js       # Tests page profil (✅ 4/4)
+├── game-flow.spec.js     # Tests flow de jeu avancé (✅ 3/3)
 ├── helpers.js            # Fonctions utilitaires
 └── README.md             # Cette documentation
 ```
@@ -173,5 +176,5 @@ pnpm test:debug e2e/solo-game.spec.js
 
 ---
 
-**Statut global** : 6/15 tests passent (40%)
-**Prochaine étape** : Ajouter data-testid + fixer auth multijoueur
+**Statut global** : 34 tests (17 tests x 2 browser projects)
+**Prochaine étape** : Intégration CI/CD
