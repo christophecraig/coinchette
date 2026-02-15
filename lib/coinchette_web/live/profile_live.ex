@@ -8,11 +8,7 @@ defmodule CoinchetteWeb.ProfileLive do
 
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
-
-    # Get or create user statistics
     {:ok, stats} = Accounts.get_or_create_stats(user.id)
-
-    # Get recent finished games
     recent_games = Multiplayer.list_recent_finished_games(user.id, 10)
 
     socket =
@@ -35,18 +31,49 @@ defmodule CoinchetteWeb.ProfileLive do
             <.link navigate="/lobby" class="btn btn-ghost btn-sm">
               ← Retour au lobby
             </.link>
-            <.link navigate="/settings/notifications" class="btn btn-ghost btn-sm gap-2">
-              <span class="text-lg">🔔</span>
-              <span class="hidden sm:inline">Notifications</span>
-            </.link>
+            <div class="flex gap-2">
+              <.link navigate="/leaderboard" class="btn btn-ghost btn-sm gap-2">
+                <span class="text-lg">🏆</span>
+                <span class="hidden sm:inline">Classement</span>
+              </.link>
+              <.link navigate="/settings/notifications" class="btn btn-ghost btn-sm gap-2">
+                <span class="text-lg">🔔</span>
+                <span class="hidden sm:inline">Notifications</span>
+              </.link>
+            </div>
           </div>
           <h1 class="text-3xl sm:text-4xl font-bold text-base-content" data-testid="profile-username">
             Profil de {@user.username}
           </h1>
         </div>
-        
-    <!-- Stats Overview Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8" data-testid="stats-cards">
+
+        <!-- ELO Card -->
+        <div class="card bg-base-100 shadow-xl mb-8" data-testid="elo-card">
+          <div class="card-body flex-row items-center justify-between">
+            <div>
+              <p class="text-sm text-base-content/60">Score ELO</p>
+              <p class={["text-5xl font-bold font-mono", UserStats.elo_color(@stats.elo_rating)]}>
+                {@stats.elo_rating}
+              </p>
+              <p class={["text-sm font-semibold mt-1", UserStats.elo_color(@stats.elo_rating)]}>
+                {UserStats.elo_rank(@stats.elo_rating)}
+              </p>
+            </div>
+            <div class="text-6xl opacity-80">
+              <%= case UserStats.elo_rank(@stats.elo_rating) do %>
+                <% "Débutant" -> %>🌱
+                <% "Apprenti" -> %>📘
+                <% "Joueur" -> %>🃏
+                <% "Confirmé" -> %>⚔️
+                <% "Expert" -> %>🔥
+                <% "Maître" -> %>👑
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Overview Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" data-testid="stats-cards">
           <.stat_card
             title="Parties jouées"
             value={@stats.games_played}
@@ -71,11 +98,72 @@ defmodule CoinchetteWeb.ProfileLive do
             value={@stats.best_score}
             icon="⭐"
             color="bg-yellow-500"
-            subtitle="points en une partie"
+            subtitle="points"
           />
         </div>
-        
-    <!-- Detailed Stats -->
+
+        <!-- Streaks + Team Stats -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <!-- Streaks -->
+          <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+              <h2 class="card-title">🔥 Séries de victoires</h2>
+              <div class="grid grid-cols-2 gap-4 mt-4">
+                <div class="text-center p-4 bg-base-200 rounded-xl">
+                  <p class="text-sm text-base-content/60">Série actuelle</p>
+                  <p class="text-3xl font-bold text-success">{@stats.current_win_streak}</p>
+                </div>
+                <div class="text-center p-4 bg-base-200 rounded-xl">
+                  <p class="text-sm text-base-content/60">Meilleure série</p>
+                  <p class="text-3xl font-bold text-warning">{@stats.best_win_streak}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Team Performance -->
+          <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+              <h2 class="card-title">📊 Performance par équipe</h2>
+              <div class="space-y-4 mt-4">
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span>Équipe 1 (positions 1-3)</span>
+                    <span class="font-bold">
+                      {UserStats.team_win_rate(@stats, 0, @stats.games_as_team0)}% victoires
+                    </span>
+                  </div>
+                  <progress
+                    class="progress progress-success w-full"
+                    value={UserStats.team_win_rate(@stats, 0, @stats.games_as_team0)}
+                    max="100"
+                  />
+                  <p class="text-xs text-base-content/60 mt-1">
+                    {@stats.wins_as_team0}/{@stats.games_as_team0} parties
+                  </p>
+                </div>
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span>Équipe 2 (positions 2-4)</span>
+                    <span class="font-bold">
+                      {UserStats.team_win_rate(@stats, 1, @stats.games_as_team1)}% victoires
+                    </span>
+                  </div>
+                  <progress
+                    class="progress progress-info w-full"
+                    value={UserStats.team_win_rate(@stats, 1, @stats.games_as_team1)}
+                    max="100"
+                  />
+                  <p class="text-xs text-base-content/60 mt-1">
+                    {@stats.wins_as_team1}/{@stats.games_as_team1} parties
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Points + Achievements -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <!-- Points Statistics -->
           <div class="card bg-base-100 shadow-xl">
@@ -127,8 +215,8 @@ defmodule CoinchetteWeb.ProfileLive do
               </div>
             </div>
           </div>
-          
-    <!-- Achievements -->
+
+          <!-- Achievements -->
           <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
               <h2 class="card-title">🎖️ Accomplissements</h2>
@@ -207,8 +295,8 @@ defmodule CoinchetteWeb.ProfileLive do
             </div>
           </div>
         </div>
-        
-    <!-- Recent Games -->
+
+        <!-- Recent Games -->
         <div class="card bg-base-100 shadow-xl" data-testid="recent-games">
           <div class="card-body">
             <h2 class="card-title">📜 Historique récent</h2>
@@ -250,16 +338,16 @@ defmodule CoinchetteWeb.ProfileLive do
   defp stat_card(assigns) do
     ~H"""
     <div class="card bg-base-100 shadow-xl">
-      <div class="card-body">
+      <div class="card-body p-4">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-base-content/60">{@title}</p>
-            <p class="text-3xl font-bold">{@value}</p>
+            <p class="text-xs sm:text-sm text-base-content/60">{@title}</p>
+            <p class="text-2xl sm:text-3xl font-bold">{@value}</p>
             <%= if assigns[:subtitle] do %>
               <p class="text-xs text-base-content/60 mt-1">{@subtitle}</p>
             <% end %>
           </div>
-          <div class={["text-4xl", @color, "rounded-full w-16 h-16 flex items-center justify-center"]}>
+          <div class={["text-3xl sm:text-4xl", @color, "rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center"]}>
             {@icon}
           </div>
         </div>
@@ -269,7 +357,6 @@ defmodule CoinchetteWeb.ProfileLive do
   end
 
   defp game_row(assigns) do
-    # Determine if the user won this game
     user_position = get_user_position(assigns.game, assigns.user.id)
     user_team = if user_position, do: rem(user_position, 2), else: nil
     winner_team = assigns.game.winner_team

@@ -8,50 +8,14 @@ defmodule Coinchette.Accounts do
   alias Coinchette.Accounts.User
   alias Coinchette.Accounts.UserStats
 
-  @doc """
-  Gets a single user by ID.
+  @elo_k_factor 32
 
-  Raises `Ecto.NoResultsError` if the User does not exist.
-
-  ## Examples
-
-      iex> get_user!(123)
-      %User{}
-
-      iex> get_user!(456)
-      ** (Ecto.NoResultsError)
-
-  """
   def get_user!(id), do: Repo.get!(User, id)
 
-  @doc """
-  Gets a user by email.
-
-  ## Examples
-
-      iex> get_user_by_email("user@example.com")
-      %User{}
-
-      iex> get_user_by_email("unknown@example.com")
-      nil
-
-  """
   def get_user_by_email(email) when is_binary(email) do
     Repo.get_by(User, email: email)
   end
 
-  @doc """
-  Gets a user by email and password.
-
-  ## Examples
-
-      iex> get_user_by_email_and_password("user@example.com", "correct_password")
-      {:ok, %User{}}
-
-      iex> get_user_by_email_and_password("user@example.com", "wrong_password")
-      {:error, :unauthorized}
-
-  """
   def get_user_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
     user = get_user_by_email(email)
@@ -63,124 +27,42 @@ defmodule Coinchette.Accounts do
     end
   end
 
-  @doc """
-  Registers a new user.
-
-  ## Examples
-
-      iex> register_user(%{email: "user@example.com", username: "user", password: "secret123"})
-      {:ok, %User{}}
-
-      iex> register_user(%{email: "bad"})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def register_user(attrs) do
     %User{}
     |> User.registration_changeset(attrs)
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a user's password.
-
-  ## Examples
-
-      iex> update_user_password(user, %{password: "new_password"})
-      {:ok, %User{}}
-
-  """
   def update_user_password(user, attrs) do
     user
     |> User.password_changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Confirms a user's account.
-
-  ## Examples
-
-      iex> confirm_user(user)
-      {:ok, %User{}}
-
-  """
   def confirm_user(%User{} = user) do
     user
     |> User.confirm_changeset()
     |> Repo.update()
   end
 
-  @doc """
-  Lists all users.
-
-  ## Examples
-
-      iex> list_users()
-      [%User{}, ...]
-
-  """
   def list_users do
     Repo.all(User)
   end
 
-  @doc """
-  Deletes a user.
-
-  ## Examples
-
-      iex> delete_user(user)
-      {:ok, %User{}}
-
-  """
   def delete_user(%User{} = user) do
     Repo.delete(user)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking user changes.
-
-  ## Examples
-
-      iex> change_user_registration(user)
-      %Ecto.Changeset{data: %User{}}
-
-  """
   def change_user_registration(%User{} = user, attrs \\ %{}) do
     User.registration_changeset(user, attrs)
   end
 
   ## User Statistics
 
-  @doc """
-  Gets user statistics by user ID.
-
-  Returns nil if the user has no statistics yet.
-
-  ## Examples
-
-      iex> get_stats(user_id)
-      %UserStats{}
-
-      iex> get_stats(unknown_id)
-      nil
-
-  """
   def get_stats(user_id) do
     Repo.get_by(UserStats, user_id: user_id)
   end
 
-  @doc """
-  Gets or creates user statistics.
-
-  If the user doesn't have statistics yet, creates a new record with default values.
-
-  ## Examples
-
-      iex> get_or_create_stats(user_id)
-      {:ok, %UserStats{}}
-
-  """
   def get_or_create_stats(user_id) do
     case get_stats(user_id) do
       nil ->
@@ -204,18 +86,14 @@ defmodule Coinchette.Accounts do
       - points_scored: Points the player's team scored
       - points_conceded: Points the opposing team scored
       - had_belote_rebelote: Boolean indicating if the player had Belote/Rebelote
-
-  ## Examples
-
-      iex> record_game_result(user_id, :win, %{points_scored: 120, points_conceded: 42, had_belote_rebelote: true})
-      {:ok, %UserStats{}}
-
+      - team: (optional) 0 or 1 — the player's team
+      - is_multiplayer: (optional) boolean — if true, ELO is updated
+      - opponent_elo: (optional) average ELO of opposing team
   """
   def record_game_result(user_id, result, game_data)
       when result in [:win, :loss] and is_map(game_data) do
     {:ok, stats} = get_or_create_stats(user_id)
 
-    # Calculate new values
     new_games_played = stats.games_played + 1
     new_games_won = if result == :win, do: stats.games_won + 1, else: stats.games_won
     new_games_lost = if result == :loss, do: stats.games_lost + 1, else: stats.games_lost
@@ -228,17 +106,74 @@ defmodule Coinchette.Accounts do
         do: stats.belote_rebelote_count + 1,
         else: stats.belote_rebelote_count
 
-    # Update stats
+    # Streak calculation
+    {new_current_streak, new_best_streak} = calculate_streaks(stats, result)
+
+    # Team stats
+    team = Map.get(game_data, :team)
+    team_attrs = calculate_team_stats(stats, team, result)
+
+    # ELO calculation (only for multiplayer games)
+    elo_attrs =
+      if Map.get(game_data, :is_multiplayer, false) do
+        opponent_elo = Map.get(game_data, :opponent_elo, 1000)
+        new_elo = calculate_elo(stats.elo_rating, opponent_elo, result)
+        %{elo_rating: new_elo}
+      else
+        %{}
+      end
+
+    attrs =
+      %{
+        games_played: new_games_played,
+        games_won: new_games_won,
+        games_lost: new_games_lost,
+        total_points_scored: new_total_points_scored,
+        total_points_conceded: new_total_points_conceded,
+        best_score: new_best_score,
+        belote_rebelote_count: new_belote_count,
+        current_win_streak: new_current_streak,
+        best_win_streak: new_best_streak
+      }
+      |> Map.merge(team_attrs)
+      |> Map.merge(elo_attrs)
+
     stats
-    |> UserStats.update_changeset(%{
-      games_played: new_games_played,
-      games_won: new_games_won,
-      games_lost: new_games_lost,
-      total_points_scored: new_total_points_scored,
-      total_points_conceded: new_total_points_conceded,
-      best_score: new_best_score,
-      belote_rebelote_count: new_belote_count
-    })
+    |> UserStats.update_changeset(attrs)
     |> Repo.update()
+  end
+
+  @doc """
+  Calculates a new ELO rating using the standard formula.
+  """
+  def calculate_elo(player_elo, opponent_elo, result) do
+    expected = 1.0 / (1.0 + :math.pow(10, (opponent_elo - player_elo) / 400.0))
+    actual = if result == :win, do: 1.0, else: 0.0
+    round(player_elo + @elo_k_factor * (actual - expected))
+  end
+
+  defp calculate_streaks(stats, :win) do
+    new_streak = stats.current_win_streak + 1
+    {new_streak, max(stats.best_win_streak, new_streak)}
+  end
+
+  defp calculate_streaks(stats, :loss) do
+    {0, stats.best_win_streak}
+  end
+
+  defp calculate_team_stats(_stats, nil, _result), do: %{}
+
+  defp calculate_team_stats(stats, 0, result) do
+    %{
+      games_as_team0: stats.games_as_team0 + 1,
+      wins_as_team0: if(result == :win, do: stats.wins_as_team0 + 1, else: stats.wins_as_team0)
+    }
+  end
+
+  defp calculate_team_stats(stats, 1, result) do
+    %{
+      games_as_team1: stats.games_as_team1 + 1,
+      wins_as_team1: if(result == :win, do: stats.wins_as_team1 + 1, else: stats.wins_as_team1)
+    }
   end
 end

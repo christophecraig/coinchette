@@ -757,33 +757,41 @@ defmodule Coinchette.GameServer do
         MapSet.member?(state.bot_positions, position)
       end)
 
+    # Determine if this is a real multiplayer game (at least 2 human players)
+    is_multiplayer = length(human_players) >= 2
+
     # Check if the game had Belote/Rebelote
     had_belote_rebelote = state.game.belote_rebelote != nil
 
+    # Pre-compute ELO averages per team for multiplayer games
+    team_elos =
+      if is_multiplayer do
+        compute_team_elos(human_players, state.bot_positions)
+      else
+        %{}
+      end
+
     # Update stats for each human player
     Enum.each(human_players, fn {position, user_id} ->
-      # Determine player's team (0-1 or 2-3)
       player_team = rem(position, 2)
-
-      # Determine if player won
       result = if player_team == winner_team, do: :win, else: :loss
 
-      # Get points for player's team and opposing team
       points_scored = Map.get(scores, player_team, 0)
       points_conceded = Map.get(scores, 1 - player_team, 0)
 
-      # Check if this specific player had Belote/Rebelote
       player_had_belote =
         case state.game.belote_rebelote do
           {team, _} when team == player_team and had_belote_rebelote -> true
           _ -> false
         end
 
-      # Record the game result
       game_data = %{
         points_scored: points_scored,
         points_conceded: points_conceded,
-        had_belote_rebelote: player_had_belote
+        had_belote_rebelote: player_had_belote,
+        team: player_team,
+        is_multiplayer: is_multiplayer,
+        opponent_elo: Map.get(team_elos, 1 - player_team, 1000)
       }
 
       case Accounts.record_game_result(user_id, result, game_data) do
@@ -793,6 +801,25 @@ defmodule Coinchette.GameServer do
         {:error, reason} ->
           Logger.error("Failed to update stats for user #{user_id}: #{inspect(reason)}")
       end
+    end)
+  end
+
+  defp compute_team_elos(human_players, bot_positions) do
+    # Group human players by team, compute average ELO per team
+    human_players
+    |> Enum.reject(fn {pos, _} -> MapSet.member?(bot_positions, pos) end)
+    |> Enum.group_by(fn {pos, _} -> rem(pos, 2) end)
+    |> Map.new(fn {team, players} ->
+      elos =
+        Enum.map(players, fn {_pos, user_id} ->
+          case Accounts.get_stats(user_id) do
+            nil -> 1000
+            stats -> stats.elo_rating
+          end
+        end)
+
+      avg = if elos == [], do: 1000, else: div(Enum.sum(elos), length(elos))
+      {team, avg}
     end)
   end
 

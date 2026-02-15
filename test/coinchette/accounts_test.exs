@@ -89,4 +89,92 @@ defmodule Coinchette.AccountsTest do
       assert returned_user.id == user.id
     end
   end
+
+  describe "ELO calculation" do
+    test "calculate_elo/3 win against equal opponent gives ~16 points" do
+      new_elo = Accounts.calculate_elo(1000, 1000, :win)
+      assert new_elo == 1016
+    end
+
+    test "calculate_elo/3 loss against equal opponent loses ~16 points" do
+      new_elo = Accounts.calculate_elo(1000, 1000, :loss)
+      assert new_elo == 984
+    end
+
+    test "calculate_elo/3 win against stronger opponent gives more points" do
+      new_elo = Accounts.calculate_elo(1000, 1400, :win)
+      assert new_elo > 1016
+    end
+
+    test "calculate_elo/3 loss against weaker opponent loses more points" do
+      new_elo = Accounts.calculate_elo(1400, 1000, :loss)
+      assert new_elo < 1384
+    end
+  end
+
+  describe "record_game_result with new fields" do
+    setup do
+      {:ok, user} = Accounts.register_user(%{
+        email: "stats@example.com",
+        username: "statsuser",
+        password: "password123",
+        password_confirmation: "password123"
+      })
+      %{user: user}
+    end
+
+    test "updates win streak on consecutive wins", %{user: user} do
+      game_data = %{points_scored: 100, points_conceded: 50, had_belote_rebelote: false}
+
+      {:ok, stats} = Accounts.record_game_result(user.id, :win, game_data)
+      assert stats.current_win_streak == 1
+      assert stats.best_win_streak == 1
+
+      {:ok, stats} = Accounts.record_game_result(user.id, :win, game_data)
+      assert stats.current_win_streak == 2
+      assert stats.best_win_streak == 2
+    end
+
+    test "resets win streak on loss, keeps best", %{user: user} do
+      game_data = %{points_scored: 100, points_conceded: 50, had_belote_rebelote: false}
+
+      {:ok, _} = Accounts.record_game_result(user.id, :win, game_data)
+      {:ok, _} = Accounts.record_game_result(user.id, :win, game_data)
+      {:ok, stats} = Accounts.record_game_result(user.id, :loss, game_data)
+
+      assert stats.current_win_streak == 0
+      assert stats.best_win_streak == 2
+    end
+
+    test "tracks team stats", %{user: user} do
+      game_data = %{points_scored: 100, points_conceded: 50, had_belote_rebelote: false, team: 0}
+      {:ok, stats} = Accounts.record_game_result(user.id, :win, game_data)
+      assert stats.games_as_team0 == 1
+      assert stats.wins_as_team0 == 1
+
+      game_data = %{points_scored: 50, points_conceded: 100, had_belote_rebelote: false, team: 1}
+      {:ok, stats} = Accounts.record_game_result(user.id, :loss, game_data)
+      assert stats.games_as_team1 == 1
+      assert stats.wins_as_team1 == 0
+    end
+
+    test "updates ELO for multiplayer games", %{user: user} do
+      game_data = %{
+        points_scored: 100,
+        points_conceded: 50,
+        had_belote_rebelote: false,
+        is_multiplayer: true,
+        opponent_elo: 1000
+      }
+
+      {:ok, stats} = Accounts.record_game_result(user.id, :win, game_data)
+      assert stats.elo_rating == 1016
+    end
+
+    test "does not update ELO for solo games", %{user: user} do
+      game_data = %{points_scored: 100, points_conceded: 50, had_belote_rebelote: false}
+      {:ok, stats} = Accounts.record_game_result(user.id, :win, game_data)
+      assert stats.elo_rating == 1000
+    end
+  end
 end

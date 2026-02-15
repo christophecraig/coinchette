@@ -52,6 +52,7 @@ defmodule CoinchetteWeb.Router do
     live "/lobby", LobbyLive
     live "/friends", FriendsLive
     live "/profile", ProfileLive
+    live "/leaderboard", LeaderboardLive
     live "/settings/notifications", SettingsLive.Notifications
     live "/game/:id/lobby", GameLobbyLive
     live "/game/:id/play", MultiplayerGameLive

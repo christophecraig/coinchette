@@ -240,6 +240,29 @@ defmodule Coinchette.Friends do
     MapSet.intersection(friend_ids, online_ids)
   end
 
+  @doc """
+  Lists accepted friends with their stats, sorted by ELO descending.
+  Returns a list of maps with :friend_id, :username, :elo_rating, :games_played, :games_won.
+  """
+  def list_friends_with_stats(user_id) do
+    alias Coinchette.Accounts.UserStats
+
+    from(f in Friendship,
+      where: f.user_id == ^user_id and f.status == "accepted",
+      join: u in User, on: u.id == f.friend_id,
+      left_join: s in UserStats, on: s.user_id == u.id,
+      select: %{
+        friend_id: u.id,
+        username: u.username,
+        elo_rating: coalesce(s.elo_rating, 1000),
+        games_played: coalesce(s.games_played, 0),
+        games_won: coalesce(s.games_won, 0)
+      },
+      order_by: [desc: coalesce(s.elo_rating, 1000)]
+    )
+    |> Repo.all()
+  end
+
   # Private helpers
 
   defp find_user_by_username(username) do
